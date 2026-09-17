@@ -15,6 +15,9 @@ previous chapter. Use a reference directory's `./launch` to catch up, rather tha
 as a substitute for the construction exercise. Supplied app checkpoints let you pick up at the next exercise, or you can carry
 your own changes forward.
 
+The third-party tools and workflow are the author's choices for this workshop,
+not Docker endorsements. See [about the tool choices](../README.md#about-the-tool-choices).
+
 [Presenter-only cloud and mounts](08-presenter/README.md)
 
 | Directory | The new capability | What you can point to afterward |

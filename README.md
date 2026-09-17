@@ -34,6 +34,15 @@ Each chapter adds something the factory needs:
 The workshop closes with presenter demonstrations of live mounts, cloud sandboxes
 and organization governance.
 
+## About the tool choices
+
+Docker Sandboxes provides the environment, kits, network controls and MCP gateway
+used in this workshop. The third-party tools—including Beans, ACR, Herdr, Pi,
+Claude Code and Codex—and the coding policy and team workflow reflect the author's
+personal choices for this example. Their inclusion does not imply endorsement or
+recommendation by Docker. You can apply the same Docker capabilities with tools
+and conventions that suit your own team.
+
 ## Get started
 
 Bring a **Mac with Apple silicon**, a terminal, a browser and model access. The
