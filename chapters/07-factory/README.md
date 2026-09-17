@@ -98,7 +98,7 @@ Once the team has committed its result, copy it out from your host terminal:
 sbx cp wad-ch-07:/home/agent/work/app "./.local/service-filter-app"
 ```
 
-This preserves the app in a new host directory. Keep your `chapters/my-*` recipes
+This preserves the app in a new host directory. Keep the environment recipe and team configuration you built
 as well. End the launch terminal with Ctrl-C and run `sbx stop wad-ch-07` when done.
 Stopping preserves files, but it ends the running processes; it is not a pause of
 a live model conversation.

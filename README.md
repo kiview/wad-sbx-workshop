@@ -67,11 +67,10 @@ Or browse the [chapter guide](chapters/README.md) to see the whole journey.
 ## How to use this repository
 
 Run host commands from this repository root. The sample application is in
-`sample-app/`; no per-terminal setup script is needed.
+`sample-app/`.
 
-Follow each chapter from the top. You will build your own configuration in
-`chapters/my-*`; the numbered chapter directories contain completed reference
-configurations. Supplied app checkpoints let you catch up and keep exploring.
+Follow each chapter from the top. Each step tells you which files to create or
+edit, what to run and what to look for afterward.
 
 | Directory | What is inside |
 |---|---|

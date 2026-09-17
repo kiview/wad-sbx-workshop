@@ -29,7 +29,6 @@ SBX credentials may mean you are already authenticated. See
 
 The built-in Claude configuration starts with permission prompts bypassed—the
 “YOLO” mode for this exercise. SBX still enforces its own access boundaries.
-We do not need to launch the `claude` executable ourselves or supply token variables.
 
 ## 2. Try shell commands without leaving Claude
 

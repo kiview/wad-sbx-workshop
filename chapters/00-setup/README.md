@@ -87,35 +87,21 @@ You do not need to build either tool or install Go.
 The download script also prepares `sample-app/`, your working copy for the coding
 exercises. It keeps an existing working copy if you run the download again.
 
-| Path from the workshop root | What it contains |
-|---|---|
-| `sample-app/` | The application your agents will change. |
-| `host-only.txt` | A file outside the app, for the file-isolation exercise. |
-| `.local/app/` | The supplied application checkpoints. |
-| `.local/chapters/` | Tools and demo tasks created during host setup in chapter 02. |
+**Run host commands from the workshop repository root.** The sample application's
+code is in `sample-app/`. In each new host terminal, open the workshop repository.
 
-**Run all host commands from the workshop repository root**, unless a step says
-otherwise. In each new host terminal, open this same directory. There is no script
-to source and no workshop environment variables to set. Commands labelled
-**SANDBOX** run inside the sandbox instead.
+## Where to enter commands
 
-## How to use the terminals and chapter directories
+Each command block tells you where it belongs:
 
-A code block says **HOST**, **CLAUDE**, or **SANDBOX**. Do not run application commands on the
-host. Keep one terminal connected to each live sandbox; use another for host
-commands. In this SBX build, background processes alone do not prevent idle stop.
-The later launcher deliberately stays in the foreground for this reason.
+- **HOST**: your laptop's terminal, in the workshop repository.
+- **CLAUDE** or **PI**: the coding assistant's input.
+- **SANDBOX**: a shell inside the sandbox. Type `exit` to return to the host.
 
-At the start of a chapter, pause to name the problem the new component solves.
-After an exercise, look at its effect before running the next command. Commands
-marked CLAUDE or PI go into that assistant's interface; a sandbox shell is a normal
-terminal inside the environment. `exit` leaves that shell and returns to the host.
+The instructions will tell you when to open another terminal and which files to
+create or edit. Application commands run inside the sandbox.
 
-You will create `chapters/my-*` directories to edit recipes. Keep them directly
-under `chapters/`, because the supplied launch wrapper and relative kit paths
-expect that layout. The numbered directories are completed reference assemblies.
-Their `./launch` commands let you catch up using a supplied app fixture.
-
-**Ready when:** SBX reports the intended version, Docker login works, your agent account is ready, and the app and its fixture tags are present.
+You are ready to start when SBX is installed, you have signed in to Docker, and
+`sample-app/` contains the downloaded application.
 
 Next: [run an agent manually](../01-agent/README.md).

@@ -9,12 +9,6 @@ from the top. Each starts from a problem in the previous setup, introduces a cap
 lets you use it before making it automatic. Read the explanation around each
 command and take time to explore the result. Host and sandbox commands are labelled.
 
-The numbered directories are **completed infrastructure reference assemblies**.
-The walkthrough builds editable `chapters/my-*` recipes incrementally from the
-previous chapter. Use a reference directory's `./launch` to catch up, rather than
-as a substitute for the construction exercise. Supplied app checkpoints let you pick up at the next exercise, or you can carry
-your own changes forward.
-
 The third-party tools and workflow are the author's choices for this workshop,
 not Docker endorsements. See [about the tool choices](../README.md#about-the-tool-choices).
 

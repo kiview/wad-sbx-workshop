@@ -89,7 +89,9 @@ Read the demo task from the first coding exercise:
 
 ## 3. Build the app's environment recipe
 
-Create your chapter directory and copy the supplied starting files into it:
+We will keep this exercise's sandbox configuration in `chapters/my-02/`. This
+lets you change the settings while keeping the supplied example available to
+compare with. Create the directory and copy the starting files:
 
 ```bash
 # HOST — from the workshop repository
