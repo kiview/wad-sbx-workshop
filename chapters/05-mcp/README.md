@@ -62,7 +62,7 @@ sbx mcp ls
 Find your named registration. This step registered a **read-only** tool source; it
 did not mount host files into a sandbox. To attach a registered server to an existing
 sandbox you would use `sbx mcp load NAME --sandbox SANDBOX`. For our factory, we will
-record registration and attachment together in the recipe instead.
+record registration and attachment together in the environment file instead.
 
 Remove this practice registration before moving on:
 
@@ -70,19 +70,26 @@ Remove this practice registration before moving on:
 sbx mcp rm wad-beans-intro
 ```
 
-## 3. Put the connection in the recipe
+## 3. Put the connection in the environment file
 
-Keep the existing recipe and team configuration; update the task instructions:
+First, give the factory its next demo task and tell the agents to fetch the task
+through MCP. Copy these two supplied files into `factory/`, replacing the versions
+from the previous exercise:
 
 ```bash
-for file in chapter.env PROMPT.md; do
-  cat "chapters/05-mcp/$file" > "factory/$file"
-done
+# HOST — from the workshop repository
+cp chapters/05-mcp/chapter.env factory/chapter.env
+cp chapters/05-mcp/PROMPT.md factory/PROMPT.md
 ```
 
-You are keeping your kits and model choices. The supplied chapter settings select
-`wad-102`, the assignment/resolution feature, and `MODE=mcp`. That mode delivers
-only a task ID: the agents must obtain the task through the new tool.
+- `factory/chapter.env` contains settings for our workshop launcher. `TASK=wad-102`
+  selects the assignment-and-resolution task. `MODE=mcp` tells the launcher to send
+  only its ID into the sandbox, so the team must fetch the requirements through MCP.
+- `factory/PROMPT.md` contains the agents' instructions: retrieve the task through
+  the developer's MCP connection, implement and review it, then append a result note.
+
+These are workshop helper files. SBX reads `factory/sbxenv.yaml`, which is where
+we will now configure the MCP connection.
 
 Add the following section to `factory/sbxenv.yaml`:
 
@@ -101,7 +108,7 @@ mcp:
         - --enable-presenter-note-tool
 ```
 
-`${{ env.fileDir }}` is the directory containing the recipe. The paths point to
+`${{ env.fileDir }}` is the directory containing the environment file. The paths point to
 our workshop tools and tasks in `.local/chapters/`, one level above `factory/`.
 SBX resolves them to absolute host paths.
 
@@ -241,8 +248,8 @@ permissions:
 
 Save that as `factory/browser-access/spec.yaml` on the host if you want to keep
 it, validate it with `sbx kit validate`, and add `./browser-access` to a future
-recipe's kits. You have moved a manual operator decision into a declared environment
-requirement. Editing a recipe does not change the running sandbox.
+environment file's kits. You have moved a manual operator decision into a declared environment
+requirement. Editing a environment file does not change the running sandbox.
 
 An enrolled organization can add central AI governance. The presenter may show it
 at the end. Network access and named MCP-tool governance are different controls;

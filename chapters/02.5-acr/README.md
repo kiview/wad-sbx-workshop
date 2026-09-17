@@ -54,7 +54,7 @@ opens the agent in it. In Claude, try the installed command directly:
 ```
 
 You should see `Hello from a kit`. You did not install the command after entering
-the sandbox: its creation recipe did. That is what we want for real tooling too.
+the sandbox: the kit's installation step did. That is what we want for real tooling too.
 Exit Claude, then run `sbx stop wad-kit-first` on the host.
 
 ## 2. Choose the real capability to distribute
@@ -70,9 +70,8 @@ the content ACR installs**.
 Keep `factory/sbxenv.yaml` and update the task instructions for this exercise:
 
 ```bash
-for file in chapter.env PROMPT.md; do
-  cat "chapters/02.5-acr/$file" > "factory/$file"
-done
+cp chapters/02.5-acr/chapter.env factory/chapter.env
+cp chapters/02.5-acr/PROMPT.md factory/PROMPT.md
 ```
 
 This carries your environment forward and brings in this chapter's settings.
@@ -94,7 +93,7 @@ Preview your composition:
 sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02-5
 ```
 
-Find the kit in the plan. The name is the same recipe argument introduced in chapter 02.
+Find the kit in the plan. The name is the same environment file argument introduced in chapter 02.
 Then start it using the same app-delivery wrapper:
 
 ```bash

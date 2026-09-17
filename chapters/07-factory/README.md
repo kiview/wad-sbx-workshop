@@ -21,19 +21,18 @@ Think back through the things you configured:
 | A way to answer a missing requirement | SSH and a recorded decision |
 
 Your task note, changed app and saved source show what this particular run produced.
-Your recipes and role instructions are the reusable part.
+Your environment files and role instructions are the reusable part.
 
 ## 2. Change the job, keep the environment
 
 On the host:
 
 ```bash
-for file in chapter.env PROMPT.md; do
-  cat "chapters/07-factory/$file" > "factory/$file"
-done
+cp chapters/07-factory/chapter.env factory/chapter.env
+cp chapters/07-factory/PROMPT.md factory/PROMPT.md
 ```
 
-The recipe and team stay unchanged. Open `factory/chapter.env`: `TASK=wad-104` now
+The environment file and team stay unchanged. Open `factory/chapter.env`: `TASK=wad-104` now
 asks for a service filter, and the browser port is 3102. There is no new kit to learn.
 
 Continue from the chapter-06 application you saved:
@@ -96,7 +95,7 @@ Once the team has committed its result, copy it out from your host terminal:
 sbx cp wad-ch-07:/home/agent/work/app "./.local/service-filter-app"
 ```
 
-This preserves the app in a new host directory. Keep the environment recipe and team configuration you built
+This preserves the app in a new host directory. Keep the environment file and team configuration you built
 as well. End the launch terminal with Ctrl-C and run `sbx stop wad-ch-07` when done.
 Stopping preserves files, but it ends the running processes; it is not a pause of
 a live model conversation.

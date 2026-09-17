@@ -24,7 +24,7 @@ account configuration. It describes the environment, not the success of a task.
 ## Grant access to a directory while the sandbox exists
 
 Chapter 1 shared an app directory when creating the sandbox. The later factory
-recipes use private snapshots. Now suppose one of those workers needs an additional
+environment files use private snapshots. Now suppose one of those workers needs an additional
 reference file: can we grant that access without rebuilding its environment?
 
 Open a shell in the selected sandbox and leave it open in terminal A:

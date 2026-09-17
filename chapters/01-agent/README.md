@@ -159,4 +159,4 @@ This puts the supplied completed exercise in `sample-app/`. Your previous copy i
 saved under `.local/saved-app.*`; the command prints its location. Continue with
 chapter 02 using the same `sample-app/` path.
 
-Next: [recipes and the host launcher](../02-launcher/README.md).
+Next: [environment files and the host launcher](../02-launcher/README.md).

@@ -2,11 +2,11 @@
 
 Running Claude by hand lets us see what happens. Now we want to start another task
 without repeating the setup. We will first put sandbox settings in an `sbxenv.yaml`
-recipe and run it with SBX. Then we will add a task tracker, Beans, for our demo tasks and a small
-host launcher that applies the recipe, supplies a task and delivers a private copy
+environment file and run it with SBX. Then we will add a task tracker, Beans, for our demo tasks and a small
+host launcher that applies the environment file, supplies a task and delivers a private copy
 of the app. You will see the SBX command before using the wrapper.
 
-## 1. Run the smallest SBX recipe
+## 1. Run the smallest SBX environment file
 
 An [environment file](https://docs.docker.com/ai/sandboxes/configuration/environment-files/)
 records the choices you would otherwise type into `sbx run` or `sbx create`.
@@ -48,7 +48,7 @@ sbx run --name wad-env-first
 
 The first line shows the proposed environment. The second creates it; `--auto-approve`
 applies the plan without another confirmation. The third opens Claude in it.
-This is the recipe equivalent of starting an agent directly in chapter 1.
+You have now started an agent using an environment file instead of the flags from chapter 1.
 
 Inside Claude, try `!docker version`. Then exit Claude and stop this practice sandbox:
 
@@ -57,7 +57,7 @@ Inside Claude, try `!docker version`. Then exit Claude and stop this practice sa
 sbx stop wad-env-first
 ```
 
-This recipe has no workspace mount. That is deliberate for the factory: each job
+This environment file has no workspace mount. That is deliberate for the factory: each job
 will receive its own copy of the app. Your chapter-1 edits remain in the host's
 `sample-app/` directory.
 
@@ -87,28 +87,28 @@ Read the demo task from the first coding exercise:
 `--config` selects our Beans configuration; `--beans-path` selects its task directory;
 `show wad-101` reads one task. It is the same task you completed in chapter 1.
 
-## 3. Build the app's environment recipe
+## 3. Build the app's environment file
 
 Keep working in `factory/sbxenv.yaml`. Replace its contents with the supplied
-application recipe, and add the task settings and agent instructions beside it:
+application environment file, and add the task settings and agent instructions beside it:
 
 ```bash
 # HOST — from the workshop repository
-for file in sbxenv.yaml chapter.env PROMPT.md; do
-  cat "chapters/02-launcher/$file" > "factory/$file"
-done
+cp chapters/02-launcher/sbxenv.yaml factory/sbxenv.yaml
+cp chapters/02-launcher/chapter.env factory/chapter.env
+cp chapters/02-launcher/PROMPT.md factory/PROMPT.md
 ```
 
 Open `factory/sbxenv.yaml`. This is the same file you will extend throughout the
 workshop. `factory/chapter.env` selects the task and startup behavior, and
 `factory/PROMPT.md` supplies the task instructions.
 
-Compared with the tiny example, this recipe makes the sandbox name an argument and
+Compared with the tiny example, this environment file makes the sandbox name an argument and
 publishes the application's port 8080 at `http://127.0.0.1:3102` on your laptop.
 The port stays the same throughout the factory exercises. Stop each chapter's
 sandbox before starting the next one so that port is available.
 
-Preview the recipe:
+Preview the environment file:
 
 ```bash
 sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02
@@ -123,12 +123,12 @@ it comes from the file, so you do not need to pass it on the command line.
 Open `chapters/support/launch`. Its job is to:
 
 1. Read a Bean and export the committed app source.
-2. Create the environment through `sbx env create`, using the recipe's arguments.
+2. Create the environment through `sbx env create`, using the environment file's arguments.
 3. Send the app and task into SBX and run the supplied app-startup helper there.
 
 For reference, this is the SBX command the script executes for this job. **Read it;
 the launch step below runs it for you.** It changes `plan` to `create` and adds
-`--auto-approve` to apply the recipe without another confirmation:
+`--auto-approve` to apply the environment file without another confirmation:
 
 ```text
 sbx env create factory/sbxenv.yaml --env-arg name=wad-ch-02 --auto-approve

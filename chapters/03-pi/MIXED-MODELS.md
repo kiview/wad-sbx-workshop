@@ -73,5 +73,5 @@ the current presenter Google account has previously hit that limit. Changing the
 handoff protocol cannot provide more account quota.
 
 Exit the shell, end the launch terminal and stop `my-mixed-team` when done. Return
-to the normal recipe for chapter 05: the custom-base variation still needs additional
+to the normal environment file for chapter 05: the custom-base variation still needs additional
 gateway-client configuration before it can replace that chapter's Claude MCP connection.

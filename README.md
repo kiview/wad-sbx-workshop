@@ -14,7 +14,7 @@ gives us a shared example while we build it.
 
 ![The sample application you will extend](chapters/images/incident-triage-board.png)
 
-You will leave with sandbox recipes, reusable kits, coding guidance and a team
+You will leave with sandbox environment files, reusable kits, coding guidance and a team
 configuration you can adapt to your own project.
 
 ## What you will learn

@@ -28,18 +28,18 @@ decide what the agents should do.
 Add the team configuration and update the exercise instructions:
 
 ```bash
-for file in chapter.env PROMPT.md team.tsv; do
-  cat "chapters/04-team/$file" > "factory/$file"
-done
+cp chapters/04-team/chapter.env factory/chapter.env
+cp chapters/04-team/PROMPT.md factory/PROMPT.md
+cp chapters/04-team/team.tsv factory/team.tsv
 ```
 
-Your existing recipe stays in place. You have added a team configuration beside it. In your editor, append to the existing `kits` list:
+Your existing environment file stays in place. You have added a team configuration beside it. In your editor, append to the existing `kits` list:
 
 ```yaml
   - source: ../chapters/kits/herdr
 ```
 
-Your recipe now combines ACR for guidance, Pi for another assistant and Herdr for
+Your environment file now combines ACR for guidance, Pi for another assistant and Herdr for
 sessions. Before starting it, edit `factory/chapter.env`: change `MODE=team` to
 `MODE=manual`. That asks our preparation helper to install everything and start the
 app, while leaving **you** to start the team in this first exercise.
@@ -73,7 +73,7 @@ use the configured MCP gateway client.
 ./scripts/launch-factory.sh wad-ch-04
 ```
 
-The launcher uses your updated SBX recipe and starts the app as before. In terminal B:
+The launcher uses your updated SBX environment file and starts the app as before. In terminal B:
 
 ```bash
 # HOST

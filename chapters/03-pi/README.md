@@ -25,17 +25,16 @@ filesystem. A [kit](https://docs.docker.com/ai/sandboxes/customize/kits/) adds s
 and access requirements. We are extending the existing Claude environment, rather
 than building a new image during the workshop.
 
-## 2. Add Pi to your existing recipe
+## 2. Add Pi to your existing environment file
 
-Keep your environment recipe and update the exercise instructions:
+Keep your environment file and update the exercise instructions:
 
 ```bash
-for file in chapter.env PROMPT.md; do
-  cat "chapters/03-pi/$file" > "factory/$file"
-done
+cp chapters/03-pi/chapter.env factory/chapter.env
+cp chapters/03-pi/PROMPT.md factory/PROMPT.md
 ```
 
-This updates the task settings and prompt. Your environment recipe keeps the ACR
+This updates the task settings and prompt. Your environment file keeps the ACR
 kit you added in the previous chapter.
 
 In your editor, add this entry to the **existing** `kits` list in `factory/sbxenv.yaml`:
@@ -45,15 +44,15 @@ In your editor, add this entry to the **existing** `kits` list in `factory/sbxen
 ```
 
 Keep the ACR entry. You are composing two capabilities, not replacing one with the
-other. The relative path is resolved from this recipe's directory.
+other. The relative path is resolved from this environment file's directory.
 
-Preview the recipe:
+Preview the environment file:
 
 ```bash
 sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-03
 ```
 
-Only the sandbox name changes; the recipe supplies the port and installed kits. Find the Pi kit in the plan. Then create the app
+Only the sandbox name changes; the environment file supplies the port and installed kits. Find the Pi kit in the plan. Then create the app
 environment using our existing launcher:
 
 ```bash

@@ -8,12 +8,11 @@ continue with a requirement we supplied, rather than guessing one.
 
 ## 1. Set up a task with a real choice
 
-Keep your recipe and team; update the instructions for the next demo task:
+Keep your environment file and team; update the instructions for the next demo task:
 
 ```bash
-for file in chapter.env PROMPT.md; do
-  cat "chapters/06-human/$file" > "factory/$file"
-done
+cp chapters/06-human/chapter.env factory/chapter.env
+cp chapters/06-human/PROMPT.md factory/PROMPT.md
 ```
 
 Your infrastructure and provider choices stay in place. Open

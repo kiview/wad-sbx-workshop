@@ -50,7 +50,7 @@ flowchart LR
 
 From the workshop root, run the chapter launcher, for example
 `./chapters/03-pi/launch`. Leave that terminal open and follow the chapter in a second
-host terminal, also at the workshop root. Setup is shared; recipes
+host terminal, also at the workshop root. Setup is shared; environment files
 are separate. The launcher uses no workspace mounts. It transfers a pinned app fixture
 and supplied support into `~/work` in the sandbox. The Beans directory stays on the host.
 `./chapters/03-pi/launch another-name` gives you a fresh sandbox without overwriting your previous run.
