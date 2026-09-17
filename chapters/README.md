@@ -4,6 +4,9 @@ Build one environment a capability at a time. Keep the same application in
 `sample-app/` and the evolving configuration in `factory/`. Each chapter explains
 what is missing, introduces a building block, and lets you use it.
 
+See [the factory you will build](../README.md#what-you-will-build) for the diagram
+connecting the host, sandbox, agent team and task backlog.
+
 | Chapter | What you add | What you can observe |
 |---|---|---|
 | [00: setup](00-setup/README.md) | SBX, accounts and workshop materials | Two terminals and the sample source on your laptop |

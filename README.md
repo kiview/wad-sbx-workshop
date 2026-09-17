@@ -6,6 +6,54 @@ that workflow yourself, starting with one agent running inside Docker Sandboxes.
 
 ## What you will build
 
+Your factory connects a task backlog on your laptop to a team of coding agents
+inside Docker Sandboxes. The team works in your project, runs the services it
+needs, and asks you when a decision needs a human.
+
+```mermaid
+flowchart TB
+  subgraph HOST["Your laptop"]
+    Setup["Environment file + kits<br/>Small host launcher"]
+    Project["Project files + Git history"]
+    Beans["Beans task backlog"]
+    MCP["Beans MCP server"]
+    You["You"]
+    Beans <--> MCP
+  end
+
+  Gateway["SBX MCP gateway"]
+
+  subgraph SBX["Docker Sandbox — isolated execution environment"]
+    Guidance["ACR coding rules + review skill"]
+    subgraph Team["Herdr sessions — file messages + wakeups"]
+      Coordinator["Coordinator"]
+      Developer["Developer"]
+      QA["Reviewer / QA"]
+      Coordinator <--> Developer
+      Coordinator <--> QA
+    end
+    Work["Mounted project"]
+    Runtime["App + tests<br/>Database containers"]
+    Guidance --> Developer
+    Guidance --> QA
+    Developer -->|edits and commits| Work
+    QA -->|reviews| Work
+    Work -->|run inside SBX| Runtime
+  end
+
+  Setup -->|creates and configures| SBX
+  Project <-->|shared files, same history| Work
+  Developer <-->|read tasks, append results| Gateway
+  Gateway <--> MCP
+  You -->|SSH: answer a question| Coordinator
+  Runtime -->|published port: try the app| You
+```
+
+You will build this one capability at a time. The roles can use Pi, Claude Code
+or Codex, with the provider and model chosen for each role. The source and task
+backlog stay on your laptop; agent sessions and application services run inside
+the sandbox.
+
 We will use a sample application throughout the workshop: a web app for tracking
 service incidents, with an API and a PostgreSQL database. Agents will add features,
 run commands and database containers inside their sandbox, review each other's changes, and write results
@@ -34,8 +82,8 @@ Each chapter adds something the factory needs:
 | Bring in a human | Join through SSH, answer a product question and let the team continue. |
 | Use your own project | Supply another repository and task, let agents discover its setup, and review changes in your working copy. |
 
-The workshop closes with presenter demonstrations of live mounts, cloud sandboxes
-and organization governance.
+We’ll also explore AI governance features and bleeding-edge additions to Docker
+Sandboxes, including live mounts and cloud execution.
 
 ## About the tool choices
 
