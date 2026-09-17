@@ -74,8 +74,8 @@ agent-generated application code on the host.
 ## The pieces you will use
 
 `chapters/support/launch` starts the sandbox and supplies its task and source code.
-`chapters/support/bin` contains the helpers for starting the app, managing Herdr sessions
-and passing messages. `chapters/support/roles` describes the coordinator, developer and QA
+`chapters/support/bin` contains the helpers for preparing agent sessions
+and passing messages. Agents inspect and start the project themselves. `chapters/support/roles` describes the coordinator, developer and QA
 responsibilities. You will inspect these pieces as you introduce them, then reuse
 them for the next task.
 
