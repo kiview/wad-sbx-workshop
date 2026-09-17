@@ -18,8 +18,14 @@ if [ "$USE_ACR" = 1 ]; then
   env -u GH_TOKEN -u GITHUB_TOKEN acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --agent claude-code --agent codex --freshness none --non-interactive
   env -u GH_TOKEN -u GITHUB_TOKEN acr realize
 fi
-npm ci --no-audit --fund=false > ../factory/evidence/npm-install.log 2>&1
-board > ../factory/evidence/board-start.log 2>&1
+case "${PROJECT_SETUP:-sample}" in
+  sample)
+    npm ci --no-audit --fund=false > ../factory/evidence/npm-install.log 2>&1
+    board > ../factory/evidence/board-start.log 2>&1
+    ;;
+  project) echo 'Project source ready. The team will follow its setup and test instructions.' ;;
+  *) echo "Unknown PROJECT_SETUP: $PROJECT_SETUP" >&2; exit 2 ;;
+esac
 if [ "$MODE" = team ] || [ "$MODE" = mcp ] || [ "$MODE" = human ]; then
   start-team
 fi

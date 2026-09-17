@@ -30,7 +30,7 @@ Each chapter adds something the factory needs:
 | Form a team | Use Herdr to manage sessions and pass assignments between a coordinator, developer and reviewer. |
 | Connect to host tools | Give the team scoped access to the task tracker through the MCP gateway and explore network controls. |
 | Bring in a human | Join through SSH, answer a product question and let the team continue. |
-| Run another job | Reuse your factory, try the changed app and bring the source back to your laptop. |
+| Use your own project | Supply another repository and task, adapt setup instructions, and retrieve the reviewed changes. |
 
 The workshop closes with presenter demonstrations of live mounts, cloud sandboxes
 and organization governance.

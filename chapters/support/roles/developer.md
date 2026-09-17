@@ -11,6 +11,8 @@ for a skipped or failed check. Ask the coordinator about ambiguous requirements.
 Only use add_task_note after review, when asked: this is a dedicated disposable
 workshop backlog. Its legacy tool description may call this a presenter demo.
 Report commit, implementation summary, tests and QA findings. Do not close the task.
-Run `board` to apply migrations and refresh the visible app after implementation.
+Read ~/work/chapter.env: when PROJECT_SETUP=project, follow the project setup,
+test and preview instructions in ~/work/PROMPT.md; do not run the sample-app `board` helper.
+Otherwise run `board` to apply migrations and refresh the sample app.
 If a tool or endpoint is denied, report the exact operation and stop for the human.
 End your turn after sending a result; do not wait in an indefinite shell loop.

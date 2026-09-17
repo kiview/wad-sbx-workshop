@@ -163,4 +163,4 @@ As in chapter 05, this retrieves the private source copy. End the launcher with
 Ctrl-C, then `sbx stop wad-ch-06` when done. A product decision belongs in the team's
 conversation; a network-policy change still belongs on the host.
 
-Next: [use the factory for another job](../07-factory/README.md).
+Next: [use the factory on your own project](../07-factory/README.md).

@@ -11,7 +11,10 @@ handoff init --run "$CHAPTER" --task "$TASK"
 ws=''
 while IFS=$'\t' read -r role harness provider model; do
   args=(--model "$model")
-  vars=(--env GH_TOKEN= --env GITHUB_TOKEN= --env "PATH=$PATH" --env "FACTORY_DIR=$FACTORY_DIR" --env "WORKSPACE_DIR=$WORKSPACE_DIR" --env "FACTORY_ROLE=$role" --env "DATABASE_URL=postgres://board:board@127.0.0.1:55432/board")
+  vars=(--env GH_TOKEN= --env GITHUB_TOKEN= --env "PATH=$PATH" --env "FACTORY_DIR=$FACTORY_DIR" --env "WORKSPACE_DIR=$WORKSPACE_DIR" --env "FACTORY_ROLE=$role")
+  if [ "${PROJECT_SETUP:-sample}" = sample ]; then
+    vars+=(--env "DATABASE_URL=postgres://board:board@127.0.0.1:55432/board")
+  fi
   if [ "$harness" = pi ]; then
     args=(--provider "$provider" --model "$model" --approve --append-system-prompt "$WORKSPACE_DIR/app/AGENTS.md")
     case "$provider" in anthropic) vars+=(--env ANTHROPIC_API_KEY=proxy-managed);; google) vars+=(--env GEMINI_API_KEY=proxy-managed);; *) echo 'This example supports Pi Anthropic/Google'; exit 2;; esac

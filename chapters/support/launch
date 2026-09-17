@@ -40,7 +40,12 @@ COPYFILE_DISABLE=1 tar --no-xattrs -cf "$record/payload.tar" -C "$record/payload
 want="$(shasum -a 256 "$record/payload.tar" | awk '{print $1}')"
 sbx exec -i "$name" bash -lc 'cat > "$HOME/chapter.tar"' < "$record/payload.tar"
 sbx exec "$name" bash -lc "echo '$want  '\"\$HOME/chapter.tar\" | sha256sum -c - && mkdir -p \"\$HOME/work\" && tar xf \"\$HOME/chapter.tar\" -C \"\$HOME/work\" && bash \"\$HOME/work/bin/prepare\""
-printf '\nBoard: http://127.0.0.1:%s\nSandbox: %s\n' "${WORKSHOP_PORT:-$PORT}" "$name"
+if [ "${PROJECT_SETUP:-sample}" = sample ]; then
+  printf '\nBoard: http://127.0.0.1:%s\n' "${WORKSHOP_PORT:-$PORT}"
+else
+  printf '\nProject source ready; no application server started automatically.\n'
+fi
+printf 'Sandbox: %s\n' "$name"
 printf 'Inspect: sbx exec -it %s bash\n' "$name"
 printf "Keep this terminal open while working; use a second host terminal. Ctrl-C ends this session.\n"
 exec sbx exec "$name" sleep infinity

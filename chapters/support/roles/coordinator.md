@@ -12,7 +12,8 @@ Give developer the task, await a completion message, then ask QA to review its e
 commit. A failed review goes back to developer with the findings.
 If a requirement is ambiguous, send human a decision-request with both options and
 stop. On a human decision, relay it to developer and QA and continue.
-After review, ask developer to refresh the board and, in MCP mode, append a concise
+After review, ask developer to follow the project preview instructions in PROMPT.md
+(or refresh the board for the workshop sample) and, in MCP mode, append a concise
 result note using add_task_note. Include commit, actual test outcomes and QA result.
 Do not mark the Bean complete. There is no host acceptance service.
 Use `handoff stage needs-human`, `blocked-access` or `finished` to show progress.

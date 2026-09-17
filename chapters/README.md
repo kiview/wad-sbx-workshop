@@ -1,7 +1,8 @@
 # From one agent to a software factory
 
 Start with an assistant you can let act. Finish with a team you can give work.
-The same sample application supplies the UI, API and PostgreSQL workload throughout.
+A sample application supplies the UI, API and PostgreSQL workload as we build the factory.
+In chapter 07, you will bring another project and your own task.
 You will assemble the environment and tools that let the team do that work.
 
 Start with [chapter 00](00-setup/README.md), then follow each chapter's README
@@ -24,7 +25,7 @@ not Docker endorsements. See [about the tool choices](../README.md#about-the-too
 | [04-team](04-team) | Add Herdr with another kit | Coordinator → developer → QA, using files plus wakeups |
 | [05-mcp](05-mcp) | Bridge to the host through MCP | Team reads a demo task from the host and appends its result note |
 | [06-human](06-human) | Intervene through SSH | A recorded human decision resumes the same team |
-| [07-factory](07-factory) | Give the factory another task | Changed app, review, task note and retrievable source |
+| [07-factory](07-factory) | Use the factory on your own project | Your repository, task and project instructions driving the same team |
 
 ```mermaid
 flowchart LR
