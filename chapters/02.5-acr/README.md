@@ -67,15 +67,19 @@ the rules before giving them to the agent. Which would matter for the warm-up?
 The distinction matters: **the kit makes ACR available; the policy package supplies
 the content ACR installs**.
 
-Keep `factory/sbxenv.yaml` and update the task instructions for this exercise:
+We want the agent to review the first exercise using shared coding guidance. It
+should inspect the existing implementation rather than implement the task again.
+The supplied `PROMPT.md` expresses that review request; `chapter.env` keeps the
+first demo task selected and enables policy installation on future launches.
+Load those instructions:
 
 ```bash
 cp chapters/02.5-acr/chapter.env factory/chapter.env
 cp chapters/02.5-acr/PROMPT.md factory/PROMPT.md
 ```
 
-This carries your environment forward and brings in this chapter's settings.
-In your editor, add the following top-level section to `factory/sbxenv.yaml`:
+The sandbox also needs the tool that installs our guidance. Add this `kits`
+section to `factory/sbxenv.yaml` so SBX installs ACR when creating the environment:
 
 ```yaml
 kits:

@@ -25,7 +25,11 @@ Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it records a pinned execu
 its installation and download access. This mixin supplies Herdr; it does not itself
 decide what the agents should do.
 
-Add the team configuration and update the exercise instructions:
+We want three sessions with different responsibilities: coordination,
+implementation and review. `team.tsv` chooses the assistant and model for each
+role. The supplied prompt tells the agents to read their role instructions and
+use our message helpers to pass work. The startup settings enable team creation.
+Put that team definition and those instructions in place:
 
 ```bash
 cp chapters/04-team/chapter.env factory/chapter.env
@@ -33,7 +37,9 @@ cp chapters/04-team/PROMPT.md factory/PROMPT.md
 cp chapters/04-team/team.tsv factory/team.tsv
 ```
 
-Your existing environment file stays in place. You have added a team configuration beside it. In your editor, append to the existing `kits` list:
+Those files describe the team; the sandbox still needs the program that manages
+its sessions. Add Herdr to the `kits` list in `factory/sbxenv.yaml` so SBX installs
+it alongside the assistants:
 
 ```yaml
   - source: ../chapters/kits/herdr

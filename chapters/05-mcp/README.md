@@ -72,24 +72,10 @@ sbx mcp rm wad-beans-intro
 
 ## 3. Put the connection in the environment file
 
-First, give the factory its next demo task and tell the agents to fetch the task
-through MCP. Copy these two supplied files into `factory/`, replacing the versions
-from the previous exercise:
-
-```bash
-# HOST — from the workshop repository
-cp chapters/05-mcp/chapter.env factory/chapter.env
-cp chapters/05-mcp/PROMPT.md factory/PROMPT.md
-```
-
-- `factory/chapter.env` contains settings for our workshop launcher. `TASK=wad-102`
-  selects the assignment-and-resolution task. `MODE=mcp` tells the launcher to send
-  only its ID into the sandbox, so the team must fetch the requirements through MCP.
-- `factory/PROMPT.md` contains the agents' instructions: retrieve the task through
-  the developer's MCP connection, implement and review it, then append a result note.
-
-These are workshop helper files. SBX reads `factory/sbxenv.yaml`, which is where
-we will now configure the MCP connection.
+We want SBX to connect each new sandbox to the host task tracker automatically.
+The `mcp` section in `factory/sbxenv.yaml` tells SBX which host program supplies
+the tools and which arguments limit it to our workshop backlog. This replaces
+the manual registration we just explored.
 
 Add the following section to `factory/sbxenv.yaml`:
 
@@ -128,6 +114,33 @@ The adapter itself is a host process with host-user permissions, so its implemen
 is part of what we trust. The gateway connects it; the gateway does not automatically
 make a broadly privileged server narrow. For this exercise we are choosing a small,
 inspectable set of operations on practice data.
+
+### Tell the team to use the connection
+
+Access to a tool does not tell an agent when to use it. We want the coordinator to
+ask the developer to fetch the task through MCP, then write a result note after
+implementation and review.
+
+Two pieces make that happen:
+
+- Set `TASK=wad-102` and `MODE=mcp` in the launcher settings. This selects the
+  assignment-and-resolution task and sends only its ID into the sandbox, so the
+  team retrieves the current requirements from the host.
+- Give the coordinator a prompt that directs it to use the developer's MCP
+  connection and append a result note when the work is reviewed.
+
+The supplied files contain those settings and instructions:
+
+```bash
+# HOST — from the workshop repository
+cp chapters/05-mcp/chapter.env factory/chapter.env
+cp chapters/05-mcp/PROMPT.md factory/PROMPT.md
+```
+
+Open both files and find the task ID, mode and MCP instruction. The launcher reads
+`chapter.env`. Later, when you run `assign` inside the sandbox, it asks the
+coordinator to read `PROMPT.md`. The environment file supplies the capability;
+the prompt tells the team how to use it.
 
 Preview the updated environment and then launch it:
 

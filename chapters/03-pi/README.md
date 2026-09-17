@@ -27,17 +27,22 @@ than building a new image during the workshop.
 
 ## 2. Add Pi to your existing environment file
 
-Keep your environment file and update the exercise instructions:
+We want to try Pi ourselves before assigning it an automated role. Keep the
+review task and coding guidance from the previous chapter, and start the sandbox
+without launching a team. The supplied settings select `MODE=manual`; the prompt
+asks for a review using the installed skill:
+
 
 ```bash
 cp chapters/03-pi/chapter.env factory/chapter.env
 cp chapters/03-pi/PROMPT.md factory/PROMPT.md
 ```
 
-This updates the task settings and prompt. Your environment file keeps the ACR
-kit you added in the previous chapter.
+`MODE=manual` lets us choose when to start the assistant. `USE_ACR=1` prepares the
+same policy for Pi to read. The ACR kit remains in the environment file.
 
-In your editor, add this entry to the **existing** `kits` list in `factory/sbxenv.yaml`:
+To make Pi available in each new sandbox, add its kit to the **existing** `kits`
+list in `factory/sbxenv.yaml`:
 
 ```yaml
   - source: ../chapters/kits/pi

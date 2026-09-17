@@ -25,15 +25,19 @@ Your environment files and role instructions are the reusable part.
 
 ## 2. Change the job, keep the environment
 
-On the host:
+We want the same team to implement a service filter without waiting for the
+specific reopening decision from the previous exercise. Select `TASK=wad-104`,
+return to `MODE=mcp`, and give the coordinator the standard instruction to fetch,
+implement and review the task. These supplied files make those changes:
 
 ```bash
 cp chapters/07-factory/chapter.env factory/chapter.env
 cp chapters/07-factory/PROMPT.md factory/PROMPT.md
 ```
 
-The environment file and team stay unchanged. Open `factory/chapter.env`: `TASK=wad-104` now
-asks for a service filter, and the browser port is 3102. There is no new kit to learn.
+Open `factory/chapter.env` and `factory/PROMPT.md` to find the new task ID and the
+instruction to fetch it through MCP. The sandbox tools, model choices and port
+3102 still come from the configuration you already built.
 
 Continue from the chapter-06 application you saved:
 

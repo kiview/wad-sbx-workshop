@@ -89,8 +89,19 @@ Read the demo task from the first coding exercise:
 
 ## 3. Build the app's environment file
 
-Keep working in `factory/sbxenv.yaml`. Replace its contents with the supplied
-application environment file, and add the task settings and agent instructions beside it:
+We want each launch to create a sandbox, make the sample app available in the
+browser, and give the agent a specific coding task. Three files describe those
+choices:
+
+| File | What it tells the system to do |
+|---|---|
+| `factory/sbxenv.yaml` | Tells SBX which agent environment to create and which application port to publish. |
+| `factory/chapter.env` | Tells our launcher which demo task to load and which startup steps to run. |
+| `factory/PROMPT.md` | Gives a coding agent instructions for approaching that task. The team will read this when we introduce task assignment. |
+
+The supplied starting configuration names the sandbox through an argument,
+publishes the app on port 3102, and selects the first demo task. Put those settings
+in place:
 
 ```bash
 # HOST — from the workshop repository
@@ -99,9 +110,9 @@ cp chapters/02-launcher/chapter.env factory/chapter.env
 cp chapters/02-launcher/PROMPT.md factory/PROMPT.md
 ```
 
-Open `factory/sbxenv.yaml`. This is the same file you will extend throughout the
-workshop. `factory/chapter.env` selects the task and startup behavior, and
-`factory/PROMPT.md` supplies the task instructions.
+Open `factory/sbxenv.yaml` and find `args`, `sandboxOptions` and `ports`. These
+control sandbox creation; the task and prompt files are read by our workshop
+helpers. We will keep extending this same environment file.
 
 Compared with the tiny example, this environment file makes the sandbox name an argument and
 publishes the application's port 8080 at `http://127.0.0.1:3102` on your laptop.

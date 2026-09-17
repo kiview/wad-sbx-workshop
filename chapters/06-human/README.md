@@ -8,16 +8,20 @@ continue with a requirement we supplied, rather than guessing one.
 
 ## 1. Set up a task with a real choice
 
-Keep your environment file and team; update the instructions for the next demo task:
+We want the team to pause for a product decision instead of choosing a behavior
+on its own. Select the reopen-incident task (`TASK=wad-103`) and give the coordinator
+an explicit instruction to ask the human before implementation. The supplied
+settings use `MODE=human`, and the prompt tells the team to wait for a recorded
+answer before continuing:
 
 ```bash
 cp chapters/06-human/chapter.env factory/chapter.env
 cp chapters/06-human/PROMPT.md factory/PROMPT.md
 ```
 
-Your infrastructure and provider choices stay in place. Open
-`factory/chapter.env`: the task is now `wad-103`. Open `factory/PROMPT.md`: it asks the coordinator
-to bring the ambiguous requirement to you **before** implementation.
+Read `factory/PROMPT.md` and find the instruction to ask before implementation.
+SSH will let us join the environment; this instruction is what tells the agents
+to bring a decision to us.
 
 The question is what to do with the old resolution note when reopening an incident.
 Keeping it records the previous conclusion; clearing it avoids presenting an open
