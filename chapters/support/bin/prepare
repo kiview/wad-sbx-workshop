@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SANDBOX: prepare source, guidance and sessions. Agents own project setup and work.
+# SANDBOX: wire workshop tools to the mounted project; never rebuild its Git history.
 set -euo pipefail
 cd "$HOME/work"
 source chapter.env
@@ -8,17 +8,20 @@ mkdir -p factory/evidence "$HOME/.local/bin"
 ln -sfn "$HOME/work/roles" factory/roles
 for tool in "$HOME/work/bin/"*; do ln -sf "$tool" "$HOME/.local/bin/$(basename "$tool")"; done
 export PATH="$HOME/work/bin:$PATH"
-trust-workspace "$HOME/work" "$HOME/work/app"
-cd app
-git init -q
-git config user.name 'Workshop learner'
-git config user.email 'workshop@example.invalid'
-git add . && git commit -qm 'Supplied chapter starting fixture'
+app="$(cat app-path)"
+[ -d "$app" ] || { echo "Missing mounted project: $app"; exit 1; }
+ln -sfn "$app" "$HOME/work/app"
+trust-workspace "$HOME/work" "$app"
+cd "$app"
 if [ "$USE_ACR" = 1 ]; then
-  env -u GH_TOKEN -u GITHUB_TOKEN acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --agent claude-code --agent codex --freshness none --non-interactive
-  env -u GH_TOKEN -u GITHUB_TOKEN acr realize
+  if [ ! -f agents.yaml ]; then
+    if [ -f AGENTS.md ]; then
+      echo "Existing project guidance found; leaving it in place. Use install-guidance only after reviewing the package."
+    else
+      install-guidance
+    fi
+  fi
 fi
-echo 'Source and guidance ready. Ask the agent to inspect, set up and run the project.'
-if [ "$MODE" = team ] || [ "$MODE" = mcp ] || [ "$MODE" = human ]; then
+if [ "$MODE" = team ] || [ "$MODE" = mcp ]; then
   start-team
 fi

@@ -1,168 +1,147 @@
-# 3. Bring a second assistant into the workspace
+# 3. Give the factory a choice of assistant
 
-Claude can work on the app and read our policy. Now we want a choice of assistant
-and model for the roles we will create. We will add [Pi](https://pi.dev), an
-open-source coding assistant, through another kit. You will enter the sandbox,
-start Pi yourself and have a conversation about the same repository. This gives us
-a chance to understand its model configuration before asking it to join a team.
+A coding team needs roles, but those roles need not all use the same assistant or
+model. SBX is a useful place to try those choices: a new assistant and its tools can
+live inside the sandbox instead of becoming another installation on your laptop.
+You can give it a real project, constrain its access and see how it behaves.
 
-## 1. Decide what belongs in the kit
+We will install [Pi](https://pi.dev), an open-source coding assistant, and
+have a conversation with it about the same application and coding policy.
 
-Open `chapters/kits/pi/spec.yaml` in your editor. Find these three parts:
+We will keep the project, task and guidance the same, so the comparison is about
+how the assistant works rather than about a different starting point.
 
-| Part | Why this assistant needs it |
+This introduces three separate choices: the assistant program, its model provider,
+and the particular model. Later we will assign those choices to team roles.
+
+## 1. Understand what the Pi kit supplies
+
+Open `chapters/kits/pi/spec.yaml`. Read these parts before using the whole file:
+
+| Part | Purpose |
 |---|---|
-| `pi_version` | A fresh environment should install the same tool version. |
-| `permissions.network.allow` | Installation and model calls need access to specific hosts. |
-| `setup.install` | Download, check and install the executable as the sandbox user. |
+| `args.pi_version` | Select a repeatable version of the assistant. |
+| `permissions.network.allow` | Permit the download hosts and model API endpoints it needs. |
+| `setup.install` | Download the right build, verify its checksum and install it as the sandbox user. |
 
-The checksum and CPU-architecture handling are supplied implementation details. The
-important choice is to record installation and access in a kit, so each new worker
-gets the capability without somebody installing Pi by hand again.
+The longer architecture and checksum code makes that small installation recipe
+portable. You do not need to rewrite it. The important choices are **what to
+install**, **where it may connect**, and **which user runs setup**.
 
-A [template](https://docs.docker.com/ai/sandboxes/customize/templates/) is the starting
-filesystem. A [kit](https://docs.docker.com/ai/sandboxes/customize/kits/) adds setup
-and access requirements. We are extending the existing Claude environment, rather
-than building a new image during the workshop.
+A [template](https://docs.docker.com/ai/sandboxes/customize/templates/) supplies the
+starting filesystem. A [kit](https://docs.docker.com/ai/sandboxes/customize/kits/)
+adds capabilities and access requirements. We can combine kits on the existing
+Claude template without building our own image.
 
-## 2. Add Pi to your existing environment file
+## 2. Compose it with the guidance kit
 
-We want to try Pi ourselves before assigning it an automated role. Keep the
-review task and coding guidance from the previous chapter, and start the sandbox
-without launching a team. The supplied settings select `MODE=manual`; the prompt
-asks for a review using the installed skill:
-
-
-```bash
-cp chapters/03-pi/chapter.env factory/chapter.env
-cp chapters/03-pi/PROMPT.md factory/PROMPT.md
-```
-
-`MODE=manual` lets us choose when to start the assistant. `USE_ACR=1` prepares the
-same policy for Pi to read. The ACR kit remains in the environment file.
-
-To make Pi available in each new sandbox, add its kit to the **existing** `kits`
-list in `factory/sbxenv.yaml`:
+Add this entry under the existing `kits` list in `factory/sbxenv.yaml`:
 
 ```yaml
   - source: ../chapters/kits/pi
 ```
 
-Keep the ACR entry. You are composing two capabilities, not replacing one with the
-other. The relative path is resolved from this environment file's directory.
+Keep the ACR entry. Relative kit paths are resolved from the environment file,
+so this points from `factory/` to the supplied Pi kit.
 
-Preview the environment file:
+Set `SESSION=shell` in `factory/chapter.env`. We want a shell where we can start Pi
+ourselves; `MODE=manual` and `USE_ACR=1` stay as they are.
+
+In HOST:
 
 ```bash
 sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-03
 ```
 
-Only the sandbox name changes; the environment file supplies the port and installed kits. Find the Pi kit in the plan. Then create the app
-environment using our existing launcher:
+Check that both kits and the same application mount appear. In the SANDBOX tab:
 
 ```bash
-# HOST — terminal A, from the workshop repository
 ./scripts/launch-factory.sh wad-ch-03
 ```
 
-This still calls `sbx env create`, transfers your committed app and prepares its coding guidance.
-Project dependencies and services are left to the agent when the task needs them. The additional kit makes Pi available. Leave this terminal open.
-
-## 3. Enter the sandbox and start Pi yourself
-
-In terminal B on the host:
-
-```bash
-sbx exec -it wad-ch-03 bash
-```
-
-`exec` starts a process in the existing sandbox; `-it` gives you an interactive
-terminal; `bash` is the shell we want to use. From now until you type `exit`, commands
-in this terminal run **inside SBX**.
+The launcher opens an interactive shell inside SBX, already in the mounted project.
+It keeps this sandbox session open while you work. Try:
 
 ```bash
 # SANDBOX shell
-cd ~/work/app
 pi --version
 ```
 
-`cd` puts you in the same app the developer will use. The version output tells you
-which executable the kit installed. Next we will open its actual interface.
+You should see the version selected by the kit. Now we will use the actual assistant.
 
-### Give Pi access to its model
+## 3. Connect an assistant to a provider
 
-For the workshop's Anthropic route, SBX must already have a usable Anthropic API
-credential. If you need to set one, do it in another **host** terminal with
-`sbx secret set anthropic`; enter the real key at the prompt. Claude subscription
-login and another assistant's API access are separate things.
-
-Back in your sandbox shell:
+Claude subscription login and Pi's API access are separate. If you have an
+Anthropic API key, register it from HOST:
 
 ```bash
-export ANTHROPIC_API_KEY=proxy-managed
+sbx secret set anthropic
+```
+
+Enter the real key at the secure prompt, not in a command or file. Skip this if the
+service is already configured. SBX keeps the real credential on the host and injects
+it into permitted model requests. Allowing a network host and providing a credential
+solve different problems: the request needs both permission and authentication.
+
+In the SANDBOX shell, start Pi with the provider and model you want to try:
+
+```bash
 pi --provider anthropic --model claude-sonnet-5
 ```
 
-The export gives Pi the placeholder expected by our SBX credential-proxy setup.
-It is not your real key: the proxy supplies that when the request leaves SBX.
-The variable belongs to this sandbox shell; do not put it in your host shell profile.
+Our kit's Pi wrapper supplies a placeholder API value when this route needs one;
+the SBX proxy supplies the real credential. Open the kit's wrapper section if you
+want to see that mechanism. No real key is written into the project.
 
-`pi` opens the interactive assistant. `--provider` selects the service and `--model`
-selects the initial model. Accept its project-trust prompt if shown. Inside Pi,
-type `/model` to explore the available choices. Select a model your account can use
-and note its ID—we will put that choice into the team configuration next.
-Pi's [interactive commands](https://github.com/earendil-works/pi/blob/v0.85.1/packages/coding-agent/README.md#commands)
-include `/quit` to return to your shell.
+Accept the workspace trust prompt if shown. In Pi, type `/model` to see available
+models and choose one your account can use. Keep that model ID for the next chapter.
 
-Pi also supports its own provider login flows. This workshop's automated team uses
-the SBX proxy configuration above; a separate Pi login is not automatically carried
-to a newly created sandbox. If you have only subscription access, work with the
-instructor on the provider route before continuing to the automated team.
+**Only have a Claude subscription?** You can explore Pi's interface, then use the
+three-Claude team configuration in chapter 04. For a real Pi model conversation,
+pair with someone who has API access or use the presenter's demonstration. Do not
+enter a subscription token as an API key.
 
-## 4. Have a conversation about the same application
+## 4. Use the same guidance with a different assistant
 
 Ask Pi:
 
-> Look around this project and explain what this sample application does. Do not change
-> anything yet. Where is the active-filter result count calculated?
+> Look around this project and explain what our sample application does. Where is
+> the filter-result count calculated? Do not change anything yet.
 
-Let it inspect the files and answer. Follow up in your own words if its explanation
-is unclear. Then ask:
+Then:
 
-> Read AGENTS.md and
-> .claude/skills/acr__shelajev__coding-policy__review-change/SKILL.md.
-> Use that review skill on the warm-up described in ~/work/task.json. Explain one
-> concrete thing you checked against our policy. Do not modify the app.
+> Read AGENTS.md and use the installed review-change skill. Review the warm-up
+> described in ~/work/task.json. Explain one rule you checked against actual code.
+> Do not modify the application.
 
-You are using a different assistant in the same environment with the same guidance.
-Compare its explanation with Claude's. Does it point to actual code? Can you follow
-why it considers the warm-up correct? These are useful questions for a reviewer,
-not just a check that the API returned text.
+Follow up in your own words. Does its answer help you understand the change? You
+have changed the assistant while keeping the application, task and guidance.
 
-If you get an authentication or quota error, pause here and resolve the provider
-choice with the instructor. The [mixed-provider variation](MIXED-MODELS.md) shows the intended
-Pi/Google, Claude/Anthropic and Codex/OpenAI combination when accounts permit it.
+## 5. Use this environment to try another model
 
-## 5. Turn your choices into roles
+Pi separates the assistant interface from the model behind it. Type `/model` to
+inspect the choices your provider offers. If you have access to another model,
+select it and ask the same review question. For Gemini in this workshop, always
+use **`gemini-3.8-flash`**; the mixed-provider exercise uses that model.
 
-Type `/quit` to leave Pi, then `exit` to leave the sandbox shell. Note down the
-working model ID you selected. Read `chapters/04-team/team.tsv` as an example—leave
-this reference file unchanged. In the next chapter you will edit your own copy at
-`factory/team.tsv`. Each row separates four choices:
+Compare something concrete: does the answer identify the right code, apply the
+shared rule, and support its conclusion? A different style of answer is not by
+itself evidence of a better review. For a clean comparison, start a fresh conversation
+with `/new` before repeating the request; that keeps the first answer out of context.
+Keep the working provider/model ID you want for your team.
 
-| Choice | Question it answers |
-|---|---|
-| Role | What responsibility does this agent have? |
-| Harness | Which assistant program runs it? |
-| Provider | Which service supplies its model? |
-| Model | Which specific model should that role use? |
+This is a reusable way to evaluate tools: put an assistant's installation and
+network requirements in a kit, create its sandbox, give it a bounded task, and
+inspect what it actually does. When you remove the sandbox, its installed tools
+and running processes go away. The mounted project and its edits remain, so use
+a separate checkout when an experiment should not affect work you want to keep.
 
-A coordinator can run in Pi while a developer runs in Claude Code. A QA role can use
-another provider, or the same one if that is all you have. Everyone configures the
-roles; extra subscriptions determine how diverse the live team can be.
+Type `/quit` to return to the sandbox shell. The [Pi command reference](https://github.com/earendil-works/pi/blob/v0.85.1/packages/coding-agent/README.md#commands)
+explains its other interactive controls. Type `exit` to return to the host shell
+in this tab. In HOST:
 
-We now have assistants, but you are still carrying information between them by hand.
-Next we will give them sessions, responsibilities and a way to talk to each other.
-End terminal A's hold with Ctrl-C, then run `sbx stop wad-ch-03` on the host.
+```bash
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-03
+```
 
-Next: [turn the assistants into a team](../04-team/README.md).
+Next: [give the assistants roles and communication](../04-team/README.md).

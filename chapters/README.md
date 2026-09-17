@@ -1,88 +1,87 @@
 # From one agent to a software factory
 
-Start with an assistant you can let act. Finish with a team you can give work.
-A sample application supplies the UI, API and PostgreSQL workload as we build the factory.
-In chapter 07, you will bring another project and your own task.
-You will assemble the environment and tools that let the team do that work.
+Build one environment a capability at a time. Keep the same application in
+`sample-app/` and the evolving configuration in `factory/`. Each chapter explains
+what is missing, introduces a building block, and lets you use it.
 
-Start with [chapter 00](00-setup/README.md), then follow each chapter's README
-from the top. Each starts from a problem in the previous setup, introduces a capability, and
-lets you use it before making it automatic. Read the explanation around each
-command and take time to explore the result. Host and sandbox commands are labelled.
-
-The third-party tools and workflow are the author's choices for this workshop,
-not Docker endorsements. See [about the tool choices](../README.md#about-the-tool-choices).
-
-[Presenter-only cloud and mounts](08-presenter/README.md)
-
-| Directory | The new capability | What you can point to afterward |
+| Chapter | What you add | What you can observe |
 |---|---|---|
-| [00-setup](00-setup) | Install and authenticate | Standalone SBX, tools, dedicated host backlog |
-| [01-agent](01-agent) | Let one agent act in SBX | Isolated files, Docker inside SBX, board in your browser |
-| [02-launcher](02-launcher) | Launch work from Beans + sbxenv | Task snapshot and app delivered by a small launcher |
-| [02.5-acr](02.5-acr) | First kit: distribute guidance | Four coding rules and a review skill materialized by ACR |
-| [03-pi](03-pi) | Add another assistant with a kit | Pi reads the same policy; role/provider choices are explicit |
-| [04-team](04-team) | Add Herdr with another kit | Coordinator → developer → QA, using files plus wakeups |
-| [05-mcp](05-mcp) | Bridge to the host through MCP | Team reads a demo task from the host and appends its result note |
-| [06-human](06-human) | Intervene through SSH | A recorded human decision resumes the same team |
-| [07-factory](07-factory) | Use the factory on your own project | Your repository, task and project instructions driving the same team |
+| [00: setup](00-setup/README.md) | SBX, accounts and workshop materials | Two terminals and the sample source on your laptop |
+| [01: one agent](01-agent/README.md) | Isolated execution and a mounted project | An agent runs containers, changes code and opens the app through a port |
+| [02: repeatable environment](02-launcher/README.md) | sbxenv and a Beans task | The same project and its task in a newly created sandbox |
+| [02.5: shared guidance](02.5-acr/README.md) | A simple kit, then ACR | A reusable installation and a policy-backed review |
+| [03: another assistant](03-pi/README.md) | Pi and provider configuration | Try assistants and models against the same code and guidance |
+| [04: team](04-team/README.md) | Herdr, roles and file messages | A request passes from coordinator to developer to QA |
+| [05: host tools](05-mcp/README.md) | MCP gateway and scoped access | Agents read a host task and append the reviewed result |
+| [06: human intervention](06-human/README.md) | SSH and a product answer | The existing team resumes using your decision |
+| [07: reuse](07-factory/README.md) | Another project and task | The same factory works in a different mounted repository |
+| [Presenter extensions](08-presenter/README.md) | Runtime mounts, cloud and governance | Additional capabilities demonstrated by the presenter |
 
-```mermaid
-flowchart LR
-  subgraph Host
-    B[Beans backlog] --- M[Small Beans MCP server]
-    L[Small launcher] --> S[SBX environment]
-  end
-  M <--> G[SBX MCP gateway]
-  subgraph Sandbox
-    S --> H[Herdr sessions]
-    H --> P[Pi coordinator]
-    P <-->|files + wakeups| D[Developer]
-    P <-->|files + wakeups| Q[QA]
-    A[ACR rules + skill] --> D
-    A --> Q
-    D --> App[Board + Postgres containers]
-  end
-  G <--> D
-  Human[Human via SSH] --> P
-```
+The third-party tools and workflow are the author's choices, not Docker
+endorsements. [About the tool choices](../README.md#about-the-tool-choices).
 
-## Run a completed reference chapter (catch-up)
+## The working arrangement
 
-The main walkthrough uses `./scripts/launch-factory.sh` with the configuration
-you build in `factory/`. If you want to try a chapter's completed setup instead,
-its reference launcher supplies that setup and an app checkpoint. For example:
+**HOST** stays at the workshop repository root. **SANDBOX** starts there too, then
+connects to the agent or shell. Keep that connection open while agents and services
+run: a sandbox may stop after its last client disconnects. A shell, Claude session
+or SSH connection provides that client; a separate keepalive terminal is unnecessary.
+
+Use one workshop sandbox at a time. At the end of a chapter, leave its session and
+remove its environment with the command shown. This stops its processes and removes
+its private runtime files. Your mounted app and Git history remain on the host.
+The next worker discovers dependencies and starts services inside its new sandbox.
+Database-container data is temporary unless you explicitly arrange persistence;
+our sample app can recreate its demo data from its setup instructions.
+
+Edit host configuration with your normal editor. Run application code inside SBX.
+If you need another diagnostic shell while an assistant is occupied, open a third
+tab and use `sbx exec -it SANDBOX-NAME bash`, substituting the current name. That
+shell is for a concrete investigation; it is not a permanent part of the workflow.
+
+## Catch-up
+
+The numbered directories contain completed reference configurations. A catch-up
+command puts the chosen configuration in **the same `factory/` directory**, so the
+next incremental chapter starts from the right state. Exit and remove the current
+sandbox before changing configuration or replacing its mounted project.
+
+For example, to start chapter 03 with the ACR/Pi environment already assembled:
 
 ```bash
-# HOST — from the workshop repository
-./chapters/03-pi/launch wad-ch-03
+# HOST
+./scripts/use-chapter.sh 03-pi
 ```
 
-Stop the previous sandbox first to free port 3102. Leave this terminal open, then
-join the sandbox at [chapter 03, step 3](03-pi/README.md#3-enter-the-sandbox-and-start-pi-yourself).
-This runs the supplied configuration; it does not update the files in your own
-`factory/` directory. The task tracker remains on the host.
+This saves your previous configuration under `.local/` and updates `factory/`.
+It leaves `sample-app/` unchanged. In your SANDBOX tab:
 
-Chapter 1 mounts `sample-app/`: its changes are already on the host. Later factory
-chapters use isolated source snapshots. To carry one of those results forward,
-retrieve the sandbox's app with
-`sbx cp NAME:/home/agent/work/app ./saved-app`, then launch the next chapter with
-`./chapters/04-team/launch new-name ./saved-app`.
-This transfers committed source only. Commit inside SBX before copying. Don't execute
-agent-generated application code on the host.
+```bash
+./scripts/launch-factory.sh wad-ch-03
+```
 
-## The pieces you will use
+Continue at chapter 03's provider setup. The finished configuration already enables
+guidance installation and opens the shell.
 
-`chapters/support/launch` starts the sandbox and supplies its task and source code.
-`chapters/support/bin` contains the helpers for preparing agent sessions
-and passing messages. Agents inspect and start the project themselves. `chapters/support/roles` describes the coordinator, developer and QA
-responsibilities. You will inspect these pieces as you introduce them, then reuse
-them for the next task.
+If you also need a completed application checkpoint, select it explicitly. To join
+the SSH chapter without doing the earlier feature:
 
-## Keep one SBX session open
+```bash
+# HOST
+./scripts/use-chapter.sh 06-human app-02-feature-solution
+```
 
-SBX v0.45.0-rc2 auto-stops a sandbox 30 seconds after its last client session
-disconnects, even if background processes are running inside. `launch` therefore
-ends with one foreground `sbx exec NAME sleep infinity`. Leave that host terminal
-open; use another terminal for the exercises. Ctrl-C releases the session hold. A stopped sandbox preserves files but loses live
-agent processes. Retrieve work before stopping; use a fresh sandbox name when repeating an exercise.
+This also replaces `sample-app/` with the completed feature, saving its previous
+contents under `.local/` and printing the backup location. Then launch `wad-ch-06`
+and submit its task as chapter 06 describes. The path you work in remains `sample-app/`.
+
+## Repeating a chapter
+
+To recreate a chapter after changing kits or environment settings, exit its session
+and use that chapter's `sbx env rm` command in HOST. Run its launcher again with the
+same name. Your app's current edits remain; use a checkpoint only if you want to
+replace them. Removing a sandbox also removes its in-sandbox conversation, so read
+any result or question you need before removal.
+
+If creation failed, inspect `sbx ls` first. Remove only the named workshop environment
+if it exists; then retry its launch. Do not remove unrelated sandboxes.

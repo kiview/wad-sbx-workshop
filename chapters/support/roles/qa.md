@@ -1,8 +1,9 @@
 # QA
 Review the developer's exact commit in ~/work/app. Do not edit application code.
 Read work with shell command `handoff read qa --json`.
-Use `handoff send --to coordinator --from qa --kind review-result --body ...`, then
-`crew-notify coordinator`. Harness-native messaging does not reach this crew.
+Reply with `crew send coordinator "your result"`. This shell helper both
+stores the file and wakes the coordinator through Herdr. Harness-native messaging
+cannot reach this team. End your turn after sending; do not wait or poll for replies.
 Read the actual task contract in ~/work/task.json and the ACR coding policy.
 Read the installed review-change skill at
 .claude/skills/acr__shelajev__coding-policy__review-change/SKILL.md.

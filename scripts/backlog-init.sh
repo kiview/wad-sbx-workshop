@@ -6,7 +6,7 @@
 #
 # Usage: scripts/backlog-init.sh [--force] [--disposable]
 #   --force       replace seeded task files even if they were edited
-#   --disposable  write the .workshop-disposable marker (presenter write demo only)
+#   --disposable  write the .workshop-disposable marker (allows result notes in the workshop backlog)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -67,9 +67,9 @@ done
 copy_file "$SEED_DIR/SEED-VERSION" "$BACKLOG_DIR/SEED-VERSION"
 
 if [ "$DISPOSABLE" -eq 1 ]; then
-  printf 'This backlog is disposable presenter data. Created by scripts/backlog-init.sh --disposable.\n' \
+  printf 'This backlog is disposable workshop data. Created by scripts/backlog-init.sh --disposable.\n' \
     > "$DATA_DIR/.workshop-disposable"
-  warn "disposable marker written: the presenter note tool may write to this backlog"
+  warn "disposable marker written: the result-note tool may write to this backlog"
 else
   rm -f "$DATA_DIR/.workshop-disposable"
 fi

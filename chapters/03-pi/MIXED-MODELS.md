@@ -1,16 +1,14 @@
-# Choose a different model for each responsibility
+# Demonstration: different models for different responsibilities
 
-A developer and a reviewer can be separate conversations with the same model. With
-more provider access, they can also use different models. The configuration should
-let us make that choice without rewriting how work moves through the team.
+The role table separates responsibility from assistant, provider and model.
+**Use `gemini-3.8-flash` for every Gemini role in this workshop.** The
+presenter can show Pi using Gemini for coordination, Claude for development and
+Codex for review. Attendees still configure the roles even if all their working
+sessions use one provider.
 
-This variation belongs alongside chapter 04. If you have one provider, still read
-and edit the role table, then keep the working choices from the main exercise.
-The presenter can demonstrate the broader combination.
+## What changes, and what does not?
 
-## Read the proposed team
-
-Open `chapters/04-team/team-mixed.tsv`:
+Compare `chapters/04-team/team.tsv` with `team-mixed.tsv`:
 
 | Role | Assistant | Provider |
 |---|---|---|
@@ -18,60 +16,87 @@ Open `chapters/04-team/team-mixed.tsv`:
 | Developer | Claude Code | Anthropic |
 | QA | Codex | OpenAI |
 
-The last column of each file row supplies the model ID. Choose models your accounts
-can actually use. Changing a row affects a newly started team, not a session already
-running. Consider the distinction: replacing QA's model should not change how the
-coordinator sends it a review request.
+The fourth column selects each model. The role briefs and file-message protocol
+remain the same. A different model does not require a new way to send a review request.
 
-## See what the environment must supply
+Open `chapters/kits/multi-provider/spec.yaml`. This is a **sandbox kit**, which
+selects a starting image and declares provider credential bindings, rather than
+just a mixin. Read it in these pieces:
 
-Open `chapters/kits/multi-provider/spec.yaml`. This is a **sandbox kit**, not a mixin:
-it declares the base environment and provider credential bindings, and installs
-Codex. Pi and Herdr are still separate mixins layered on top.
+1. `sandbox` selects the base image and entrypoint.
+2. `credentials` describes each provider's request hosts and credential injection.
+   API-key and OAuth routes differ: a subscription login must not be forced into
+   API-key mode by setting a placeholder variable indiscriminately.
+3. `permissions.network` allows the endpoints these assistants need.
+4. `setup.install` installs Codex and prepares the assistant configuration appropriate
+   to the selected authentication mode. Pi and Herdr remain separate mixins.
 
-Use the instructor's configured SBX provider services for this variation. The kit
-expects `anthropic`, `openai` and `gemini`; an existing `google` service can be selected
-with its `google_secret_service` kit argument. Real keys and OAuth tokens do not
-belong in the TSV file. These bindings are why selecting a model involves more than
-just changing its name in an assistant command.
+The real credentials live in SBX's host credential store, not the role table. The
+presenter's setup needs usable `anthropic`, `openai` and `gemini` services; the kit's
+`google_secret_service` argument can select an existing `google` service instead.
 
-## Start the variation and explore it
+## Presenter walkthrough
 
-From the host:
-
-```bash
-./chapters/04-team/launch-mixed my-mixed-team
-```
-
-Open the short `launch-mixed` script first if you want to see its choices. It selects
-the sandbox kit, this role table and browser port 3205, then uses the shared launcher.
-This separate port lets you compare the variation with a factory running on 3102.
-The script uses `sbx create KIT --kit MIXIN` to select the custom sandbox kit and
-apply its mixins.
-
-Leave the launcher open. In another host terminal:
+Finish and remove the normal chapter sandbox first. This demonstration uses the
+same mounted `sample-app/` and port 3102, so it runs on its own. In the SANDBOX tab:
 
 ```bash
-sbx exec -it my-mixed-team bash
+./chapters/04-team/launch-mixed wad-mixed
 ```
 
-Inside the sandbox:
+The helper uses `sbx create` with the custom sandbox kit and the ACR, Pi and Herdr
+mixins, then opens the same workshop shell. Try:
 
 ```bash
-export FACTORY_DIR="$HOME/work/factory"
-herdr agent list
-herdr agent read coordinator --lines 30
-herdr agent read developer --lines 30
-herdr agent read qa --lines 30
+crew ask "Ask developer to list the project's test commands, ask QA to check the answer, then report to me. Do not change application code."
+crew watch
 ```
 
-Read each role's introduction. You are looking at three assistant sessions using
-the role choices from the table. Repeat the message-and-wakeup exercise in chapter
-04: the communication mechanism stays the same even though the models differ.
+Show `crew logs coordinator` and `crew logs qa` to identify the actual assistants.
+The observable result is a cross-provider handoff, not merely three model names
+in a file. If a provider lacks quota, explain the unavailable route and use the
+working team configuration; do not present a failed call as a successful model swap.
 
-If a provider reports a quota limit, select an available model or use the
-one-provider team for the exercise. Keep the same role and handoff configuration.
+Exit the shell when finished. In HOST:
 
-Exit the shell, end the launch terminal and stop `my-mixed-team` when done. Return
-to the normal environment file for chapter 05: the custom-base variation still needs additional
-gateway-client configuration before it can replace that chapter's Claude MCP connection.
+```bash
+sbx rm wad-mixed
+```
+
+## Carry the mixed team into the MCP exercise
+
+The custom kit also configures Claude's MCP client. To demonstrate the chapter-05
+connection with this same team, use the supplied MCP reference configuration:
+
+```bash
+# SANDBOX tab — before connecting, at the workshop root
+./chapters/04-team/launch-mixed wad-mixed-mcp 05-mcp
+```
+
+The second argument chooses the chapter's completed settings and prompt. This
+creates one new sandbox on the same `sample-app/`. Inside its shell, try a small
+read-only request before a full feature:
+
+```bash
+crew ask "Ask developer to read wad-101 through MCP and list package.json test scripts. Ask QA to check the list independently. Report the combined answer; do not change project files or write a task note."
+crew watch
+```
+
+The result should include a real host task read by Claude, an independent Codex
+check, and Pi's combined answer. The gateway-capable role remains Claude; the other
+roles communicate with it through the same file-message helpers.
+
+This RC's `sbx env` accepts built-in agent names, not a custom sandbox kit as its
+`agent` value. The presenter helper therefore uses `sbx create KIT --kit MIXIN` and
+attaches the host server with `--static-mcp`. These are different ways to compose
+the same SBX building blocks. The reference helper uses the ACR, Pi and Herdr kits;
+it does not read extra kits from your evolving `factory/` configuration.
+
+Exit the shell, then in HOST:
+
+```bash
+sbx rm wad-mixed-mcp
+sbx mcp rm wad-mixed-mcp-beans
+```
+
+The main attendee path continues with `factory/` and the built-in Claude environment.

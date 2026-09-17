@@ -1,199 +1,191 @@
-# 2. Make starting a task repeatable
+# 2. Turn a one-off sandbox into a repeatable work environment
 
-Running Claude by hand lets us see what happens. Now we want to start another task
-without repeating the setup. We will first put sandbox settings in an `sbxenv.yaml`
-environment file and run it with SBX. Then we will add a task tracker, Beans, for our demo tasks and a small
-host launcher that applies the environment file, supplies a task and delivers a private copy
-of the app. You will see the SBX command before using the wrapper.
+You ran an agent, opened its app in a browser and kept its changes in `sample-app/`.
+Now we want the next worker to receive the same environment and a written task.
+We will describe SBX in a file, try a small task tracker, then connect the two with
+a short host launcher. The application stays in the same mounted directory.
 
-## 1. Run the smallest SBX environment file
+## 1. Describe the environment
 
-An [environment file](https://docs.docker.com/ai/sandboxes/configuration/environment-files/)
-records the choices you would otherwise type into `sbx run` or `sbx create`.
-From your workshop repository, create a practice directory:
+An [SBX environment file](https://docs.docker.com/ai/sandboxes/configuration/environment-files/)
+records the settings you previously typed into `sbx run`. In HOST, create the
+configuration directory:
 
 ```bash
-# HOST
 mkdir -p factory
 ```
 
-Create `factory/sbxenv.yaml` with this content:
+Create `factory/sbxenv.yaml` in your editor:
 
 ```yaml
 schemaVersion: "1"
 name: wad-env-first
 agent: claude
+workspace: ../sample-app
 sandboxOptions:
   skills: off
   cpus: 4
   memory: 8g
+ports:
+  - sandbox: 8080
+    host: 3102
+    protocol: tcp4
+    hostIP: 127.0.0.1
 ```
 
-| Line | What it does |
-|---|---|
-| `schemaVersion` | Selects the environment-file format. |
-| `name` | Gives this sandbox a name we can use later. |
-| `agent` | Chooses the built-in Claude environment. |
-| `skills: off` | Keeps this example independent of skills installed on your host. |
-| `cpus`, `memory` | Assigns resources to the sandbox. |
+`agent` selects the built-in Claude environment. `workspace` is relative to this
+file: `../sample-app` shares our application, including `.git`. The resource and
+skills settings are the choices from chapter 01. `ports` publishes the app's port
+8080 at localhost:3102 every time this environment is created. It does not start
+the app; the agent does that when needed.
 
-Preview it, then create it:
+Preview it in HOST:
 
 ```bash
-# HOST
 sbx env plan factory/sbxenv.yaml
-sbx env create factory/sbxenv.yaml --auto-approve
-sbx run --name wad-env-first
 ```
 
-The first line shows the proposed environment. The second creates it; `--auto-approve`
-applies the plan without another confirmation. The third opens Claude in it.
-You have now started an agent using an environment file instead of the flags from chapter 1.
-
-Inside Claude, try `!docker version`. Then exit Claude and stop this practice sandbox:
+Find your sample-app path and the 3102 → 8080 mapping. A plan shows the proposed
+setup without creating it. In your SANDBOX tab, still at the repository root:
 
 ```bash
-# HOST
-sbx stop wad-env-first
+sbx env run factory/sbxenv.yaml
 ```
 
-This environment file has no workspace mount. That is deliberate for the factory: each job
-will receive its own copy of the app. Your chapter-1 edits remain in the host's
-`sample-app/` directory.
+Read and approve the plan. This creates the environment and opens Claude.
+Ask the assistant to inspect the project
+and confirm your filter-count change is present. You have reused the actual files
+and history, not a fresh copy of the application.
 
-## 2. Give the host a task list
-
-Our workshop tasks live in a small file-based task tracker,
-[Beans](https://github.com/hmans/beans).
-The task is a written contract an agent can read, rather than a prompt we keep retyping.
+Type `/exit` to leave Claude. In HOST:
 
 ```bash
-# HOST — from the workshop repository
+sbx env rm factory/sbxenv.yaml
+```
+
+Approve removal. The source stays in `sample-app/`. Removing this practice
+sandbox lets us apply new configuration on the next creation.
+
+## 2. Put work in a task tracker
+
+[Beans](https://github.com/hmans/beans) is a command-line issue tracker. Its tasks
+are Markdown files: a person can read them in an editor, and an agent can read
+requirements, update notes and use the CLI without a browser integration.
+
+In an ordinary project, `beans init` creates the task store, `beans create` adds
+work, and `beans show` reads it. Our backlog will stay **on the host**, outside the
+mounted app. Later, MCP will expose selected operations to the agents.
+
+In HOST, install the pinned CLI and initialize the supplied workshop tasks:
+
+```bash
 ./scripts/install-beans.sh
 ./scripts/backlog-init.sh --disposable
 ```
 
-The first script downloads the pinned Beans executable. The second creates our
-practice backlog with four tasks. `--disposable` identifies it as workshop data;
-later we will let the agents append result notes through MCP.
+The first helper downloads Beans. The second creates our four demo tasks under
+`.local/chapters/beans/`. `--disposable` marks this as practice data that our later
+MCP server may append notes to.
 
-Read the demo task from the first coding exercise:
-
-```bash
-# HOST
-"$(pwd)/.local/chapters/bin/beans" --config "$(pwd)/.local/chapters/beans/.beans.yml" \
-  --beans-path "$(pwd)/.local/chapters/beans/.beans" show wad-101
-```
-
-`--config` selects our Beans configuration; `--beans-path` selects its task directory;
-`show wad-101` reads one task. It is the same task you completed in chapter 1.
-
-## 3. Build the app's environment file
-
-We want each launch to create a sandbox, supply the sample app and give the agent a specific coding task. Three files describe those
-choices:
-
-| File | What it tells the system to do |
-|---|---|
-| `factory/sbxenv.yaml` | Tells SBX which agent environment to create and which application port to publish. |
-| `factory/chapter.env` | Tells our launcher which demo task to load and whether to prepare coding guidance or start the team. |
-| `factory/PROMPT.md` | Gives a coding agent instructions for approaching that task. The team will read this when we introduce task assignment. |
-
-The supplied starting configuration names the sandbox through an argument,
-publishes a port for the app on 3102, and selects the first demo task. Put those settings
-in place:
+Try the CLI:
 
 ```bash
-# HOST — from the workshop repository
-cp chapters/02-launcher/sbxenv.yaml factory/sbxenv.yaml
-cp chapters/02-launcher/chapter.env factory/chapter.env
-cp chapters/02-launcher/PROMPT.md factory/PROMPT.md
+./scripts/beans list
+./scripts/beans show wad-101
+./scripts/beans create "Try a small improvement" --type task --status todo
 ```
 
-Open `factory/sbxenv.yaml` and find `args`, `sandboxOptions` and `ports`. These
-control sandbox creation; the task and prompt files are read by our workshop
-helpers. We will keep extending this same environment file.
+`list` shows the backlog; `show` prints the warm-up requirements; `create` adds a
+new task and prints its ID. Use `./scripts/beans show YOUR-ID` with that ID to
+read it. Open `.local/chapters/beans/.beans/` in your editor to see the Markdown
+behind the commands.
 
-Compared with the tiny example, this environment file makes the sandbox name an argument and
-publishes the application's port 8080 at `http://127.0.0.1:3102` on your laptop.
-The port stays the same throughout the factory exercises. Stop each chapter's
-sandbox before starting the next one so that port is available.
+`scripts/beans` is a small wrapper around the real Beans CLI. It selects this
+workshop's executable and backlog so each command need not repeat their paths.
+It does not run an agent. We will keep using the supplied tasks for the walkthrough.
 
-Preview the environment file:
+## 3. Connect a task to a sandbox
 
-```bash
-sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02
+We want a reusable environment with a different name for each chapter. At the top
+of `factory/sbxenv.yaml`, replace the `name` and `workspace` values and add `args`.
+Keep `sandboxOptions` and `ports` as they are:
+
+```yaml
+schemaVersion: "1"
+name: "${{ env.args.name }}"
+agent: claude
+workspace: "${{ env.args.app }}"
+args:
+  name:
+    required: true
+  app:
+    default: ../sample-app
 ```
 
-`factory/sbxenv.yaml` selects your environment file. `--env-arg name=wad-ch-02`
-supplies the name declared in its `args` section. Find the port mapping in the plan;
-it comes from the file, so you do not need to pass it on the command line.
+The name is an input now. The app path defaults to the same working directory;
+chapter 07 will show how to select another project.
 
-## 4. Add the small amount of host glue
+Create `factory/chapter.env`:
 
-Open `chapters/support/launch`. Its job is to:
+```text
+TASK=wad-101
+MODE=manual
+USE_ACR=0
+SESSION=claude
+```
 
-1. Read a Bean and export the committed app source.
-2. Create the environment through `sbx env create`, using the environment file's arguments.
-3. Send the app and task into SBX and prepare the workspace for the agent.
+These are our helper's settings, not SBX syntax. They select the task, leave team
+startup manual, leave guidance installation off, and open Claude for us.
 
-For reference, this is the SBX command the script executes for this job. **Read it;
-the launch step below runs it for you.** It changes `plan` to `create` and adds
-`--auto-approve` to apply the environment file without another confirmation:
+Create `factory/PROMPT.md`:
+
+```markdown
+Read ~/work/task.json and inspect this project. Confirm whether the warm-up
+filter-count change is already present; do not implement it twice. Explain
+how the current code meets the task and what you would check.
+```
+
+This file is the agent's instruction. The environment file provides the workspace;
+the task says what the change is; the prompt says how to approach today's exercise.
+
+## 4. Run the small host launcher
+
+Open `chapters/support/launch` if you want to inspect the glue. It reads the selected
+Bean, calls SBX to mount the project, supplies the task and workshop helpers, then
+opens your session. It does not implement the task, start application services,
+or verify the result.
+
+The SBX creation command inside it is equivalent to this **reference example**:
 
 ```text
 sbx env create factory/sbxenv.yaml --env-arg name=wad-ch-02 --auto-approve
 ```
 
-That is the host harness: start an environment and give it the source and task.
-`factory/chapter.env` picks the task and agent preparation.
-`scripts/launch-factory.sh` calls this shared helper with your `factory/` directory.
-For this chapter, `TASK=wad-101` selects the warm-up.
-
-Now let the launcher create and prepare the task environment:
+The launcher also passes the absolute application path. `--auto-approve` applies
+the configuration you just inspected. Preview that configuration in HOST:
 
 ```bash
-# HOST — terminal A, from the workshop repository
+sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02
+```
+
+Then in the SANDBOX tab, at the workshop root:
+
+```bash
 ./scripts/launch-factory.sh wad-ch-02
 ```
 
-The argument names the sandbox. The launcher takes your committed app from
-`sample-app/` and reads the configuration in `factory/`. The script runs the same SBX creation command with
-`name=wad-ch-02`, then supplies the sample app and demo task. The agent will handle project setup.
-It exports committed files, so ask the chapter-1 agent to commit first if needed.
+The name selects this sandbox. The launcher opens Claude in the mounted project.
+Tell it:
 
-Leave this terminal open: its final SBX connection keeps the sandbox awake.
+> Read ~/work/PROMPT.md and follow those instructions. Explain what you found.
 
-## 5. Open the agent and inspect what it received
+You should recognize your own warm-up change. In your host editor, the same files
+and Git history are still in `sample-app/`.
 
-In a second host terminal:
-
-```bash
-# HOST
-sbx run --name wad-ch-02
-```
-
-This opens Claude in the environment we created. Tell it:
-
-> Work in /home/agent/work/app. Read /home/agent/work/task.json. Explain the task
-> and check that our warm-up change is already present. Do not implement it again.
-> Read the project setup instructions, install dependencies and start its supporting
-> services inside this sandbox. Start the app on 0.0.0.0:8080, verify that it responds,
-> and leave it running. Tell me what you ran and why.
-
-Watch Claude discover the dependencies and run the setup commands. The launcher
-published a port; it did not install project dependencies or start a web server.
-When Claude reports that the app is ready, open **<http://127.0.0.1:3102>**. We now have a repeatable environment plus delivery of a task and code.
-A fresh worker still does not know our coding conventions; that is the next chapter.
-
-Exit Claude when done, end terminal A's waiting command with Ctrl-C, then stop:
+Type `/exit` to end the session. In HOST:
 
 ```bash
-# HOST
-sbx stop wad-ch-02
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-02
 ```
 
-We only inspected the app here. Keep using the same `sample-app/` source for the next
-chapters; no copying is needed.
-
-Next: [kits and ACR](../02.5-acr/README.md).
+Next: [give each worker shared guidance through a kit](../02.5-acr/README.md).

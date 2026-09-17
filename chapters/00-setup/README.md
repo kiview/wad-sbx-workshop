@@ -14,7 +14,8 @@ Use the [standalone SBX installation instructions](https://docs.docker.com/ai/sa
 No host Docker engine or Docker Desktop is required. Docker containers will run
 **inside** the sandbox.
 
-Install the release-candidate channel and host utilities:
+These commands assume [Homebrew](https://brew.sh) is installed. Install the
+release-candidate channel and host utilities:
 
 ```bash
 # HOST
@@ -32,7 +33,7 @@ If SBX is already installed, check which executable `command -v sbx` selects bef
 changing it. This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
 may now deliver a later release; use the assets and installation guidance on the
 [pinned release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2)
-to install that version. Keep one SBX executable on your PATH.
+to install that version. Use `sbx version` again afterward; the version for this workshop is `v0.45.0-rc2`.
 
 You also need a browser, SSH, a Bash-compatible terminal, internet access and enough
 available memory for a 4-CPU/8-GB sandbox. Run one main chapter sandbox at a time
@@ -43,16 +44,25 @@ when resources are limited. Git, jq and sha256sum must be on the host PATH:
 command -v sbx git jq sha256sum ssh
 ```
 
+You should see a path for each of the five tools above. A missing path means that
+tool is not available in this terminal; fix its installation before continuing.
+
 ## 2. Have an agent account ready
 
 For chapter 1, use your Claude subscription: we will sign in with `/login` inside
 Claude Code. You do not need to create an API key for that chapter. If SBX already
 has an Anthropic API credential configured, it may use that instead.
 
-Later, we will add a second coding assistant, Pi, which needs access to its chosen provider. We check that in chapter 03, when we
-introduce Pi. Having a Claude subscription does not automatically give another
-assistant Anthropic API access. The team configuration supports separate providers,
-with a one-provider route when that is what you have available.
+In chapter 03 you will also try Pi, an open-source assistant. The main Pi example
+uses an **Anthropic API key**, configured on the host through SBX. A Claude
+subscription alone does not supply that API access. If you only have a Claude
+subscription, you can build all three team roles with Claude Code; chapter 04
+provides that configuration. You can still install Pi and explore its interface,
+or pair with someone who has provider access for the Pi conversation.
+
+With additional accounts, you can choose different models for development and
+review. Configure the roles even if you initially give them the same model.
+Never put actual keys or OAuth tokens in the workshop's files.
 
 ## 3. Clone the workshop and get its materials
 
@@ -89,18 +99,31 @@ exercises. It keeps an existing working copy if you run the download again.
 **Run host commands from the workshop repository root.** The sample application's
 code is in `sample-app/`. In each new host terminal, open the workshop repository.
 
-## Where to enter commands
+## Set up your two terminals
 
-Each command block tells you where it belongs:
+Open two tabs or windows, each at the workshop repository root. Name them if your
+terminal supports it:
 
-- **HOST**: your laptop's terminal, in the workshop repository.
-- **CLAUDE** or **PI**: the coding assistant's input.
-- **SANDBOX**: a shell inside the sandbox. Type `exit` to return to the host.
+- **HOST** stays on your laptop. Use it for SBX controls, task tracking and editing
+  the workshop configuration.
+- **SANDBOX** starts as another host shell at the same repository root. You run
+  `sbx run` or our launcher there; it becomes your connection to an agent or a
+  shell inside SBX. Keep it open while work is running. Exiting returns to the host.
 
-The instructions will tell you when to open another terminal and which files to
-create or edit. Application commands run inside the sandbox.
+Code blocks say **HOST**, **SANDBOX tab — before connecting**, **CLAUDE**, **PI**,
+or **SANDBOX shell**. A prompt shown as a quotation is something to say to the
+assistant, not a shell command. Edit configuration files with your normal editor.
 
-You are ready to start when SBX is installed, you have signed in to Docker, and
-`sample-app/` contains the downloaded application.
+We use one sandbox at a time and one application directory, `sample-app/`, through
+chapters 01–06. The directory is mounted read/write: edits, commits and deletions
+inside it are visible on your host. The rest of this workshop repository—including
+the host task backlog—is outside that mount. Run application code and containers
+inside SBX, not on the host.
 
-Next: [run an agent manually](../01-agent/README.md).
+A chapter's sandbox is temporary; your source and its Git history remain. We will
+remove each sandbox before creating the next one with its new capabilities.
+
+You are ready when `sbx version` reports the intended version, Docker login is
+complete, and you can open `sample-app/README.md` in your editor.
+
+Next: [run one agent](../01-agent/README.md).

@@ -8,7 +8,7 @@
 # crew cannot proceed. So the workspace is trusted explicitly, once, by the script that
 # created it — a deliberate act with a visible record, not a dialog nobody sees.
 #
-# This trusts exactly one directory: the run workspace, which contains a clone of the
+# This trusts exactly one directory: the run workspace, and the mounted
 # app repository the host chose. It does not disable any other guard.
 #
 # Usage: trust-workspace <directory> [<directory>...]

@@ -4,15 +4,14 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 command -v sbx >/dev/null || { echo 'NOT RUN: sbx is required'; exit 2; }
 for script in "$root/chapters/support/launch" "$root/chapters/support/bin/"* "$root/chapters/00-setup/setup" "$root/chapters/0"*/launch; do
-  bash -n "$script"
+  case "$(head -1 "$script")" in *python*) python3 -c 'import ast,sys; ast.parse(open(sys.argv[1]).read())' "$script";; *) bash -n "$script";; esac
 done
 sbx kit validate "$root/chapters/examples/hello-kit" --json
 sbx env plan "$root/chapters/examples/minimal-env/sbxenv.yaml" >/dev/null
 for kit in pi herdr multi-provider; do sbx kit validate "$root/chapters/kits/$kit" --json; done
 for chapter in "$root/chapters/0"*/chapter.env; do
   source "$chapter"
-  git -C "$root/.local/app" rev-parse --verify "$APP_REF^{commit}" >/dev/null
   sbx env plan "${chapter%/*}/sbxenv.yaml" --env-arg name=wad-chapter-plan >/dev/null
-  printf 'VALID recipe + fixture: %s\n' "${chapter%/*}"
+  printf 'VALID environment: %s\n' "${chapter%/*}"
 done
-echo 'PASS: syntax, kit validation, fixture refs and real SBX environment plans. This is not an end-to-end run.'
+echo 'PASS: syntax, kit validation, and real SBX environment plans. This is not an end-to-end run.'

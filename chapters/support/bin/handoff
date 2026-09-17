@@ -34,7 +34,7 @@
 #   handoff doctor               # validate the handoff directory
 set -euo pipefail
 
-FACTORY_DIR="${FACTORY_DIR:-${WORKSPACE_DIR:-$PWD}/factory}"
+FACTORY_DIR="${FACTORY_DIR:-$HOME/work/factory}"
 MESSAGES_DIR="$FACTORY_DIR/messages"
 CONSUMED_DIR="$FACTORY_DIR/consumed"
 REPORTS_DIR="$FACTORY_DIR/reports"

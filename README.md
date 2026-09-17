@@ -15,7 +15,9 @@ gives us a shared example while we build it.
 ![The sample application you will extend](chapters/images/incident-triage-board.png)
 
 You will leave with sandbox environment files, reusable kits, coding guidance and a team
-configuration you can adapt to your own project.
+configuration you can adapt to your own project. The same setup is also a place to
+try new coding assistants and models: install their tools inside SBX, give them the
+same project and guidance, and compare how they work before choosing your team.
 
 ## What you will learn
 
@@ -26,11 +28,11 @@ Each chapter adds something the factory needs:
 | Run one agent | Use SBX interactively, explore file isolation and shared files, run containers, and open the app through a published port. |
 | Repeat the setup | Describe an environment with sbxenv and connect it to a demo task in our task tracker, Beans, with a small host script. |
 | Share tools and guidance | Build a simple kit, then use the ACR kit to install a coding policy and review skill. |
-| Choose your assistants | Add Pi through a kit and configure the assistant, provider and model for each role. |
+| Try assistants and models | Install Pi inside SBX, compare assistants on the same project, and choose the assistant, provider and model for each role. |
 | Form a team | Use Herdr to manage sessions and pass assignments between a coordinator, developer and reviewer. |
 | Connect to host tools | Give the team scoped access to the task tracker through the MCP gateway and explore network controls. |
 | Bring in a human | Join through SSH, answer a product question and let the team continue. |
-| Use your own project | Supply another repository and task, adapt setup instructions, and retrieve the reviewed changes. |
+| Use your own project | Supply another repository and task, let agents discover its setup, and review changes in your working copy. |
 
 The workshop closes with presenter demonstrations of live mounts, cloud sandboxes
 and organization governance.
@@ -66,8 +68,15 @@ Or browse the [chapter guide](chapters/README.md) to see the whole journey.
 
 ## How to use this repository
 
-Run host commands from this repository root. The sample application is in
-`sample-app/`.
+Use two terminal tabs, both initially opened at this repository root:
+
+- **HOST** stays on your laptop for sandbox creation, network policy and task tracking.
+- **SANDBOX** is where you open the assistant or shell inside SBX. Keep that session open while the agents work.
+
+We run one workshop sandbox at a time. Every chapter mounts the same `sample-app/`
+working copy, including its Git history. Edits appear on your host immediately.
+Containers and application processes run inside SBX. A chapter ends by removing
+its sandbox; the mounted source remains for the next chapter.
 
 From chapter 02, you will build one configuration in `factory/`, adding tools and
 capabilities to the same `factory/sbxenv.yaml` as you go.

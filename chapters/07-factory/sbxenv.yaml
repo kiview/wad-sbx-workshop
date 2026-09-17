@@ -1,7 +1,10 @@
 schemaVersion: "1"
 name: "${{ env.args.name }}"
 agent: claude
+workspace: "${{ env.args.app }}"
 args:
+  app:
+    default: ../../sample-app
   name:
     required: true
 sandboxOptions:
@@ -20,12 +23,5 @@ kits:
 mcp:
   servers:
     - name: "${{ env.args.name }}-beans"
-      command: "${{ env.fileDir }}/../../.local/chapters/bin/beans-mcp"
-      args:
-        - --beans-bin
-        - "${{ env.fileDir }}/../../.local/chapters/bin/beans"
-        - --beans-config
-        - "${{ env.fileDir }}/../../.local/chapters/beans/.beans.yml"
-        - --beans-data
-        - "${{ env.fileDir }}/../../.local/chapters/beans/.beans"
-        - --enable-presenter-note-tool
+      command: "${{ env.fileDir }}/../../scripts/beans-mcp"
+      args: [--allow-notes]

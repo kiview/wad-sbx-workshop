@@ -11,7 +11,7 @@ boundary yourself before trusting an agent with a larger task.
 From the workshop repository root:
 
 ```bash
-# HOST
+# SANDBOX tab — before connecting, from the workshop repository
 sbx run claude "$(pwd)/sample-app" --name wad-manual --skills off --cpus 4 --memory 8g
 ```
 
@@ -19,8 +19,9 @@ sbx run claude "$(pwd)/sample-app" --name wad-manual --skills off --cpus 4 --mem
 application to share, and `--name` gives the environment a reusable name. `--skills off` keeps the exercise
 independent of host-installed skills; the final options give it four CPUs and 8 GB.
 This creates the sandbox and opens Claude Code in your app directory. Keep this
-terminal open while working. If you repeat this exercise, choose a fresh sandbox
-name to create a new environment with these settings.
+terminal open while working. If you need to start this chapter over, exit its session and remove `wad-manual`
+from HOST with `sbx rm wad-manual`, then run this command again. Removing a sandbox
+does not delete the mounted application.
 
 **Sign in:** if Claude asks you to authenticate, choose your subscription account
 and follow the browser login. You can also type `/login` inside Claude. Existing
@@ -45,26 +46,28 @@ host shell:
 You are in the application directory, running as the sandbox user. Docker's server
 is inside SBX; you do not need a host Docker engine.
 
-We want to see which files are shared with the sandbox. In a **second host
-terminal**, create a file outside the sample application:
-
-```bash
-# HOST — from the workshop repository
-printf 'A note outside the shared app.\n' > host-only.txt
-```
-
-Only `sample-app/` is mounted. Predict whether Claude can read this neighbouring
-file, then enter these commands in **Claude's input** in the first terminal:
+We want to see which files are shared with the sandbox. In your host editor, open `host-only.txt` at the workshop root (the setup helper created
+it) and replace its content with:
 
 ```text
-!printf 'Hello from SBX\n' > sandbox-message.txt
+A note outside the shared app.
+```
+
+Ask Claude:
+
+> Create sandbox-message.txt in this project with the text "Hello from SBX".
+
+Only `sample-app/` is mounted. Predict whether Claude can read the neighbouring
+host file, then enter this in **Claude's input**:
+
+```text
 !cat ../host-only.txt
 ```
 
-The first command writes into the shared application directory. The second should
-fail: you created that file outside the directory you mounted.
+The agent wrote into the shared application directory. Reading the neighbouring
+file should fail: you created that file outside the directory you mounted.
 
-Back in your **second host terminal**:
+Back in your **HOST tab**:
 
 ```bash
 # HOST
@@ -84,10 +87,10 @@ inside the mounted directory. Remove the demonstration file from Claude:
 
 Give Claude this prompt:
 
-> Read README.md and get this application running inside the sandbox. Install its
-> dependencies, start its PostgreSQL Docker container, migrate and seed the database,
-> and start the web server on 0.0.0.0:8080 as a background process. Verify /healthz
-> responds successfully. Do not change the application yet. Tell me when it is ready.
+> Read README.md and get this application running inside the sandbox. Work out its
+> dependencies and start any supporting services using the Docker engine inside SBX.
+> Make the app available on 0.0.0.0:8080 and leave it running. Verify it responds.
+> Do not change application code yet. Explain what you started and why.
 
 Watch the commands it chooses. This is the value of giving the agent a real working
 environment: it can install dependencies and start the containers it needs.
@@ -104,15 +107,15 @@ status and the database being up. If it fails, ask Claude to finish startup befo
 continuing. This checks local health; the server must also listen on `0.0.0.0`, as
 requested above, so the published port can reach it.
 
-Then publish the web port from your second host terminal:
+Then publish the web port from your HOST tab:
 
 ```bash
 # HOST
-sbx ports wad-manual --publish 3101:8080
+sbx ports wad-manual --publish 3102:8080
 ```
 
-`3101:8080` connects port 3101 on your host to port 8080 in this sandbox.
-Open **<http://127.0.0.1:3101>**. You should see the incident list and severity/status
+`3102:8080` connects port 3102 on your host to port 8080 in this sandbox.
+Open **<http://127.0.0.1:3102>**. You should see the incident list and severity/status
 filters. This is our starting application:
 
 ![Incident Triage Board with eight incidents and severity and status filters](../images/incident-triage-board.png)
@@ -130,8 +133,7 @@ chapters. Try a severity or status filter, then give Claude this prompt:
 > Read WORKSHOP-TASK.md and implement the active-filter result-count task. Run the
 > relevant checks inside this sandbox, commit your change, and refresh the running
 > app so I can try it. Use “Workshop learner” and “workshop@example.invalid” as the
-> Git author if none is configured. Do not install a browser or run the browser-test
-> suite for this exercise. Report what changed and the commit.
+> Git author if none is configured. Report what changed and how you checked it.
 
 Try the filters again in your browser. Ask Claude to show the commit and explain
 what it checked. You can inspect it yourself without leaving Claude:
@@ -141,14 +143,15 @@ what it checked. You can inspect it yourself without leaving Claude:
 !git log -1 --oneline
 ```
 
-The change is **already on your host** in `sample-app/`. There is no `sbx cp` step because
-this working directory is mounted. The next chapter uses that committed source.
+The change and its Git commit are **already on your host** in `sample-app/`.
+Open the changed file in your editor. Every later chapter will use this same working copy.
 
-When done, exit Claude and stop this sandbox from the host:
+Type `/exit` in Claude to return to the host shell in your SANDBOX tab.
+In HOST, remove the sandbox:
 
 ```bash
 # HOST
-sbx stop wad-manual
+sbx rm wad-manual
 ```
 
 **Result:** an agent ran the app and its database inside SBX, changed the code, and
@@ -156,7 +159,7 @@ left the result in your working directory. Next we make launching a task repeata
 
 ## Skip to the completed chapter
 
-To skip to the completed exercise, stop `wad-manual` if it is running. Then run
+To skip to the completed exercise, exit and remove `wad-manual` if it exists. Then run
 this from the workshop repository:
 
 ```bash

@@ -1,166 +1,103 @@
-# 6. Join the team when a requirement needs a human
+# 6. Join the team when it needs a human decision
 
-What should happen when the task leaves a product decision unanswered? For our next
-demo task, the team will add a way to reopen a resolved incident in the sample app.
-It must ask what to do with the old resolution note. We will use SSH to enter the existing sandbox, read the question and
-record our answer through the same file-message convention. The team can then
-continue with a requirement we supplied, rather than guessing one.
+Our team can implement a clear task. What should it do when two interpretations
+are reasonable? We will ask it to add reopening a resolved incident, but leave one
+product choice for us: should reopening clear the current resolution note?
 
-## 1. Set up a task with a real choice
+The coordinator will ask. We will connect through SSH, answer in ordinary language,
+and watch the same team continue. SSH provides access to the running environment;
+our role instructions tell the team when to involve a human.
 
-We want the team to pause for a product decision instead of choosing a behavior
-on its own. Select the reopen-incident task (`TASK=wad-103`) and give the coordinator
-an explicit instruction to ask the human before implementation. The supplied
-settings use `MODE=human`, and the prompt tells the team to wait for a recorded
-answer before continuing:
+## 1. Give it a task with a real choice
 
-```bash
-cp chapters/06-human/chapter.env factory/chapter.env
-cp chapters/06-human/PROMPT.md factory/PROMPT.md
+Keep using `sample-app/`, including your completed chapter-05 feature. If you skipped
+that feature, the [catch-up instructions](../README.md#catch-up) can install a completed
+checkpoint before you continue.
+
+In HOST, change only `TASK=wad-103` in `factory/chapter.env`. Keep `MODE=mcp`,
+`USE_ACR=1` and `SESSION=shell`. Keep the existing prompt and append this paragraph
+to `factory/PROMPT.md`:
+
+```markdown
+Before implementing reopening, ask the human whether to clear the current
+resolutionNote or retain it. Explain both interpretations and wait for an answer.
+The coordinator records the human's choice for the developer and QA, then resumes
+implementation and review. Preserve the historical resolution entry either way.
 ```
 
-Read `factory/PROMPT.md` and find the instruction to ask before implementation.
-SSH will let us join the environment; this instruction is what tells the agents
-to bring a decision to us.
-
-The question is what to do with the old resolution note when reopening an incident.
-Keeping it records the previous conclusion; clearing it avoids presenting an open
-incident as resolved. History can still preserve the old note. Both readings are
-plausible, so the team must ask.
-
-For this exercise, start from the supplied app checkpoint that already implements
-assignment and resolution:
+The task is now different; the environment, tools and team are the same.
+In the SANDBOX tab, at the workshop root:
 
 ```bash
-# HOST — terminal A, from the workshop repository
-./scripts/prepare-app.sh app-02-feature-solution
 ./scripts/launch-factory.sh wad-ch-06
 ```
 
-This starts from the supplied assignment-and-resolution checkpoint. To continue
-from your own completed chapter-05 result, use
-`./scripts/launch-factory.sh wad-ch-06 "./.local/feature-app"` instead of those two commands.
-Leave the launch terminal open.
+Then in its sandbox shell:
 
-## 2. Open the SSH doorway
+```bash
+crew submit
+crew watch
+```
 
-In terminal B on the host:
+Expect a question describing both options. If you added the browser-access kit in
+chapter 05, it is also installed in this newly created environment.
+
+## 2. Reach the existing team through SSH
+
+Leave the SANDBOX session open. In HOST:
 
 ```bash
 sbx setup ssh
 ssh wad-ch-06.sbx
 ```
 
-The first command prepares the host's SSH integration for SBX. The second opens a
-shell in this named sandbox using that integration. You do not need to find a VM
-IP address or set up an SSH server in the app. Read more in
-[SBX integrations](https://docs.docker.com/ai/sandboxes/integrations/).
+`setup ssh` configures the host's SSH integration. The second command opens another
+shell in this exact sandbox, not a new agent team. You do not need to find an IP
+address or install an SSH server in the app. See [SBX integrations](https://docs.docker.com/ai/sandboxes/integrations/).
 
-Look around from the SSH shell:
-
-```bash
-# SANDBOX, over SSH
-cd ~/work
-export FACTORY_DIR="$HOME/work/factory"
-herdr agent list
-```
-
-You should recognize the coordinator, developer and QA. This is the same environment
-the launcher started, not a fresh copy. The export points our message tools at its
-existing shared conversation directory.
-
-## 3. Let the team ask its question
-
-Once the roles have finished introducing themselves:
+Your HOST tab is temporarily an SSH session. Inside it:
 
 ```bash
-./bin/assign
+crew status
 ```
 
-As in chapter 05, this delivers the task to the coordinator. Now read its progress:
+You should see the same task and product question. The message tools know where
+the current team's files live; reconnecting does not require exports or new setup.
+
+## 3. Give a product answer
+
+For this walkthrough, clear the current note while retaining history:
 
 ```bash
-herdr agent read coordinator --lines 40
-handoff inbox human --json
+crew reply "Clear resolutionNote when reopening. An open incident has no current resolution, but retain the old note in history. Continue implementation and review using that decision."
+crew watch
 ```
 
-The first command shows what it is doing. The second shows messages addressed to
-you without consuming them. Wait for the decision request; if it has not arrived,
-read the conversation again after the agent's turn finishes.
+You supply the decision and its reason. The helper delivers it to the coordinator;
+the coordinator records the task-specific decision and passes it to the developer
+and QA. You do not need to assemble a JSON message or know a run's attempt number.
 
-Read both options before choosing. For this walkthrough we will **clear the current
-resolution note and retain the historical entry**. You can choose the other behavior,
-but the recorded decision and your reply must agree.
+Look for the choice being used in implementation and review. When the team reports
+that the app is ready, open <http://127.0.0.1:3102> and reopen a resolved incident.
+Does the current note clear while history retains the old resolution?
 
-## 4. Record the choice so every role can refer to it
+Ctrl-C leaves the message view. Type `exit` to close SSH and restore your HOST tab.
+Your original SANDBOX tab remains connected; SSH was another doorway into the
+same running team. The code changes are already in `sample-app/`.
 
-The task asks for a decision file as well as a reply. That makes the chosen behavior
-available to both the implementer and reviewer after the conversation moves on.
-First find the current attempt number:
+## 4. Finish this environment
+
+Once the team is finished, leave its message view and type `exit` in the original
+SANDBOX tab. In HOST:
 
 ```bash
-attempt=$(handoff state | jq -r .attempt)
-echo "$attempt"
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-06
+sbx mcp rm wad-ch-06-beans
 ```
 
-`handoff state` describes this run. `jq` selects its attempt number; the shell keeps
-it in `attempt`. You should see a number such as `1`. If you do not, stop and ask
-the instructor to help inspect the run state before writing an answer.
-We put it in the filename so a later attempt can have its own answer.
+The second command removes this sandbox's host MCP registration.
 
-Write the decision in readable JSON:
+A product decision can travel through the team's conversation. An access-policy
+change still requires the operator's host controls. You have now used both.
 
-```bash
-mkdir -p "$FACTORY_DIR/decisions"
-cat > "$FACTORY_DIR/decisions/wad-103-a${attempt}.json" <<EOF
-{
-  "task": "wad-103",
-  "attempt": $attempt,
-  "decision": "clear",
-  "rationale": "An open incident has no current resolution; history keeps the old note."
-}
-EOF
-```
-
-`mkdir` prepares the decisions directory. The `cat` block writes everything between
-it and `EOF` into the named file, substituting the attempt number. The meaningful
-parts are the choice and its reason; the surrounding fields identify the task/run.
-
-Now tell the coordinator where to find your answer:
-
-```bash
-handoff send --to coordinator --from human --kind decision --body \
-  "Clear resolutionNote on reopen; history keeps the old note. The decision is in $FACTORY_DIR/decisions/wad-103-a${attempt}.json. Continue implementation and review."
-crew-notify coordinator
-```
-
-This is the same leave-a-message/notify pair you used in chapter 04. The new message
-kind is `decision`. You are responding to the existing team, not restarting it.
-
-## 5. Watch the team use your answer
-
-Read the coordinator's next turn and then the developer's:
-
-```bash
-herdr agent read coordinator --lines 40
-herdr agent read developer --lines 40
-```
-
-Look for the chosen behavior being relayed and implemented. When QA reviews, it
-should use the same choice. Open <http://127.0.0.1:3102> when the team refreshes the
-app and try reopening a resolved incident. The important result is that your
-answer changed what the team built.
-
-Type `exit` to return to the host. The launch terminal still keeps SBX running.
-When the team finishes and commits, save the app with:
-
-```bash
-# HOST
-sbx cp wad-ch-06:/home/agent/work/app "./.local/reopen-app"
-```
-
-As in chapter 05, this retrieves the private source copy. End the launcher with
-Ctrl-C, then `sbx stop wad-ch-06` when done. A product decision belongs in the team's
-conversation; a network-policy change still belongs on the host.
-
-Next: [use the factory on your own project](../07-factory/README.md).
+Next: [use the factory on another project](../07-factory/README.md).

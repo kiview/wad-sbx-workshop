@@ -24,7 +24,7 @@ Source: chapters/01-agent/README.md.
 About 45 seconds.
 Our host starts the sandbox and supplies the project and task. Inside, a coordinator routes work, a developer implements it, and QA reviews the exact commit. The developer records the outcome back in our host backlog through MCP.
 The agents inspect the repository and work out its dependencies and startup commands. Containers they need run inside SBX. The host launcher does not set up Node or PostgreSQL for them.
-When the work is done we retrieve the code and inspect the result. There is no extra host judge that accepts changes or closes tasks automatically.
+When the work is done we inspect the changes in the same mounted working copy. There is no extra host judge that accepts changes or closes tasks automatically.
 Source: chapters/support/launch, chapters/support/bin/prepare, chapters/support/roles, chapters/05-mcp/PROMPT.md, chapters/07-factory/README.md.
 
 ## 4. A small app with real dependencies
@@ -37,8 +37,8 @@ Screenshot: chapters/images/incident-triage-board.png. Source: chapters/00-setup
 ## 5. Host and sandbox
 
 About 55 seconds.
-Keep this boundary in mind throughout. Beans, our file-based task tracker, stays on the host. A small script creates the sandbox from an SBX environment file and delivers a private source snapshot. The agents work inside that environment and run any containers there.
-We do not need Docker Desktop or a host Docker engine. The first manual exercise mounts a working directory so we can observe shared-file behavior. Later factory jobs receive private snapshots, and we copy the result back.
+Keep this boundary in mind throughout. Beans, our file-based task tracker, stays on the host. A small script creates the sandbox from an SBX environment file and mounts the application working directory. The agents work inside that environment and run any containers there.
+We do not need Docker Desktop or a host Docker engine. Every chapter uses the same mounted working copy, including its Git history. We replace sandbox environments as their capabilities grow; edits remain in the project on the host.
 MCP supplies selected host operations; it does not mount the whole backlog directory. SSH lets us join the existing environment when a human decision is needed.
 Source: chapters/01-agent, chapters/02-launcher, chapters/05-mcp, chapters/06-human.
 
@@ -62,6 +62,7 @@ Sources: chapters/02.5-acr/README.md, chapters/03-pi/README.md, chapters/04-team
 ## 8. One team, separate responsibilities
 
 About 55 seconds.
+SBX is also a place to try new assistants and models without installing their tool stacks on your laptop. Keep the project, task and guidance the same, then compare what each assistant actually does. Tools and processes live in the sandbox; edits to the mounted project persist.
 Our default team uses Pi as coordinator and Claude Code for developer and QA. Each role has its own assistant, provider and model setting. File messages carry the durable handoff; Herdr manages sessions and delivers the wakeup. We do not equate a status indicator with completed work.
 Everyone inspects and configures the roles. If your access permits it, the variation uses Pi with Gemini, Claude Code with Anthropic, and Codex with OpenAI. With one provider, keep the same structure and use the access you have. Separate sessions with the same model are not the same as independent model diversity.
 We will use the mixed-provider configuration to explore team handoffs, then return to the main environment for the MCP exercise.

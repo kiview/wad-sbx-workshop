@@ -1,7 +1,8 @@
-Read your role brief. Use handoff files and crew-notify to coordinate.
-Follow the actual task contract. In MCP mode, obtain it through the developer's
-MCP connection before coding. Ask developer to inspect the repository, install
-dependencies and start required services inside SBX.
-After QA review, ask developer to start or refresh the app on 0.0.0.0:8080,
-verify it responds and leave it running. In MCP mode, append a result note to the
-Bean; do not close it.
+Ask the developer to retrieve the task named in ~/work/task-id through the Beans
+MCP get_task tool and save it to ~/work/task.json. Do not invent its requirements.
+The developer should inspect the mounted project's documentation, install its
+dependencies and start any required services inside SBX, then implement the task.
+Ask QA to review the exact commit against the task and coding policy.
+After review, refresh the web app on 0.0.0.0:8080 and leave it running.
+Ask the developer to append a Beans result note with the change, commit and actual
+check outcomes. Leave the task open. Send the human a summary and how to try it.

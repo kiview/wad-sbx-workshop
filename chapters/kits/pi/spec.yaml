@@ -34,7 +34,7 @@ setup:
           tar -xzf "$work/pi.tgz" -C "$work"
           mkdir -p "$HOME/.local/share/pi-${{ kit.args.pi_version }}"
           (cd "$work/pi" && tar cf - .) | (cd "$HOME/.local/share/pi-${{ kit.args.pi_version }}" && tar xf -)
-          printf '#!/bin/sh\nexec "$HOME/.local/share/pi-%s/pi" "$@"\n' "${{ kit.args.pi_version }}" \
+          printf '#!/bin/sh\nexport ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-proxy-managed}"\nexec "$HOME/.local/share/pi-%s/pi" "$@"\n' "${{ kit.args.pi_version }}" \
             > "$HOME/.local/bin/pi"
           chmod 0755 "$HOME/.local/bin/pi"
           rm -rf "$work"

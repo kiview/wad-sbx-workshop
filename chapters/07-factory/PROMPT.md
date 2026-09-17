@@ -1,8 +1,8 @@
-Read your role brief. Coordinate through handoff files and crew-notify.
+Read your role brief. Use crew send for messages; it stores each handoff and wakes its recipient.
 Ask the developer to retrieve the task named in ~/work/task-id through Beans MCP
 and save it to ~/work/task.json before implementing anything.
 
-This is a different project, available in ~/work/app. First ask the developer to read its README,
+This is a different project, mounted at ~/work/app. First ask the developer to read its README,
 contributor guide, agent instructions, dependency manifests and build configuration.
 Determine the required runtimes, dependencies and supporting services. Install and
 start what is needed inside SBX, using containers for services where appropriate.

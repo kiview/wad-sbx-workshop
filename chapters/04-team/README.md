@@ -1,185 +1,151 @@
-# 4. Let the assistants hand work to each other
+# 4. Turn assistants into a team
 
-We have two assistants, but someone still has to give them roles and pass work
-between them. We will add [Herdr](https://github.com/herdrdev/herdr) through a kit
-to manage their sessions. Our file-message helpers preserve assignments and replies;
-a separate notification wakes the recipient. You will start the team manually,
-send a small request and follow its handoff before letting the launcher start
-future teams for you.
+We can run assistants with shared guidance. Now we need them to divide work and
+communicate. [Herdr](https://github.com/herdrdev/herdr) manages their terminal
+sessions. Small file messages carry assignments and replies; a notification gives
+the recipient a turn to read them.
 
-### Another way to build a team
+We will see one message travel through the team before trusting it with a feature.
 
-[Docker Agent](https://docs.docker.com/ai/docker-agent/) is Docker's open-source
-framework for defining agent teams in YAML. Each agent can have its own model,
-instructions and tools, and delegate work to other agents. It is available as a
-standalone binary, so Docker Desktop is not required.
+## 1. Add session management
 
-You could build an SBX-based team around Docker Agent by packaging it in a kit and
-configuring its tools and provider access. Here we use Herdr to coordinate Claude
-Code and Pi sessions, following the author's own setup. The focus is the same:
-give your chosen team an environment, shared guidance and controlled access to tools.
+Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it pins a tool version,
+allows its download hosts and installs the executable. It supplies a session
+manager; the role instructions decide what those sessions should do.
 
-## 1. Give the environment a session manager
-
-Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it records a pinned executable,
-its installation and download access. This mixin supplies Herdr; it does not itself
-decide what the agents should do.
-
-We want three sessions with different responsibilities: coordination,
-implementation and review. `team.tsv` chooses the assistant and model for each
-role. The supplied prompt tells the agents to read their role instructions and
-use our message helpers to pass work. We will start the sessions ourselves first
-to see how Herdr creates the team, then enable automatic startup.
-Put that team definition and those instructions in place:
-
-```bash
-cp chapters/04-team/chapter.env factory/chapter.env
-cp chapters/04-team/PROMPT.md factory/PROMPT.md
-cp chapters/04-team/team.tsv factory/team.tsv
-```
-
-Set `MODE=manual` in `factory/chapter.env`. This lets the launcher prepare the
-sandbox and app source while leaving team startup to us.
-
-Those files describe the team; the sandbox still needs the program that manages
-its sessions. Add Herdr to the `kits` list in `factory/sbxenv.yaml` so SBX installs
-it alongside the assistants:
+Add this entry to the existing `kits` list in `factory/sbxenv.yaml`:
 
 ```yaml
   - source: ../chapters/kits/herdr
 ```
 
-Your environment file now combines ACR for guidance, Pi for another assistant and
-Herdr for managing sessions.
+You now combine three capabilities: ACR installs guidance, Pi provides another
+assistant, and Herdr manages the team's sessions.
 
-## 2. Decide who should do what
+[Docker Agent](https://docs.docker.com/ai/docker-agent/) is another way to define
+agent teams, models, instructions and tools. It could also run inside SBX. This
+workshop uses Herdr with coding assistants, following the author's own setup;
+the environment and access-control concepts apply to either approach.
 
-Open `factory/team.tsv`. It has one tab-separated row for each role:
+## 2. Give the assistants different responsibilities
 
-| Role | Responsibility | Initial harness |
-|---|---|---|
-| coordinator | Route work and questions; wait for replies | Pi |
-| developer | Change the app and report what was tested | Claude Code |
-| qa | Review the developer's change and request corrections | Claude Code |
+Create `factory/team.tsv` in your editor. Each line has four fields, separated by spaces or tabs:
 
-Put the working provider/model choice from chapter 03 into the Pi row. The default
-uses Anthropic for all roles. The [mixed-provider variation](../03-pi/MIXED-MODELS.md)
-lets you use separate providers when available.
+```text
+coordinator	pi	anthropic	claude-sonnet-5
+developer	claude	anthropic	claude-sonnet-5
+qa	claude	anthropic	claude-sonnet-5
+```
 
-Now read the short files in `chapters/support/roles/`. Notice that the coordinator
-is told not to edit app code. QA reviews a particular commit, so it knows which
-version the developer is asking it to review. These responsibilities come from
-instructions, not from the model's name.
+Each row means **role, assistant, provider, model**. Use the working Pi model from
+chapter 03. The coordinator routes work and questions; the developer changes code;
+QA checks the proposed change against the requirements.
 
-Keep Claude as the developer for the main path: in the next chapter that role will
-use the configured MCP gateway client.
+If you only have Claude subscription access, use this content instead:
 
-## 3. Start the environment, then start the team
+```text
+coordinator	claude	anthropic	claude-sonnet-5
+developer	claude	anthropic	claude-sonnet-5
+qa	claude	anthropic	claude-sonnet-5
+```
+
+The sandbox lets you test these choices before relying on them: change a role's
+assistant or model, recreate the environment, and give it the same small handoff
+exercise. Kits keep the installation repeatable; the role table keeps the comparison
+separate from the communication protocol.
+
+These are separate conversations with separate responsibilities. Using different
+providers can add another review perspective; it does not change how roles exchange
+work. The [mixed-provider demonstration](../03-pi/MIXED-MODELS.md) explains the
+additional credential and assistant configuration for Pi/Gemini and Codex.
+
+Read the three short role briefs in `chapters/support/roles/`. Notice that only the
+developer writes application code, and QA reviews a specific commit. A model name
+alone does not establish those responsibilities. Keep Claude as the developer for
+now; it will use the MCP gateway in the next chapter.
+
+Keep `MODE=manual`, `SESSION=shell` and `USE_ACR=1` in `factory/chapter.env`.
+In the SANDBOX tab, at the workshop root:
 
 ```bash
-# HOST — terminal A, from the workshop repository
 ./scripts/launch-factory.sh wad-ch-04
 ```
 
-The launcher uses your updated SBX environment file and supplies the app source. This handoff exercise only reads files; no app server needs to run. In terminal B:
+## 3. Start the sessions and understand what that means
+
+In the SANDBOX shell:
 
 ```bash
-# HOST
-sbx exec -it wad-ch-04 bash
+start-team
 ```
 
-You now have a shell inside SBX. Set the message directory and look at the supplied
-team-startup helper:
+This supplied helper reads `team.tsv` and performs three Herdr operations:
 
-```bash
-# SANDBOX shell
-cd ~/work
-export FACTORY_DIR="$HOME/work/factory"
-cat bin/start-team
-```
+| Operation | Effect |
+|---|---|
+| `herdr server` | Starts the session service inside this sandbox. |
+| `herdr agent start` | Launches the assistant selected for a role. |
+| `herdr agent prompt` | Gives that assistant its role brief. |
 
-The export tells the message tools where this team's shared files live. Preparation
-also made `handoff` and `crew-notify` available on the sandbox's command path, so we
-can use them by name. In the
-script, find `herdr server`, `herdr agent start` and `herdr agent prompt`. They start
-the session service, launch each configured harness, and deliver its role brief.
-The remaining lines connect those operations to the rows of `team.tsv`.
+Open `chapters/support/bin/start-team` on the host if you want the complete working
+example. Workspace IDs, environment variables and terminal creation are plumbing
+around these three operations.
 
-Run the helper from the directory you are in:
-
-```bash
-./bin/start-team
-```
-
-Then look at the sessions:
+Inside SBX, inspect the sessions once:
 
 ```bash
 herdr agent list
-herdr agent read coordinator --lines 30
+crew logs coordinator
 ```
 
-`list` shows who is present. `read` shows the end of an agent's actual terminal, so
-you can see its role acknowledgment. Look at `developer` and `qa` the same way.
-Wait for their introductions before giving them work.
+`list` should show coordinator, developer and QA. `crew logs` shows an assistant's
+terminal, useful for understanding its introduction or diagnosing a login problem.
+The `crew` helper is our small human interface to this team's messages; it is not
+an SBX command. `crew help` lists its operations.
 
-## 4. Leave a message, then wake its recipient
+## 4. See a file message and its wakeup
 
-We will ask the team a small question before entrusting it with a feature. In your
-sandbox shell, leave this message for the coordinator:
+We will ask a small question without changing the app. In the SANDBOX shell:
 
 ```bash
-handoff send --to coordinator --from human --kind assignment --body \
-  'Ask developer to list the test scripts in package.json. Ask QA to check that list. Send me the combined answer. Do not change the app.'
+crew ask "Ask developer to list the test scripts in package.json, ask QA to check that list, and send me the combined answer. Do not change the application."
+crew watch
 ```
 
-The options say who receives it, who sent it, what kind of message it is, and its
-text. This command writes a message file. See it waiting:
+`ask` waits for role acknowledgments, stores your message, and notifies the
+coordinator. `watch` displays readable messages as the team passes work between
+roles. Expect a developer answer, a QA check and a combined reply to you. Press
+Ctrl-C to return to the shell; the agents continue running.
 
-```bash
-handoff inbox coordinator --json
-```
+What happened underneath? These are the two operations the helper combines,
+shown as a **reference**, not another request to send:
 
-The inbox is a view of the stored messages. The agent has not been interrupted just
-because a file appeared. Now notify it through Herdr:
-
-```bash
+```text
+handoff send --to coordinator --from human --kind question --body "Your request"
 crew-notify coordinator
 ```
 
-That is the second half of delivery: give the existing session a turn so it can
-read its inbox. The coordinator will use these same helpers to contact developer
-and QA. Herdr handles the sessions; files carry the conversation.
+A file is durable: the next role can read the exact request. But writing a file
+alone does not give a running assistant a new turn. Herdr's notification does that.
+This is also why explicit messages matter when a harness's busy/idle status is
+unreliable. You can inspect `~/work/factory/messages/` inside SBX to see the stored
+conversation. Agents use `crew send ROLE "message"` to combine storage and notification too.
+Future exercises use `crew` so neither you nor a model needs to remember a separate
+wakeup after every message.
 
-## 5. Follow the conversation
+## 5. Make startup repeatable
 
-Take a moment to read what the coordinator is doing:
+In HOST, set `MODE=team` in `factory/chapter.env`. A future launch now runs
+`start-team` for you. Starting sessions and assigning a task remain separate:
+`crew submit` will give them the selected task when you are ready.
+
+Type `exit` in the SANDBOX shell. In HOST:
 
 ```bash
-herdr agent read coordinator --lines 40
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-04
 ```
 
-Try the same command with `developer` and `qa`. You should be able to follow the
-request, the developer's answer, and QA checking it. When they have replied:
+We have a team that can discuss work. Next we give it a controlled connection to
+the host backlog so it can fetch requirements and write a result note.
 
-```bash
-handoff inbox human --json
-```
-
-Read the result. Did the coordinator combine the answers? Did QA actually inspect
-the app? If a session is still working, give it time. A busy status alone tells you
-less than its conversation; read the messages to follow the work.
-
-If a wakeup says the agent is busy, let it finish before retrying. If delivery is
-uncertain, read the terminal before sending anything again.
-
-## 6. Make this repeatable
-
-Exit the sandbox shell. On the host, edit your `factory/chapter.env` back to
-`MODE=team`. On a future launch, preparation will call `start-team` for you. You
-have just performed the step that is being automated.
-
-We have a team that can discuss work. It still receives a copied task and cannot
-write a result back to the host backlog. Next we will connect that boundary with MCP.
-End the launcher with Ctrl-C, then run `sbx stop wad-ch-04` on the host.
-
-Next: [connect the host backlog](../05-mcp/README.md).
+Next: [connect host tools through MCP](../05-mcp/README.md).

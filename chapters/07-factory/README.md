@@ -1,48 +1,31 @@
-# 7. Use the factory on your own project
+# 7. Give your factory another project
 
-So far, everyone has worked on the same sample application. Now bring a project
-that interests you and give the team a small, real change to make. The factory
-still needs the same three inputs: **source code, a task, and instructions for
-working on that project**. The sandbox, kits, model choices, MCP connection and
-handoff workflow can stay as they are.
+The incident application was our shared example. The factory can work on another
+repository with the same environment, roles and communication. We need a project,
+a useful task and enough context for the agents to recognize a good result.
 
-This is open-lab time. You could try a small change in Testcontainers or another
-open-source project you know, or use one of your own repositories. Choose a change
-you can explain and check: a regression test and fix, clearer validation, or a
-small CLI feature. Knowing what a good result looks like will help you assess the
-team's work.
+This is open-lab time: choose a small feature or bug fix in a project you understand.
+A library or CLI is fine; the result need not be a web page.
 
-## 1. Bring a different repository
+## 1. Choose the project
 
-Save any work you want from the previous sandbox and stop it before continuing;
-our environment file still publishes host port 3102.
-
-From the workshop repository root, clone your chosen project into a new directory.
-Replace the URL below with its clone URL:
+In HOST, clone your chosen repository. Replace the URL with its actual clone URL:
 
 ```bash
-# HOST — from the workshop repository
 mkdir -p projects
 git clone https://github.com/OWNER/REPOSITORY.git projects/my-project
 ```
 
-Choose a project whose purpose you understand, so you can judge the result. The
-agents will read its documentation and work out its dependencies, setup and tests.
-A library may have no application server at all; its useful outcome is a reviewed
-code change and passing tests.
+This working copy will be mounted directly, including its Git history. The
+application from the earlier chapters remains in `sample-app/`. Work on only this
+new project in the next sandbox; there is no separate output copy to retrieve.
 
-The launcher will transfer the committed source at `HEAD` into `~/work/app` in a
-new sandbox. That path is simply where our team expects the project. Your host
-clone stays separate, and its Git history is not transferred. Commit any local
-changes you want included before launching.
+## 2. Write a task for someone seeing the project for the first time
 
-## 2. Write a task the team can verify
-
-Create `factory/TASK.md` in your editor. Describe the change for someone seeing the
-project for the first time. Use this outline, replacing each bracketed section:
+Create `factory/TASK.md` in your editor, replacing the bracketed sections:
 
 ```markdown
-# [Short title of your change]
+# [Short title]
 
 ## Problem
 [What happens now? Give a concrete example.]
@@ -51,151 +34,105 @@ project for the first time. Use this outline, replacing each bracketed section:
 [What should happen after the change?]
 
 ## How to check it
-[One or two observable examples or focused tests that demonstrate the result.]
+[One or two observable examples or focused tests.]
 
 ## Scope
 [What should the team leave alone?]
 ```
 
-Add this task to the same workshop backlog the MCP server already exposes:
+Add it to the host backlog:
 
 ```bash
-./.local/chapters/bin/beans \
-  --config .local/chapters/beans/.beans.yml \
-  --beans-path .local/chapters/beans/.beans \
-  create "My project's first factory task" \
-  --type task --status todo --body-file factory/TASK.md
+./scripts/beans create "My project's first factory task" --type task --status todo --body-file factory/TASK.md
 ```
 
-`--body-file` supplies your requirements. Beans prints the new task's ID; keep it
-for the next step. This remains a task in your local workshop backlog, not an
-issue or pull request in the upstream project. The agents will read it through
-the MCP connection you already configured.
+Beans prints the ID. Put it in the `TASK=` setting in `factory/chapter.env`.
+Keep `MODE=mcp`, `USE_ACR=1` and `SESSION=shell`; the gateway will read this task just
+as it read the sample tasks. This creates a local task, not an upstream issue.
 
-## 3. Tell the factory which project workflow to use
+## 3. Adapt the instructions, not the whole factory
 
-As before, the agents will inspect and set up the project themselves. Change the
-selected task and give the team a prompt for working in the new repository:
+Replace `factory/PROMPT.md` with:
 
-```bash
-cp chapters/07-factory/chapter.env factory/chapter.env
-cp chapters/07-factory/PROMPT.md factory/PROMPT.md
+```markdown
+Ask the developer to fetch the task named in ~/work/task-id through Beans MCP and
+save it to ~/work/task.json. Inspect this project's README, contributor guidance,
+agent instructions, dependency manifests and build configuration.
+Work out its runtimes, dependencies and tests. Install tools and start required
+services inside SBX, using its Docker engine where appropriate. Run a relevant
+baseline check and distinguish existing failures from regressions.
+Implement the requested change. Ask QA to review the exact commit against the task
+and the project's guidance. Preserve existing project instructions.
+For a library or CLI, demonstrate the result with a focused test or command. For a
+web app, start it on 0.0.0.0:8080 and leave it running for the human to try.
+Ask the human about ambiguous requirements or blocked access. After review, append
+a Beans result note with the change, commit and actual check outcomes; leave the
+task open. Send the human a summary and how to try it.
 ```
 
-Open `factory/chapter.env` and replace `TASK=replace-with-your-task-id` with the ID
-Beans just printed. Notice the two settings that matter here:
+Your task says **what** to change. This prompt describes **how** the team should
+approach an unfamiliar project. Add context the agents cannot discover, such as a
+reproduction or a design constraint. Let them discover installation commands.
 
-- `MODE=mcp` keeps task retrieval and result notes connected to your host backlog.
-- `TASK` selects your new requirements rather than a sample-app exercise.
+The setup helper preserves existing `AGENTS.md` guidance. Review any policy you
+intend to add to another project rather than silently replacing its conventions.
+Project onboarding can later become a shared skill; frequently needed tools can
+become a kit. Start by observing what this project actually needs.
 
-Read `factory/PROMPT.md`. It asks the team to inspect the repository, determine its
-dependencies, get it running, and establish how to test it before making changes.
-The agents can install tools and run supporting containers inside SBX—for example,
-Node and a PostgreSQL container if that is what the project needs. You do not need
-to prescribe those choices yourself.
+## 4. Let the team work
 
-Add any project context the agents cannot discover from the source: a useful
-reproduction, a convention your team follows, or something to leave alone. Your
-Bean describes **what to change**; the prompt describes **how the team should
-approach the project**. The supplied prompt is enough to start exploring.
-
-For a library or CLI, the team should demonstrate the result with a focused test
-or command. For a web app, the prompt asks it to start the server on
-`0.0.0.0:8080`, reachable through the existing mapping at
-<http://127.0.0.1:3102>. Publishing a port does not start a server.
-
-Keep `factory/sbxenv.yaml` and `factory/team.tsv`. The same coding guidance, kits,
-roles and MCP connection will be used. If a needed download is blocked, the team
-reports it and you decide whether to allow it. Once you know which tools you want
-on every run, you can package their installation in a kit. Repeated project
-onboarding instructions can likewise become a skill distributed through ACR.
-
-## 4. Launch the team with your source
+In SANDBOX, starting at the workshop repository root:
 
 ```bash
-# HOST — terminal A, from the workshop repository
 ./scripts/launch-factory.sh wad-my-project projects/my-project
 ```
 
-The first argument names the new sandbox; the second selects your repository.
-Underneath, the launcher still calls:
+The first argument names the sandbox. The second changes its mounted workspace.
+The launcher still uses your `factory/sbxenv.yaml`, kits, team and MCP connection.
+Inside its shell:
 
 ```bash
-sbx env create factory/sbxenv.yaml --env-arg name=wad-my-project --auto-approve
+crew submit
+crew watch
 ```
 
-Then it transfers your committed source, prompt and task ID, installs the coding
-guidance and starts the roles. The launcher does that sequence for you; do not run
-the second command again. Leave terminal A open. The agents will install project dependencies and start any needed services when
-you submit the task.
-
-In another host terminal, join through SSH:
+Follow the team as it discovers the project. Ctrl-C returns to the shell, where
+you can ask a follow-up:
 
 ```bash
-ssh wad-my-project.sbx
+crew ask "Explain which checks demonstrate the requested behavior and which commit QA reviewed."
+crew watch
 ```
 
-Inside the sandbox, inspect the setup and submit the task once the roles finish
-their introductions:
+Use `crew reply "your answer"` for a product question. Use HOST for a scoped network
+policy change, as in chapter 05. `crew logs developer` opens the latest terminal
+output if a tool or login needs attention.
+
+## 5. Inspect the result in your working copy
+
+Try the changed behavior: a web app uses <http://127.0.0.1:3102>; a library or CLI
+should have a focused demonstration inside SBX. On HOST:
 
 ```bash
-# SANDBOX — over SSH
-cd ~/work
-cat task-id
-cat PROMPT.md
-herdr agent list
-./bin/assign
+git -C projects/my-project status --short
+git -C projects/my-project log -1 --oneline
+./scripts/beans show YOUR-TASK-ID
 ```
 
-The coordinator asks the developer to fetch your task through MCP. Follow the
-conversation as the team learns the project, implements the change and reviews it:
+Replace `YOUR-TASK-ID` with your task's ID. Open the changed files in your editor
+and compare the behavior with your requirements. The existing history and new
+commits are in this working copy. Decide what to keep through your normal review
+process; the workshop does not publish changes upstream.
+
+When finished, exit the SANDBOX shell. In HOST:
 
 ```bash
-herdr agent read coordinator --lines 40
-herdr agent read developer --lines 40
-herdr agent read qa --lines 40
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-my-project --env-arg "app=$(pwd)/projects/my-project"
+sbx mcp rm wad-my-project-beans
 ```
 
-If it needs a product decision, use the human handoff from chapter 06. If a network
-request is blocked, inspect it and decide on the host whether to allow that
-specific destination, as in chapter 05. The environment's access boundaries still
-apply when the project changes.
+The MCP command removes this environment's host tool registration. The app argument identifies the same workspace used on creation. You now have an
+environment and team you can reuse: change the task and select a project for the
+next job.
 
-## 5. Inspect and keep the result
-
-Ask what evidence supports the result: which commit did QA review, which checks
-ran, and what remains unverified? For a web app, try the changed behavior through
-the published port. For a library or CLI, read the focused test results or run the
-demonstration inside the sandbox.
-
-When the team finishes, inspect its saved work:
-
-```bash
-# SANDBOX
-cd ~/work/app
-git status --short
-git log -1 --oneline
-```
-
-The developer should also have appended a result note to your Bean. Exit SSH and
-read it on the host, replacing `YOUR-TASK-ID` with your actual task ID:
-
-```bash
-# HOST — from the workshop repository
-./.local/chapters/bin/beans \
-  --config .local/chapters/beans/.beans.yml \
-  --beans-path .local/chapters/beans/.beans show YOUR-TASK-ID
-
-sbx cp wad-my-project:/home/agent/work/app ./.local/my-project-result
-```
-
-The copy keeps the result in a new host directory, leaving your original clone
-unchanged. Review the diff against that clone before carrying changes into your
-normal contribution workflow. This exercise does not publish or submit anything
-to the upstream project.
-
-End terminal A with Ctrl-C, then run `sbx stop wad-my-project`. You now have the
-same factory working with your own source and requirements. For the next job,
-change the task and choose the committed project version you want it to start from.
-
-Next: [explore what else SBX can do](../08-presenter/README.md), with the presenter.
+Next: [presenter demonstrations of further SBX capabilities](../08-presenter/README.md).

@@ -1,256 +1,172 @@
-# 5. Give the team a tool for the host backlog
+# 5. Give the team controlled access to host tools
 
-The team can work from a task snapshot. Now we want it to read the current task and
-write its result back to our workshop task tracker on the host. We will connect
-the tracker's tool server (Beans MCP) through [SBX's MCP gateway](https://docs.docker.com/ai/sandboxes/mcp-gateway/),
-inspect its tools with Claude, then give the team an assignment. Because this
-crosses the sandbox boundary, we will also examine which operations we allow and
-how to change access deliberately.
+Our agents can work together, but their task is a snapshot. We want them to read
+current requirements from Beans and write a result note back to it. The backlog
+stays on the host; mounting the application does not expose those files.
 
-The connection will be:
+[MCP](https://modelcontextprotocol.io/docs/getting-started/intro) lets an assistant
+discover and call a server's named tools. [SBX's MCP gateway](https://docs.docker.com/ai/sandboxes/mcp-gateway/)
+connects the assistant inside the sandbox to our small host server:
 
 ```text
-Claude inside SBX → SBX MCP gateway → Beans MCP server on host → host backlog
+Claude developer → SBX MCP gateway → host Beans MCP server → workshop backlog
 ```
 
-## 1. Understand the server we are giving access to
+## 1. Understand the tool boundary
 
-The server is a prebuilt native program downloaded in chapter 00. Install it now:
+The workshop includes a prebuilt MCP adapter for Beans. It exposes listing tasks,
+reading a task and, when enabled, appending a note. It does not expose arbitrary
+shell commands or task deletion. We can make the integration useful without giving
+the agent our entire host filesystem or connecting a production issue tracker.
+
+Install the downloaded adapter in HOST:
 
 ```bash
-# HOST — from the workshop repository
 ./scripts/install-mcp.sh --from-local
 ```
 
-This checks and installs the downloaded executable into our workshop's local tools
-directory. It does not start a public web server. The gateway will run the program
-on the host and communicate with it over stdin/stdout, commonly called **stdio**.
-No host Docker engine or separate OAuth service is involved.
+This installs the native executable downloaded during setup. The gateway starts
+it as a host process and exchanges messages over stdin/stdout (**stdio**). No host
+Docker engine, public web service or separate OAuth login is needed.
 
-There are three useful operations: list tasks, read one task, and append a task
-note. A server chooses which operations it exposes; MCP is their interface, not a
-reason to give an agent arbitrary host access.
+Open `scripts/beans-mcp` in your editor. This short entry point selects the same
+workshop backlog as `scripts/beans`. By default it is read-only; `--allow-notes`
+enables the result-note tool. The underlying adapter also requires the disposable
+backlog marker created in chapter 02.
 
-## 2. Register a server directly with SBX
+## 2. Declare the connection alongside the sandbox
 
-First see how a host command becomes an MCP server registration:
-
-```bash
-# HOST
-sbx mcp add wad-beans-intro --command "$(pwd)/.local/chapters/bin/beans-mcp" \
-  --args="--beans-bin=$(pwd)/.local/chapters/bin/beans" \
-  --args="--beans-config=$(pwd)/.local/chapters/beans/.beans.yml" \
-  --args="--beans-data=$(pwd)/.local/chapters/beans/.beans" \
-  --dir "$(pwd)/.local/chapters"
-```
-
-| Part | What it tells the gateway |
-|---|---|
-| `wad-beans-intro` | The registration's name. |
-| `--command` | The native host program to start. |
-| `--beans-bin` | Which Beans executable the server should use. |
-| `--beans-config`, `--beans-data` | Which workshop backlog it should read. |
-| `--dir` | The host process's working directory. This is not a filesystem restriction. |
-
-Each `--args` passes an argument to the server. Absolute paths matter because the
-gateway does not run inside your current interactive shell.
-
-```bash
-sbx mcp ls
-```
-
-Find your named registration. This step registered a **read-only** tool source; it
-did not mount host files into a sandbox. To attach a registered server to an existing
-sandbox you would use `sbx mcp load NAME --sandbox SANDBOX`. For our factory, we will
-record registration and attachment together in the environment file instead.
-
-Remove this practice registration before moving on:
-
-```bash
-sbx mcp rm wad-beans-intro
-```
-
-## 3. Put the connection in the environment file
-
-We want SBX to connect each new sandbox to the host task tracker automatically.
-The `mcp` section in `factory/sbxenv.yaml` tells SBX which host program supplies
-the tools and which arguments limit it to our workshop backlog. This replaces
-the manual registration we just explored.
-
-Add the following section to `factory/sbxenv.yaml`:
+Add this section to `factory/sbxenv.yaml`:
 
 ```yaml
 mcp:
   servers:
     - name: "${{ env.args.name }}-beans"
-      command: "${{ env.fileDir }}/../.local/chapters/bin/beans-mcp"
-      args:
-        - --beans-bin
-        - "${{ env.fileDir }}/../.local/chapters/bin/beans"
-        - --beans-config
-        - "${{ env.fileDir }}/../.local/chapters/beans/.beans.yml"
-        - --beans-data
-        - "${{ env.fileDir }}/../.local/chapters/beans/.beans"
-        - --enable-presenter-note-tool
+      command: "${{ env.fileDir }}/../scripts/beans-mcp"
+      args: [--allow-notes]
 ```
 
-`${{ env.fileDir }}` is the directory containing the environment file. The paths point to
-our workshop tools and tasks in `.local/chapters/`, one level above `factory/`.
-SBX resolves them to absolute host paths.
+`command` is the **host** program the gateway will start. `${{ env.fileDir }}` is
+where this environment file lives, so the path points to the workshop script.
+`args` permits notes on our practice backlog. The name combines the sandbox name
+with `-beans`, giving each environment its own registration.
 
-- `command` is the same host program you registered manually.
-- `args` selects the same backlog.
-- The server name uses this sandbox's name so separate runs have separate registrations.
-- `--enable-presenter-note-tool` enables the tool for appending task notes.
+These fields describe both registration and attachment. You can also register and
+load servers with `sbx mcp add` and `sbx mcp load`; recording them here makes the
+connection part of every new factory environment.
 
-### Decide what the agent should be allowed to change
+This is a trust decision. The MCP adapter is a host program with your host user's
+permissions. We trust its implementation to limit its tools to the selected
+backlog. The gateway supplies the connection; the adapter supplies that narrow
+interface. A protocol does not automatically make a powerful tool safe.
 
-This is the point where we give the sandbox authority over something on the host.
-The adapter limits its tools to the configured backlog. A write requires both the
-note-tool flag and the disposable marker created in chapter 02. It cannot close a
-task or run an arbitrary command through its tool interface.
+## 3. Tell the team when to use its new tools
 
-The adapter itself is a host process with host-user permissions, so its implementation
-is part of what we trust. The gateway connects it; the gateway does not automatically
-make a broadly privileged server narrow. For this exercise we are choosing a small,
-inspectable set of operations on practice data.
+Edit `factory/chapter.env` to contain:
 
-### Tell the team to use the connection
-
-Access to a tool does not tell an agent when to use it. We want the coordinator to
-ask the developer to fetch the task through MCP, then write a result note after
-implementation and review.
-
-Two pieces make that happen:
-
-- Set `TASK=wad-102` and `MODE=mcp` in the launcher settings. This selects the
-  assignment-and-resolution task and sends only its ID into the sandbox, so the
-  team retrieves the current requirements from the host.
-- Give the coordinator a prompt that directs it to use the developer's MCP
-  connection and append a result note when the work is reviewed.
-
-The supplied files contain those settings and instructions:
-
-```bash
-# HOST — from the workshop repository
-cp chapters/05-mcp/chapter.env factory/chapter.env
-cp chapters/05-mcp/PROMPT.md factory/PROMPT.md
+```text
+TASK=wad-102
+MODE=mcp
+USE_ACR=1
+SESSION=shell
 ```
 
-Open both files and find the task ID, mode and MCP instruction. The launcher reads
-`chapter.env`. Later, when you run `assign` inside the sandbox, it asks the
-coordinator to read `PROMPT.md`. The environment file supplies the capability;
-the prompt tells the team how to use it.
+`MODE=mcp` starts the team and sends only a task ID, so the agent must fetch the
+current requirements. `SESSION=shell` gives us a place to explore the tools before
+submitting work.
 
-Preview the updated environment and then launch it:
+Replace `factory/PROMPT.md` with:
+
+```markdown
+Ask the developer to retrieve the task named in ~/work/task-id through the Beans
+MCP get_task tool and save it to ~/work/task.json. Do not invent its requirements.
+The developer should inspect the mounted project's documentation, install its
+dependencies and start any required services inside SBX, then implement the task.
+Ask QA to review the exact commit against the task and coding policy.
+After review, refresh the web app on 0.0.0.0:8080 and leave it running.
+Ask the developer to append a Beans result note with the change, commit and actual
+check outcomes. Leave the task open. Send the human a summary and how to try it.
+```
+
+The environment provides access. This prompt explains **when and why** the team
+should use it. Claude is our gateway-connected developer; Pi can ask that role for
+the requirements through the communication system we just built.
+
+In HOST, preview the connection:
 
 ```bash
-# HOST — terminal A, from the workshop repository
 sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-05
+```
+
+Look for the host program, note permission and application mount. In SANDBOX,
+starting at the workshop root:
+
+```bash
 ./scripts/launch-factory.sh wad-ch-05
 ```
 
-Look for the MCP server in the plan. The launcher then calls `sbx env create`,
-supplies the app source and starts the team, as before. Leave this terminal open.
+## 4. Explore the actual MCP tools
 
-## 4. Explore the tools in Claude before assigning work
-
-In a second host terminal:
+In the SANDBOX shell, open a personal Claude conversation:
 
 ```bash
-sbx run --name wad-ch-05
+claude
 ```
 
-This opens a conversation for **you** to explore the environment. It is separate
-from the waiting Herdr developer session. Type `/mcp` to inspect Claude's MCP
-connections, then return to the conversation and ask:
+This is your exploration session, separate from the team's developer. Type `/mcp`
+to inspect the gateway connection, then ask:
 
 > Use the Beans MCP tools to list the workshop tasks and read wad-102. Explain the
-> requested feature to me. Do not implement it or change the backlog yet.
+> requested feature. Do not implement it or write a note yet.
 
-Watch which tools Claude calls. You should be discussing the demo task stored on the host,
-with the requirements supplied by Beans. Read them together:
-what must assignment do, and what information is required to resolve an incident?
+Watch the tool calls. You should see the assignment-and-resolution requirements
+stored in the host backlog. Ask what information is required to resolve an incident.
+This proves the complete connection, rather than just a server registration.
 
-Exit this exploration conversation when you understand the task. We will now give
-it to the team we built in chapter 04.
-
-## 5. Let the team use the same bridge
-
-In terminal B, after exiting Claude to the host, enter a shell in the sandbox:
+Type `/exit` to return to the SANDBOX shell. Now give the job to the team:
 
 ```bash
-# HOST
-sbx exec -it wad-ch-05 bash
+crew submit
+crew watch
 ```
 
-Inside that shell:
+Submission waits for the roles to be ready. Expect the developer to fetch the task,
+implement it, and pass it through QA. If a role needs attention, `crew logs developer`
+(or `qa` or `coordinator`) shows its terminal. Ctrl-C leaves the message view;
+it does not stop the agents. `crew status` shows the stage and replies addressed to you.
+
+## 5. Let the human handle a request for more access
+
+After the team finishes its feature, try a normal development need: downloading a
+browser for future UI checks. In the SANDBOX shell:
 
 ```bash
-# SANDBOX
-cd ~/work
-export FACTORY_DIR="$HOME/work/factory"
-cat task-id
-cat bin/assign
+crew ask "Ask the developer to try installing Playwright Chromium for this project. If a download is blocked, tell me the exact destination and why it is needed. Do not change host policy."
+crew watch
 ```
 
-`task-id` identifies the job. `assign` is the two-step handoff from chapter 04,
-wrapped around this chapter's task: leave a message for the coordinator, then wake
-its session. Once all roles have finished their introductions, run it once:
+Read the reported failure. A common blocked destination is `cdn.playwright.dev`.
+If that is the destination your agent reports and you decide to allow it, use HOST:
 
 ```bash
-./bin/assign
-```
-
-The coordinator routes the job. The Claude developer can reach the gateway, so it
-reads the Bean and supplies the task to the team. The developer also inspects the
-project documentation, installs dependencies and starts the services it needs
-inside SBX. Watch those commands: project setup is part of the agent's work. Pi does not need its own MCP
-client in this setup: it can ask the gateway-capable role to obtain the information.
-
-Follow the developer and reviewer from the same shell:
-
-```bash
-herdr agent read developer --lines 40
-herdr agent read qa --lines 40
-```
-
-These commands show their conversations. Read the implementation plan and review
-feedback. The agents may need several turns; there is no need to keep sending the
-assignment. When the work is reviewed, the developer refreshes the app and appends
-a result note through MCP.
-
-## 6. Handle a legitimate request for more access
-
-Once the developer has installed the project dependencies, consider another normal development need: downloading a
-browser. Our observed example is Chromium's download from `cdn.playwright.dev`.
-From your sandbox shell:
-
-```bash
-cd ~/work/app
-npx playwright install chromium
-```
-
-`npx` runs the app's Playwright tool; `install chromium` asks it to fetch a browser.
-We are interested in the access boundary, not in running browser tests. Read the
-error if the download is blocked. If your policy already permits it, simply observe
-that difference; you can interrupt the download once you have seen the behavior.
-
-The agent cannot fix a host access rule from this shell. Keep the sandbox shell
-open in terminal B. Open **terminal C on the host**, enter the workshop repository,
-and decide whether this sandbox should reach that particular download host:
-
-```bash
-# HOST — terminal C, from the workshop repository
 sbx policy allow network --sandbox wad-ch-05 cdn.playwright.dev
 ```
 
-`allow network` grants network access; `--sandbox` limits the rule to this one
-sandbox; the final argument names the destination. Return to the sandbox shell in
-terminal B and retry the download if you want to see the effect. A redirect may name another destination; inspect
-that request before adding another rule.
+This grants network access only for this sandbox and host. Return to the SANDBOX
+shell (Ctrl-C leaves `crew watch`) and ask it to retry:
 
-For a dependency every future worker needs, a kit can record the requirement:
+```bash
+crew ask "The reported download host is now allowed. Ask the developer to retry and report the outcome."
+crew watch
+```
+
+Redirects may introduce another destination; inspect the actual request before
+allowing it. If the original download already succeeds, the current policy permits
+it—there is no failure to fix. The lesson is that the agent reports a need and the
+host operator decides whether to grant it.
+
+For a requirement you want every future worker to have, create
+`factory/browser-access/spec.yaml` in your editor:
 
 ```yaml
 schemaVersion: "2"
@@ -261,56 +177,46 @@ permissions:
     allow: [cdn.playwright.dev]
 ```
 
-Save that as `factory/browser-access/spec.yaml` on the host if you want to keep
-it, validate it with `sbx kit validate`, and add `./browser-access` to a future
-environment file's kits. You have moved a manual operator decision into a declared environment
-requirement. Editing an environment file does not change the running sandbox.
-
-An enrolled organization can add central AI governance. The presenter may show it
-at the end. Network access and named MCP-tool governance are different controls;
-you do not need organization access to complete this local exercise. See
-[SBX security](https://docs.docker.com/ai/sandboxes/security/).
-
-## 7. See the result on both sides
-
-When the team reports completion, open **<http://127.0.0.1:3102>** and try assigning
-and resolving an incident. Does the behavior match the task you read earlier?
-
-In host terminal C, from the workshop repository, read the same demo task again:
+Use the destinations you actually needed. In HOST:
 
 ```bash
-"$(pwd)/.local/chapters/bin/beans" --config "$(pwd)/.local/chapters/beans/.beans.yml" \
-  --beans-path "$(pwd)/.local/chapters/beans/.beans" show wad-102
+sbx kit validate factory/browser-access
 ```
 
-This is the same task-reading command from chapter 02. This time it should include
-the team's result note: what changed, the commit and the review/check outcomes.
-The agents have written back through the bridge. Read their note to see what they
-changed and how they checked it.
+Add this entry to `factory/sbxenv.yaml`'s existing `kits` list:
 
-Back in terminal B, inspect the working tree and latest commit:
+```yaml
+  - source: ./browser-access
+```
+
+The kit records the decision for the next sandbox creation; it does not modify the
+current one. On the next chapter's plan, look for this extra kit. Central AI
+governance can apply additional organization rules; the presenter will demonstrate
+that separately. [Network policy and tool governance](https://docs.docker.com/ai/sandboxes/security/)
+are distinct controls.
+
+## 6. See the factory's result
+
+Open **<http://127.0.0.1:3102>**. Try assigning and resolving an incident. In HOST:
 
 ```bash
-# SANDBOX — terminal B
-cd ~/work/app
-git status --short
-git log -1 --oneline
+./scripts/beans show wad-102
+git -C sample-app log -1 --oneline
 ```
 
-Wait for the team to finish and commit its work. `git status` shows any remaining
-uncommitted changes; `git log` identifies the saved result. Type `exit` to leave
-the sandbox shell, then save the app from the host:
+The task should contain the team's result note. The commit and changed code are
+already in `sample-app/`. Compare the actual app behavior with the requirements;
+a note saying “done” is not a substitute for trying the result.
+
+When the team is finished, exit the SANDBOX shell. In HOST:
 
 ```bash
-# HOST — terminal B
-sbx cp wad-ch-05:/home/agent/work/app "./.local/feature-app"
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-05
+sbx mcp rm wad-ch-05-beans
 ```
 
-`sbx cp` copies from the named sandbox path to a new host directory. Unlike chapter
-1's mounted app, this factory job worked on a private source snapshot, so we now
-retrieve it. If the destination exists from an earlier run, choose a new name.
+The first command removes the sandbox. The second removes its named host MCP
+registration; this SBX release keeps registrations after sandbox removal. Keep the application as it
+is; the next task builds on your assignment-and-resolution feature.
 
-End the launcher with Ctrl-C and stop `wad-ch-05` after saving your result. We have
-connected task, team and result. Next we handle a question the team cannot answer.
-
-Next: [join the team through SSH](../06-human/README.md).
+Next: [answer a human question through SSH](../06-human/README.md).

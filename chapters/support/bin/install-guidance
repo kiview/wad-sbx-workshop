@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Public package fetches must not use a proxy's GitHub placeholder as a token.
+set -euo pipefail
+cd "$(cat "$HOME/work/app-path")"
+env -u GH_TOKEN -u GITHUB_TOKEN acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --agent claude-code --agent codex --freshness none --non-interactive
+env -u GH_TOKEN -u GITHUB_TOKEN acr realize

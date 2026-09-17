@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Same Beans CLI, with this workshop's host backlog selected.
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$root/.local/chapters/bin/beans" --config "$root/.local/chapters/beans/.beans.yml" --beans-path "$root/.local/chapters/beans/.beans" "$@"

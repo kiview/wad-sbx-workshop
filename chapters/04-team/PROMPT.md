@@ -1,4 +1,4 @@
-Read your role brief. Use handoff files and crew-notify to coordinate.
+Read your role brief. Use crew send to store each handoff and wake its recipient.
 Follow the actual task contract. In MCP mode, obtain it through the developer's
 MCP connection before coding. Ask developer to inspect the repository, install
 dependencies and start required services inside SBX.

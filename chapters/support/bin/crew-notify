@@ -21,7 +21,7 @@ set -euo pipefail
 
 BIN_DIR="$(cd "$(dirname "$0")" && pwd)"
 HANDOFF="$BIN_DIR/handoff"
-FACTORY_DIR="${FACTORY_DIR:?FACTORY_DIR is required}"
+export FACTORY_DIR="${FACTORY_DIR:-$HOME/work/factory}"
 
 ROLE="" KEY="" MSG_ID="" TEXT=""
 while [ $# -gt 0 ]; do

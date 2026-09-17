@@ -9,10 +9,11 @@ configuration it needs.
 
 ## Look at the environment as a whole
 
-From the host, choose a chapter sandbox that still exists:
+Prepare one demo sandbox and keep it connected before presenting. The examples
+below use `wad-demo`; substitute your prepared sandbox name throughout. In HOST:
 
 ```bash
-sbx inspect wad-ch-05
+sbx inspect wad-demo
 ```
 
 Ask the audience to find the kits, published port and workspace/mount configuration.
@@ -23,15 +24,15 @@ account configuration. It describes the environment, not the success of a task.
 
 ## Grant access to a directory while the sandbox exists
 
-Chapter 1 shared an app directory when creating the sandbox. The later factory
-environment files use private snapshots. Now suppose one of those workers needs an additional
+Every workshop chapter shares the application directory. Now suppose a worker
+needs an additional
 reference file: can we grant that access without rebuilding its environment?
 
 Open a shell in the selected sandbox and leave it open in terminal A:
 
 ```bash
 # HOST — terminal A
-sbx exec -it wad-ch-05 bash
+sbx exec -it wad-demo bash
 ```
 
 This also starts it if it was stopped. In host terminal B, prepare a scratch folder
@@ -40,11 +41,21 @@ and a message. Run these commands from the workshop repository root.
 ```bash
 # HOST — terminal B
 mkdir -p "./.local/mount-demo"
-printf 'A message from the host\n' > "./.local/mount-demo/message.txt"
-sbx mount wad-ch-05 "$(pwd)/.local/mount-demo:/home/agent/mailbox:ro"
 ```
 
-`mkdir` and `printf` create the host data. `sbx mount` shares that directory at the
+Create `.local/mount-demo/message.txt` in your editor with this content:
+
+```text
+A message from the host
+```
+
+Share it read-only from HOST:
+
+```bash
+sbx mount wad-demo "$(pwd)/.local/mount-demo:/home/agent/mailbox:ro"
+```
+
+`sbx mount` shares that directory at the
 specified path inside the sandbox. The trailing `ro` makes it read-only. Ask the
 audience to predict which of these operations will work, then try them in terminal A:
 
@@ -61,7 +72,7 @@ Back on the host, revoke the mount:
 
 ```bash
 # HOST — terminal B
-sbx umount wad-ch-05 "$(pwd)/.local/mount-demo:/home/agent/mailbox"
+sbx umount wad-demo "$(pwd)/.local/mount-demo:/home/agent/mailbox"
 ```
 
 The spelling is `umount`; the arguments identify the same host directory and target

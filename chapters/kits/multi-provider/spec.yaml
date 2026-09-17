@@ -203,3 +203,30 @@ setup:
         esac
       user: "agent"
       description: Seed Codex config/auth from SBX_CRED_OPENAI_MODE
+
+    - user: agent
+      description: Connect Claude to the SBX MCP gateway when one is attached
+      command: |
+        set -eu
+        [ -n "${MCP_GATEWAY_URL:-}" ] || exit 0
+        node -e '
+          const fs = require("fs"), file = process.env.HOME + "/.claude.json";
+          const config = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
+          config.mcpServers = {...config.mcpServers, "mcp-gateway": {type: "http", url: process.env.MCP_GATEWAY_URL}};
+          fs.writeFileSync(file, JSON.stringify(config, null, 2));
+        '
+  startup:
+    - user: agent
+      description: Connect Claude to the SBX MCP gateway when one is attached
+      command:
+        - sh
+        - -c
+        - |
+            set -eu
+            [ -n "${MCP_GATEWAY_URL:-}" ] || exit 0
+            node -e '
+              const fs = require("fs"), file = process.env.HOME + "/.claude.json";
+              const config = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
+              config.mcpServers = {...config.mcpServers, "mcp-gateway": {type: "http", url: process.env.MCP_GATEWAY_URL}};
+              fs.writeFileSync(file, JSON.stringify(config, null, 2));
+            '

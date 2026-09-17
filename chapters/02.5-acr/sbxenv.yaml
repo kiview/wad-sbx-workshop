@@ -1,7 +1,10 @@
 schemaVersion: "1"
 name: "${{ env.args.name }}"
 agent: claude
+workspace: "${{ env.args.app }}"
 args:
+  app:
+    default: ../../sample-app
   name:
     required: true
 sandboxOptions:
