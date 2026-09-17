@@ -6,10 +6,11 @@ that workflow yourself, starting with one agent running inside Docker Sandboxes.
 
 ## What you will build
 
-Your factory will work on an incident triage board: a web application with an API
-and a PostgreSQL database. Agents will add features to the board, run commands and
-database containers inside their sandbox, review each other's changes, and write
-results back to your task backlog.
+We will use an incident triage board as our sample application: a web UI with an
+API and a PostgreSQL database. Agents will add features, run commands and database
+containers inside their sandbox, review each other's changes, and write results
+back to your task backlog. The factory can work on other projects too; the board
+gives us a shared example while we build it.
 
 ![The incident triage board you will extend](chapters/images/incident-triage-board.png)
 
