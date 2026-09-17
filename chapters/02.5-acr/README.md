@@ -12,7 +12,7 @@ A [mixin kit](https://docs.docker.com/ai/sandboxes/customize/kits/) adds setup a
 access requirements to a sandbox. On the host, make a directory for yours:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-hello-kit"
+mkdir -p "./chapters/my-hello-kit"
 ```
 
 In your editor, create `chapters/my-hello-kit/spec.yaml` with this content:
@@ -39,9 +39,9 @@ Ask SBX to validate your kit, then create a practice environment with it:
 
 ```bash
 # HOST
-sbx kit validate "$WORKSHOP/chapters/my-hello-kit"
+sbx kit validate "./chapters/my-hello-kit"
 sbx create claude --name wad-kit-first --skills off --cpus 4 --memory 8g \
-  --kit "$WORKSHOP/chapters/my-hello-kit"
+  --kit "./chapters/my-hello-kit"
 sbx run --name wad-kit-first
 ```
 
@@ -70,11 +70,10 @@ the content ACR installs**.
 Prepare your next recipe on the host:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-025"
-cd "$WORKSHOP/chapters/my-025"
-cat ../my-02/sbxenv.yaml > sbxenv.yaml
-for file in chapter.env PROMPT.md launch; do cat "../02.5-acr/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-025"
+cat chapters/my-02/sbxenv.yaml > chapters/my-025/sbxenv.yaml
+for file in chapter.env PROMPT.md launch; do cat "chapters/02.5-acr/$file" > "chapters/my-025/$file"; done
+chmod +x chapters/my-025/launch
 ```
 
 This carries your environment forward and brings in this chapter's settings.
@@ -86,23 +85,23 @@ kits:
 ```
 
 Instead of a local directory, `source` now names a Git repository at a fixed commit.
-SBX fetches that kit when creating the sandbox. Open `chapter.env` and change
+SBX fetches that kit when creating the sandbox. Open `chapters/my-025/chapter.env` and change
 `USE_ACR=1` to `USE_ACR=0` for this first run. That keeps our helper from installing
 the policy automatically—we want to do it ourselves and see what it produces.
 
 Preview your composition:
 
 ```bash
-sbx env plan sbxenv.yaml --env-arg name=wad-ch-02-5 \
-  --env-arg port=3103 --env-arg "control_dir=$CONTROL"
+sbx env plan chapters/my-025/sbxenv.yaml --env-arg name=wad-ch-02-5 \
+  --env-arg port=3103 --env-arg "control_dir=$(pwd)/.local/chapters"
 ```
 
 Find the kit in the plan. These are the recipe arguments introduced in chapter 02.
 Then start it using the same app-delivery wrapper:
 
 ```bash
-# HOST — terminal A, in chapters/my-025
-./launch wad-ch-02-5 "$WARMUP"
+# HOST — terminal A, from the workshop repository
+./chapters/my-025/launch wad-ch-02-5 "$(pwd)/sample-app"
 ```
 
 Leave this terminal open. In terminal B, join the agent:

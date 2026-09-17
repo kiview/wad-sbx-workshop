@@ -8,15 +8,15 @@ boundary yourself before trusting an agent with a larger task.
 
 ## 1. Start Claude in your application
 
-In the terminal you prepared in chapter 00:
+From the workshop repository root:
 
 ```bash
 # HOST
-sbx run claude "$WARMUP" --name wad-manual --skills off --cpus 4 --memory 8g
+sbx run claude "$(pwd)/sample-app" --name wad-manual --skills off --cpus 4 --memory 8g
 ```
 
-`claude` chooses the agent, `$WARMUP` chooses the host directory to share, and
-`--name` gives the environment a reusable name. `--skills off` keeps the exercise
+`claude` chooses the agent, `"$(pwd)/sample-app"` gives the full path to the sample
+application to share, and `--name` gives the environment a reusable name. `--skills off` keeps the exercise
 independent of host-installed skills; the final options give it four CPUs and 8 GB.
 This creates the sandbox and opens Claude Code in your app directory. Keep this
 terminal open while working. If you repeat this exercise, choose a fresh sandbox
@@ -61,9 +61,8 @@ In a **second host terminal**, from the workshop repository:
 
 ```bash
 # HOST
-source ./scripts/workshop-env.sh
-cat "$WARMUP/sandbox-message.txt"
-cat "$WORKSHOP/.local/host-only.txt"
+cat "./sample-app/sandbox-message.txt"
+cat "./host-only.txt"
 ```
 
 You can read both on the host. Edits inside the mounted app are bidirectional;
@@ -135,7 +134,7 @@ what it checked. You can inspect it yourself without leaving Claude:
 !git log -1 --oneline
 ```
 
-The change is **already on your host** in `$WARMUP`. There is no `sbx cp` step because
+The change is **already on your host** in `sample-app/`. There is no `sbx cp` step because
 this working directory is mounted. The next chapter uses that committed source.
 
 When done, exit Claude and stop this sandbox from the host:
@@ -150,16 +149,15 @@ left the result in your working directory. Next we make launching a task repeata
 
 ## Skip to the completed chapter
 
-If you want the completed warm-up without doing the exercise, run this from the
-workshop repository in your host terminal:
+To skip to the completed exercise, stop `wad-manual` if it is running. Then run
+this from the workshop repository:
 
 ```bash
-source ./scripts/workshop-env.sh --completed
+./scripts/prepare-app.sh app-01-warmup-solution
 ```
 
-This selects a separate working copy containing the supplied solution. Your own
-work is preserved. Continue with chapter 02. In another terminal, ordinary
-`source ./scripts/workshop-env.sh` picks up the same selection. The shortcut prepares
-code. You will use this completed app as the starting point for the next chapter.
+This puts the supplied completed exercise in `sample-app/`. Your previous copy is
+saved under `.local/saved-app.*`; the command prints its location. Continue with
+chapter 02 using the same `sample-app/` path.
 
 Next: [recipes and the host launcher](../02-launcher/README.md).

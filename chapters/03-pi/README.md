@@ -30,18 +30,17 @@ than building a new image during the workshop.
 On the host, create the next working directory:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-03"
-cd "$WORKSHOP/chapters/my-03"
-cat ../my-025/sbxenv.yaml > sbxenv.yaml
-for file in chapter.env PROMPT.md launch; do cat "../03-pi/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-03"
+cat chapters/my-025/sbxenv.yaml > chapters/my-03/sbxenv.yaml
+for file in chapter.env PROMPT.md launch; do cat "chapters/03-pi/$file" > "chapters/my-03/$file"; done
+chmod +x chapters/my-03/launch
 ```
 
-The first two lines create and enter your directory. The next copies your previous
-recipe. The loop brings in this chapter's task/settings and launch entry point;
+These commands create your chapter directory and copy your previous recipe.
+Your terminal stays at the workshop root. The loop brings in this chapter's task/settings and launch entry point;
 `chmod` makes that entry point executable.
 
-In your editor, add this entry to the **existing** `kits` list in `sbxenv.yaml`:
+In your editor, add this entry to the **existing** `kits` list in `chapters/my-03/sbxenv.yaml`:
 
 ```yaml
   - source: ../kits/pi
@@ -53,8 +52,8 @@ other. The relative path is resolved from this recipe's directory.
 Preview the recipe:
 
 ```bash
-sbx env plan sbxenv.yaml --env-arg name=wad-ch-03 \
-  --env-arg port=3104 --env-arg "control_dir=$CONTROL"
+sbx env plan chapters/my-03/sbxenv.yaml --env-arg name=wad-ch-03 \
+  --env-arg port=3104 --env-arg "control_dir=$(pwd)/.local/chapters"
 ```
 
 These are the same arguments from chapter 02: a sandbox name, a browser port and
@@ -62,8 +61,8 @@ the host workshop-data location. Find the Pi kit in the plan. Then create the ap
 environment using our existing launcher:
 
 ```bash
-# HOST — terminal A, in chapters/my-03
-./launch wad-ch-03 "$WARMUP"
+# HOST — terminal A, from the workshop repository
+./chapters/my-03/launch wad-ch-03 "$(pwd)/sample-app"
 ```
 
 This still calls `sbx env create`, transfers your committed app and starts its

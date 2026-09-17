@@ -28,11 +28,10 @@ decide what the agents should do.
 Prepare the next working directory on the host:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-04"
-cd "$WORKSHOP/chapters/my-04"
-cat ../my-03/sbxenv.yaml > sbxenv.yaml
-for file in chapter.env PROMPT.md launch team.tsv; do cat "../04-team/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-04"
+cat chapters/my-03/sbxenv.yaml > chapters/my-04/sbxenv.yaml
+for file in chapter.env PROMPT.md launch team.tsv; do cat "chapters/04-team/$file" > "chapters/my-04/$file"; done
+chmod +x chapters/my-04/launch
 ```
 
 You are carrying forward your recipe and adding this chapter's settings and team
@@ -43,13 +42,13 @@ configuration. In your editor, append to the existing `kits` list:
 ```
 
 Your recipe now combines ACR for guidance, Pi for another assistant and Herdr for
-sessions. Before starting it, edit `chapter.env`: change `MODE=team` to
+sessions. Before starting it, edit `chapters/my-04/chapter.env`: change `MODE=team` to
 `MODE=manual`. That asks our preparation helper to install everything and start the
 app, while leaving **you** to start the team in this first exercise.
 
 ## 2. Decide who should do what
 
-Open `team.tsv`. It has one tab-separated row for each role:
+Open `chapters/my-04/team.tsv`. It has one tab-separated row for each role:
 
 | Role | Responsibility | Initial harness |
 |---|---|---|
@@ -72,8 +71,8 @@ use the configured MCP gateway client.
 ## 3. Start the environment, then start the team
 
 ```bash
-# HOST — terminal A, in chapters/my-04
-./launch wad-ch-04 "$WARMUP"
+# HOST — terminal A, from the workshop repository
+./chapters/my-04/launch wad-ch-04 "$(pwd)/sample-app"
 ```
 
 The launcher uses your updated SBX recipe and starts the app as before. In terminal B:

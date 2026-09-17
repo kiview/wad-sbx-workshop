@@ -40,8 +40,7 @@ just changing its name in an assistant command.
 From the host:
 
 ```bash
-cd "$WORKSHOP/chapters/04-team"
-./launch-mixed my-mixed-team
+./chapters/04-team/launch-mixed my-mixed-team
 ```
 
 Open the short `launch-mixed` script first if you want to see its choices. It selects

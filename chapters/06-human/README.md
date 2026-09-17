@@ -11,16 +11,15 @@ continue with a requirement we supplied, rather than guessing one.
 On the host, carry your recipe and team forward:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-06"
-cd "$WORKSHOP/chapters/my-06"
-cat ../my-05/sbxenv.yaml > sbxenv.yaml
-cat ../my-05/team.tsv > team.tsv
-for file in chapter.env PROMPT.md launch; do cat "../06-human/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-06"
+cat chapters/my-05/sbxenv.yaml > chapters/my-06/sbxenv.yaml
+cat chapters/my-05/team.tsv > chapters/my-06/team.tsv
+for file in chapter.env PROMPT.md launch; do cat "chapters/06-human/$file" > "chapters/my-06/$file"; done
+chmod +x chapters/my-06/launch
 ```
 
 The copies keep the infrastructure and provider choices you assembled. Open
-`chapter.env`: the task is now `wad-103`. Open `PROMPT.md`: it asks the coordinator
+`chapter.env`: the task is now `wad-103`. Open `chapters/my-06/PROMPT.md`: it asks the coordinator
 to bring the ambiguous requirement to you **before** implementation.
 
 The question is what to do with the old resolution note when reopening an incident.
@@ -32,13 +31,13 @@ For this exercise, start from the supplied app checkpoint that already implement
 assignment and resolution:
 
 ```bash
-# HOST — terminal A, in chapters/my-06
-./launch wad-ch-06
+# HOST — terminal A, from the workshop repository
+./chapters/my-06/launch wad-ch-06
 ```
 
 This starts from the supplied assignment-and-resolution checkpoint. To continue
 from your own completed chapter-05 result, use
-`./launch wad-ch-06 "$WORKSHOP/.local/feature-app"` **instead of** that command.
+`./chapters/my-06/launch wad-ch-06 "./.local/feature-app"` **instead of** that command.
 Leave the launch terminal open.
 
 ## 2. Open the SSH doorway
@@ -155,7 +154,7 @@ When the team finishes and commits, save the app with:
 
 ```bash
 # HOST
-sbx cp wad-ch-06:/home/agent/work/app "$WORKSHOP/.local/reopen-app"
+sbx cp wad-ch-06:/home/agent/work/app "./.local/reopen-app"
 ```
 
 As in chapter 05, this retrieves the private source copy. End the launcher with

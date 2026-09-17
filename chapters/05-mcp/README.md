@@ -37,11 +37,11 @@ First see how a host command becomes an MCP server registration:
 
 ```bash
 # HOST
-sbx mcp add wad-beans-intro --command "$CONTROL/bin/beans-mcp" \
-  --args="--beans-bin=$CONTROL/bin/beans" \
-  --args="--beans-config=$CONTROL/beans/.beans.yml" \
-  --args="--beans-data=$CONTROL/beans/.beans" \
-  --dir "$CONTROL"
+sbx mcp add wad-beans-intro --command "$(pwd)/.local/chapters/bin/beans-mcp" \
+  --args="--beans-bin=$(pwd)/.local/chapters/bin/beans" \
+  --args="--beans-config=$(pwd)/.local/chapters/beans/.beans.yml" \
+  --args="--beans-data=$(pwd)/.local/chapters/beans/.beans" \
+  --dir "$(pwd)/.local/chapters"
 ```
 
 | Part | What it tells the gateway |
@@ -75,12 +75,11 @@ sbx mcp rm wad-beans-intro
 Prepare the chapter directory on the host:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-05"
-cd "$WORKSHOP/chapters/my-05"
-cat ../my-04/sbxenv.yaml > sbxenv.yaml
-cat ../my-04/team.tsv > team.tsv
-for file in chapter.env PROMPT.md launch; do cat "../05-mcp/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-05"
+cat chapters/my-04/sbxenv.yaml > chapters/my-05/sbxenv.yaml
+cat chapters/my-04/team.tsv > chapters/my-05/team.tsv
+for file in chapter.env PROMPT.md launch; do cat "chapters/05-mcp/$file" > "chapters/my-05/$file"; done
+chmod +x chapters/my-05/launch
 ```
 
 You are keeping your kits and model choices. The supplied chapter settings select
@@ -110,10 +109,10 @@ inspectable set of operations on practice data.
 Preview the updated environment and then launch it:
 
 ```bash
-# HOST — terminal A, in chapters/my-05
-sbx env plan sbxenv.yaml --env-arg name=wad-ch-05 \
-  --env-arg port=3106 --env-arg "control_dir=$CONTROL"
-./launch wad-ch-05 "$WARMUP"
+# HOST — terminal A, from the workshop repository
+sbx env plan chapters/my-05/sbxenv.yaml --env-arg name=wad-ch-05 \
+  --env-arg port=3106 --env-arg "control_dir=$(pwd)/.local/chapters"
+./chapters/my-05/launch wad-ch-05 "$(pwd)/sample-app"
 ```
 
 Look for the MCP server in the plan. The launcher then calls `sbx env create`,
@@ -206,7 +205,6 @@ and decide whether this sandbox should reach that particular download host:
 
 ```bash
 # HOST — terminal C, from the workshop repository
-source ./scripts/workshop-env.sh
 sbx policy allow network --sandbox wad-ch-05 cdn.playwright.dev
 ```
 
@@ -241,11 +239,11 @@ you do not need organization access to complete this local exercise. See
 When the team reports completion, open **<http://127.0.0.1:3106>** and try assigning
 and resolving an incident. Does the behavior match the task you read earlier?
 
-In host terminal C, where you sourced the workshop variables, read the same demo task again:
+In host terminal C, from the workshop repository, read the same demo task again:
 
 ```bash
-"$CONTROL/bin/beans" --config "$CONTROL/beans/.beans.yml" \
-  --beans-path "$CONTROL/beans/.beans" show wad-102
+"$(pwd)/.local/chapters/bin/beans" --config "$(pwd)/.local/chapters/beans/.beans.yml" \
+  --beans-path "$(pwd)/.local/chapters/beans/.beans" show wad-102
 ```
 
 This is the same task-reading command from chapter 02. This time it should include
@@ -268,7 +266,7 @@ the sandbox shell, then save the app from the host:
 
 ```bash
 # HOST — terminal B
-sbx cp wad-ch-05:/home/agent/work/app "$WORKSHOP/.local/feature-app"
+sbx cp wad-ch-05:/home/agent/work/app "./.local/feature-app"
 ```
 
 `sbx cp` copies from the named sandbox path to a new host directory. Unlike chapter

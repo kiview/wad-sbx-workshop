@@ -35,13 +35,13 @@ sbx exec -it wad-ch-05 bash
 ```
 
 This also starts it if it was stopped. In host terminal B, prepare a scratch folder
-and a message. Use the workshop setup script first if this is a new terminal.
+and a message. Run these commands from the workshop repository root.
 
 ```bash
 # HOST — terminal B
-mkdir -p "$WORKSHOP/.local/mount-demo"
-printf 'A message from the host\n' > "$WORKSHOP/.local/mount-demo/message.txt"
-sbx mount wad-ch-05 "$WORKSHOP/.local/mount-demo:/home/agent/mailbox:ro"
+mkdir -p "./.local/mount-demo"
+printf 'A message from the host\n' > "./.local/mount-demo/message.txt"
+sbx mount wad-ch-05 "$(pwd)/.local/mount-demo:/home/agent/mailbox:ro"
 ```
 
 `mkdir` and `printf` create the host data. `sbx mount` shares that directory at the
@@ -61,7 +61,7 @@ Back on the host, revoke the mount:
 
 ```bash
 # HOST — terminal B
-sbx umount wad-ch-05 "$WORKSHOP/.local/mount-demo:/home/agent/mailbox"
+sbx umount wad-ch-05 "$(pwd)/.local/mount-demo:/home/agent/mailbox"
 ```
 
 The spelling is `umount`; the arguments identify the same host directory and target

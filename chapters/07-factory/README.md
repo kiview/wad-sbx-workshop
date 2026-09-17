@@ -28,27 +28,26 @@ Your recipes and role instructions are the reusable part.
 On the host:
 
 ```bash
-mkdir -p "$WORKSHOP/chapters/my-07"
-cd "$WORKSHOP/chapters/my-07"
-cat ../my-06/sbxenv.yaml > sbxenv.yaml
-cat ../my-06/team.tsv > team.tsv
-for file in chapter.env PROMPT.md launch; do cat "../07-factory/$file" > "$file"; done
-chmod +x launch
+mkdir -p "./chapters/my-07"
+cat chapters/my-06/sbxenv.yaml > chapters/my-07/sbxenv.yaml
+cat chapters/my-06/team.tsv > chapters/my-07/team.tsv
+for file in chapter.env PROMPT.md launch; do cat "chapters/07-factory/$file" > "chapters/my-07/$file"; done
+chmod +x chapters/my-07/launch
 ```
 
-The recipe and team are copied unchanged. Open `chapter.env`: `TASK=wad-104` now
+The recipe and team are copied unchanged. Open `chapters/my-07/chapter.env`: `TASK=wad-104` now
 asks for a service filter, and the browser port is 3108. There is no new kit to learn.
 
 Continue from the chapter-06 application you saved:
 
 ```bash
-# HOST — terminal A, in chapters/my-07
-./launch wad-ch-07 "$WORKSHOP/.local/reopen-app"
+# HOST — terminal A, from the workshop repository
+./chapters/my-07/launch wad-ch-07 "./.local/reopen-app"
 ```
 
 The arguments choose a fresh sandbox name and your saved app, including the reopen
-behavior you just decided. If you stopped after chapter 05, use `"$WORKSHOP/.local/feature-app"`
-instead. If you did not save either result, run `./launch wad-ch-07` instead: it
+behavior you just decided. If you stopped after chapter 05, use `"./.local/feature-app"`
+instead. If you did not save either result, run `./chapters/my-07/launch wad-ch-07` instead: it
 starts from the supplied assignment/resolution checkpoint. Choose the starting
 point that actually exists from your exercise.
 
@@ -83,8 +82,8 @@ Exit the sandbox shell and read the host task:
 
 ```bash
 # HOST
-"$CONTROL/bin/beans" --config "$CONTROL/beans/.beans.yml" \
-  --beans-path "$CONTROL/beans/.beans" show wad-104
+"$(pwd)/.local/chapters/bin/beans" --config "$(pwd)/.local/chapters/beans/.beans.yml" \
+  --beans-path "$(pwd)/.local/chapters/beans/.beans" show wad-104
 ```
 
 The configuration and data arguments point to the same host backlog. Only the task
@@ -96,7 +95,7 @@ Once the team has committed its result, copy it out from your host terminal:
 
 ```bash
 # HOST
-sbx cp wad-ch-07:/home/agent/work/app "$WORKSHOP/.local/service-filter-app"
+sbx cp wad-ch-07:/home/agent/work/app "./.local/service-filter-app"
 ```
 
 This preserves the app in a new host directory. Keep your `chapters/my-*` recipes

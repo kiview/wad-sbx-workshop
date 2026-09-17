@@ -3,3 +3,5 @@ dist/
 chapters/my-*/
 *.log
 .DS_Store
+sample-app/
+host-only.txt

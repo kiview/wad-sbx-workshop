@@ -59,7 +59,7 @@ sbx stop wad-env-first
 
 This recipe has no workspace mount. That is deliberate for the factory: each job
 will receive its own copy of the app. Your chapter-1 edits remain in the host's
-`$WARMUP` directory.
+`sample-app/` directory.
 
 ## 2. Give the host a task list
 
@@ -80,8 +80,8 @@ Read the demo task from the first coding exercise:
 
 ```bash
 # HOST
-"$CONTROL/bin/beans" --config "$CONTROL/beans/.beans.yml" \
-  --beans-path "$CONTROL/beans/.beans" show wad-101
+"$(pwd)/.local/chapters/bin/beans" --config "$(pwd)/.local/chapters/beans/.beans.yml" \
+  --beans-path "$(pwd)/.local/chapters/beans/.beans" show wad-101
 ```
 
 `--config` selects our Beans configuration; `--beans-path` selects its task directory;
@@ -94,16 +94,15 @@ Create your chapter directory and copy the supplied starting files into it:
 ```bash
 # HOST — from the workshop repository
 mkdir -p chapters/my-02
-cd chapters/my-02
 for file in sbxenv.yaml chapter.env PROMPT.md launch; do
-  cat "../02-launcher/$file" > "$file"
+  cat "chapters/02-launcher/$file" > "chapters/my-02/$file"
 done
-chmod +x launch
+chmod +x chapters/my-02/launch
 ```
 
-`mkdir` creates your working directory; `cd` enters it. The loop copies the four
-reference files without changing the originals. `chmod` makes the launcher runnable.
-Open `sbxenv.yaml` in your editor. It is SBX's environment definition.
+`mkdir` creates your chapter directory. The loop copies the four reference files
+into it while keeping your terminal at the workshop root. `chmod` makes the launcher runnable.
+Open `chapters/my-02/sbxenv.yaml` in your editor. It is SBX's environment definition.
 `chapter.env` configures our workshop helper, `PROMPT.md` gives the agent the chapter's
 brief, and `launch` is the small entry point that connects those pieces.
 
@@ -114,19 +113,19 @@ connects a host browser port to the app's port 8080 inside SBX.
 Preview the full recipe before asking our helper to create it:
 
 ```bash
-# HOST — in chapters/my-02
-sbx env plan sbxenv.yaml \
+# HOST — from the workshop repository
+sbx env plan chapters/my-02/sbxenv.yaml \
   --env-arg name=wad-ch-02 \
   --env-arg port=3102 \
-  --env-arg "control_dir=$CONTROL"
+  --env-arg "control_dir=$(pwd)/.local/chapters"
 ```
 
 | Argument | Meaning |
 |---|---|
-| `sbxenv.yaml` | Read the environment recipe in this directory. |
+| `chapters/my-02/sbxenv.yaml` | Read your chapter recipe. |
 | `name=wad-ch-02` | Name the sandbox we will create. |
 | `port=3102` | Publish its app on host port 3102. |
-| `control_dir=$CONTROL` | Supply our host workshop-data path; MCP will use it later. This does not mount it. |
+| `control_dir=$(pwd)/.local/chapters` | Supply our host workshop-data path; MCP will use it later. This does not mount it. |
 
 Find those values in the plan. Planning has not started an app or occupied the port.
 You already created the tiny environment yourself; next we will let the launcher
@@ -134,7 +133,7 @@ perform creation and app delivery together.
 
 ## 4. Add the small amount of host glue
 
-Open `../support/launch`. Its job is to:
+Open `chapters/support/launch`. Its job is to:
 
 1. Read a Bean and export the committed app source.
 2. Create the environment through `sbx env create`, using the recipe's arguments.
@@ -145,7 +144,7 @@ the launch step below runs it for you.** It changes `plan` to `create` and adds
 `--auto-approve` to apply the recipe without another confirmation:
 
 ```text
-sbx env create sbxenv.yaml --env-arg name=wad-ch-02 --env-arg port=3102 --env-arg "control_dir=$CONTROL" --auto-approve
+sbx env create chapters/my-02/sbxenv.yaml --env-arg name=wad-ch-02 --env-arg port=3102 --env-arg "control_dir=$(pwd)/.local/chapters" --auto-approve
 ```
 
 That is the host harness: start an environment and give it the source and task.
@@ -155,8 +154,8 @@ this shared script. For this chapter, `TASK=wad-101` selects the warm-up.
 Now let the launcher create and prepare the task environment:
 
 ```bash
-# HOST — terminal A, in chapters/my-02
-./launch wad-ch-02 "$WARMUP"
+# HOST — terminal A, from the workshop repository
+./chapters/my-02/launch wad-ch-02 "$(pwd)/sample-app"
 ```
 
 The first argument names the sandbox. The second selects your committed app from
@@ -191,7 +190,7 @@ Exit Claude when done, end terminal A's waiting command with Ctrl-C, then stop:
 sbx stop wad-ch-02
 ```
 
-We only inspected the app here. Keep using the same `$WARMUP` source for the next
-chapters; no copying or new environment-variable settings are needed.
+We only inspected the app here. Keep using the same `sample-app/` source for the next
+chapters; no copying is needed.
 
 Next: [kits and ACR](../02.5-acr/README.md).

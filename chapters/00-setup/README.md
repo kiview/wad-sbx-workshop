@@ -82,26 +82,22 @@ It verifies their checksums. Nothing starts running yet.
 The sample application lives in `.local/app`, and the task-access tool in `dist/`.
 You do not need to build either tool or install Go.
 
-### Prepare this terminal with one command
+### Find your workshop files
 
-```bash
-# HOST — run this in each new terminal, from the workshop repository
-source ./scripts/workshop-env.sh
-```
+The download script also prepares `sample-app/`, your working copy for the coding
+exercises. It keeps an existing working copy if you run the download again.
 
-This sets the workshop paths and prepares your editable starter app in
-`.local/warmup-app`. It also creates `host-only.txt` beside that directory for the
-file-isolation exercise. It preserves an existing app working copy. We **source** the script
-so its variables remain available in your current terminal. Later instructions use three path variables:
-
-| Variable | Location it names |
+| Path from the workshop root | What it contains |
 |---|---|
-| `$WORKSHOP` | This workshop repository. |
-| `$WARMUP` | Your working copy of the sample app for the first coding exercise. |
-| `$CONTROL` | The workshop tools and demo-task backlog on your host. |
+| `sample-app/` | The application your agents will change. |
+| `host-only.txt` | A file outside the app, for the file-isolation exercise. |
+| `.local/app/` | The supplied application checkpoints. |
+| `.local/chapters/` | Tools and demo tasks created during host setup in chapter 02. |
 
-The script supplies these paths so you do not need to retype them. In each new host
-terminal, return to this repository and source the script again before using them.
+**Run all host commands from the workshop repository root**, unless a step says
+otherwise. In each new host terminal, open this same directory. There is no script
+to source and no workshop environment variables to set. Commands labelled
+**SANDBOX** run inside the sandbox instead.
 
 ## How to use the terminals and chapter directories
 

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Prepare the workshop's fixed working directory; preserve work when switching checkpoints.
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+[ $# -le 1 ] || { echo 'Usage: scripts/prepare-app.sh [checkpoint-tag]' >&2; exit 2; }
+app="$root/sample-app"
+ref="${1:-app-00-starter}"
+if [ $# -eq 0 ] && [ -e "$app" ]; then
+  echo 'Keeping your existing sample-app/.'
+  exit 0
+fi
+git -C "$root/.local/app" rev-parse --verify "$ref^{commit}" >/dev/null
+stage="$(mktemp -d "$root/.local/app-prepare.XXXXXX")"
+trap 'rm -rf "$stage"' EXIT
+git clone --quiet --no-hardlinks "$root/.local/app" "$stage/app"
+git -C "$stage/app" switch --quiet -c workshop "$ref"
+git -C "$stage/app" remote remove origin
+cat "$root/backlog/seed/wad-101--warm-up-active-filter-count.md" > "$stage/app/WORKSHOP-TASK.md"
+printf '\n/WORKSHOP-TASK.md\n' >> "$stage/app/.git/info/exclude"
+if [ -e "$app" ]; then
+  backup="$(mktemp -d "$root/.local/saved-app.XXXXXX")"
+  mv "$app" "$backup/sample-app"
+  printf 'Previous work saved in %s/sample-app\n' "$backup"
+fi
+mv "$stage/app" "$app"
+printf 'This file stays outside the mounted application.\n' > "$root/host-only.txt"
+printf 'Ready: sample-app/ at %s\n' "$ref"

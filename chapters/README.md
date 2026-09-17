@@ -54,17 +54,19 @@ flowchart LR
 
 ## Run a completed reference chapter (catch-up)
 
-From its directory, run `./launch`, then leave that terminal open and follow its README in a second host terminal. Setup is shared; recipes
+From the workshop root, run the chapter launcher, for example
+`./chapters/03-pi/launch`. Leave that terminal open and follow the chapter in a second
+host terminal, also at the workshop root. Setup is shared; recipes
 are separate. The launcher uses no workspace mounts. It transfers a pinned app fixture
 and supplied support into `~/work` in the sandbox. The Beans directory stays on the host.
-`./launch another-name` gives you a fresh sandbox without overwriting your previous run.
-Use `WORKSHOP_PORT=3200 ./launch another-name` if the normal port is occupied.
+`./chapters/03-pi/launch another-name` gives you a fresh sandbox without overwriting your previous run.
+Use `WORKSHOP_PORT=3200 ./chapters/03-pi/launch another-name` if the normal port is occupied.
 
-Chapter 1 mounts `$WARMUP`: its changes are already on the host. Later factory
+Chapter 1 mounts `sample-app/`: its changes are already on the host. Later factory
 chapters use isolated source snapshots. To carry one of those results forward,
 retrieve the sandbox's app with
 `sbx cp NAME:/home/agent/work/app ./saved-app`, then launch the next chapter with
-`./launch new-name /absolute/path/to/saved-app`.
+`./chapters/04-team/launch new-name ./saved-app`.
 This transfers committed source only. Commit inside SBX before copying. Don't execute
 agent-generated application code on the host.
 
