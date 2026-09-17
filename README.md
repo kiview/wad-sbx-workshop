@@ -83,7 +83,7 @@ Each chapter adds something the factory needs:
 | Use your own project | Supply another repository and task, let agents discover its setup, and review changes in your working copy. |
 
 We’ll also explore AI governance features and bleeding-edge additions to Docker
-Sandboxes, including live mounts and cloud execution.
+Sandboxes.
 
 ## About the tool choices
 
