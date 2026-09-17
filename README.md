@@ -57,8 +57,8 @@ Pi's provider access; [chapter 00](chapters/00-setup/README.md#2-have-an-agent-a
 explains the account requirements. Docker containers run inside SBX, so you do not
 need Docker Desktop or a host Docker engine.
 
-This repository and its downloadable materials currently require GitHub access.
-Installation and authentication are part of the workshop.
+Installation and model authentication are part of the workshop. The repository
+and sample materials are publicly downloadable.
 
 **[Start with chapter 00: setup →](chapters/00-setup/README.md)**
 

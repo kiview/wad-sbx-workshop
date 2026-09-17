@@ -14,10 +14,10 @@ esac
 asset="beans-mcp_${BEANS_MCP_VERSION}_${platform}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-gh release download materials-v0.1.0 --repo shelajev/wad-sbx-workshop \
-  --pattern incident-triage-board.bundle --pattern "$asset" \
-  --pattern SHA256SUMS --pattern LICENSE --pattern THIRD-PARTY-NOTICES.md \
-  --pattern release-manifest.json --dir "$work"
+release_url="https://github.com/shelajev/wad-sbx-workshop/releases/download/materials-v0.1.0"
+for name in incident-triage-board.bundle "$asset" SHA256SUMS LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
+  curl --fail --location --silent --show-error --retry 3 "$release_url/$name" --output "$work/$name"
+done
 for name in incident-triage-board.bundle "$asset" LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
   expected="$(awk -v n="$name" '$2 == n {print $1}' "$work/SHA256SUMS")"
   [ -n "$expected" ] || die "No published checksum for $name"

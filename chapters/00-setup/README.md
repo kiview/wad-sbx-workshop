@@ -18,13 +18,13 @@ Install the release-candidate channel and host utilities:
 
 ```bash
 # HOST
-brew install docker/tap/sbx@rc git jq coreutils gh
+brew install docker/tap/sbx@rc git jq coreutils
 sbx version
 sbx login
 ```
 
 `brew install` installs the host tools: SBX for environments, Git for source,
-jq for reading JSON, coreutils for checksums, and GitHub CLI for the private download.
+jq for reading JSON, and coreutils for checksums. Downloads use `curl`.
 `sbx version` tells you which CLI you are running. `sbx login` signs in to Docker;
 Claude's model-account login happens separately in chapter 1.
 
@@ -54,14 +54,13 @@ introduce Pi. Having a Claude subscription does not automatically give another
 assistant Anthropic API access. The team configuration supports separate providers,
 with a one-provider route when that is what you have available.
 
-## 3. Clone this private workshop and get its materials
+## 3. Clone the workshop and get its materials
 
-While the workshop is private, use GitHub CLI with an account that can access it.
-Run `gh auth login` if needed, then clone:
+Download the workshop repository, then enter its directory:
 
 ```bash
 # HOST
-gh repo clone shelajev/wad-sbx-workshop
+git clone https://github.com/shelajev/wad-sbx-workshop.git
 cd wad-sbx-workshop
 ```
 
