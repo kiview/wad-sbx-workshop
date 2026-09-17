@@ -1,8 +1,10 @@
 # 1. Let an agent build inside a sandbox
 
-**Goal:** open Claude Code in SBX, sign in, and ask it to run and change the incident
-board. The agent can run commands and containers freely inside its sandbox. Your
-application directory is shared with the host so you keep the resulting code.
+Our first step is to give one coding agent a place to work. We will launch Claude
+Code in SBX, sign in, and ask it to run and change the incident board. The app's
+source directory is shared with your laptop, so you can see its edits on the host.
+Commands and the database container run inside the sandbox. You will explore that
+boundary yourself before trusting an agent with a larger task.
 
 ## 1. Start Claude in your application
 
@@ -13,6 +15,9 @@ In the terminal you prepared in chapter 00:
 sbx run claude "$WARMUP" --name wad-manual --skills off --cpus 4 --memory 8g
 ```
 
+`claude` chooses the agent, `$WARMUP` chooses the host directory to share, and
+`--name` gives the environment a reusable name. `--skills off` keeps the exercise
+independent of host-installed skills; the final options give it four CPUs and 8 GB.
 This creates the sandbox and opens Claude Code in your app directory. Keep this
 terminal open while working. If you already created `wad-manual` with the older
 mountless instructions, use a fresh name such as `wad-manual-mounted` throughout
@@ -42,7 +47,8 @@ host shell:
 You are in the application directory, running as the sandbox user. Docker's server
 is inside SBX; you do not need a host Docker engine.
 
-Now check which files are shared:
+Before trying the next commands, predict which file the host will see and which
+one the sandbox can read. Then check which files are shared:
 
 ```text
 !printf 'Hello from SBX\n' > sandbox-message.txt
@@ -82,13 +88,25 @@ Watch the commands it chooses. This is the value of giving the agent a real work
 environment: it can install dependencies and start the containers it needs.
 If it asks where to run something, all app commands belong inside this sandbox.
 
-When it reports the app is ready, publish the web port from your second terminal:
+When it reports the app is ready, ask to see its health response. In Claude:
+
+```text
+!curl -fsS http://127.0.0.1:8080/healthz
+```
+
+This requests the application's health endpoint from inside SBX. Look for an OK
+status and the database being up. If it fails, ask Claude to finish startup before
+continuing. This checks local health; the server must also listen on `0.0.0.0`, as
+requested above, so the published port can reach it.
+
+Then publish the web port from your second host terminal:
 
 ```bash
 # HOST
 sbx ports wad-manual --publish 3101:8080
 ```
 
+`3101:8080` connects port 3101 on your host to port 8080 in this sandbox.
 Open **<http://127.0.0.1:3101>**. You should see the incident list and severity/status
 filters. This is our starting application:
 

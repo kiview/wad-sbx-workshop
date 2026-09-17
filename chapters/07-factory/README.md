@@ -1,99 +1,113 @@
-# 7. Take the factory with you
+# 7. Give the factory another job
 
-**Goal:** identify the working system you built, keep its output, and know how to
-give it another task. There is no new infrastructure component in this chapter.
+We have connected repeatable environments, coding guidance, agent roles, backlog
+tools and a way to ask a human for help. Now we will reuse that setup for another
+job: adding a service filter to the board. You will follow the team, try its change
+in the browser and bring the source home. This is open-lab time; if your earlier
+job is still running, follow that conversation and try its result first.
 
-## 1. Inspect the result of your main run
+## 1. Look at what you are taking away
 
-Use chapter 05's completed assignment/resolution run, or chapter 06's later result.
-You should be able to point to each of these:
+Think back through the things you configured:
 
-| Evidence | Where to look |
+| You wanted… | You added… |
 |---|---|
-| Working app behavior | Published browser port of the corresponding live sandbox |
-| Committed source | `git log -1` and `git status` inside `~/work/app` |
-| Real implementation/review conversation | Herdr terminal output and handoff files |
-| Host task write-back | `beans show wad-102` or `wad-103` on the host |
-| Reproducible infrastructure | Your latest `sbxenv.yaml`, `chapter.env`, `team.tsv` |
-| Reusable guidance | Pinned ACR kit and coding-policy package |
+| An agent able to run commands and containers | SBX |
+| The same environment for another task | sbxenv and a small launcher |
+| Shared coding guidance | ACR kit and a policy package |
+| A choice of assistant and model | Pi and explicit role configuration |
+| Agents to pass work to each other | Herdr sessions and file handoffs |
+| Access to a host task without a host-directory mount | Beans MCP through the gateway |
+| A way to answer a missing requirement | SSH and a recorded decision |
 
-Retrieve the source before stopping its sandbox, as in chapter 05. Keep the copied
-Git repository and your `chapters/my-*` recipes. The factory does not need a host
-acceptance gate, merge bot or task-closing system. You can add independent
-verification later if your real workflow calls for it.
+Your task note, changed app and saved source show what this particular run produced.
+Your recipes and role instructions are the reusable part.
 
-## 2. Try another job during open lab
+## 2. Change the job, keep the environment
 
-This step is for the remaining workshop time, not a prerequisite for claiming that
-the earlier MCP feature run worked. It reuses exactly the same infrastructure.
+On the host:
 
 ```bash
-# HOST
 mkdir -p "$WORKSHOP/chapters/my-07"
 cd "$WORKSHOP/chapters/my-07"
 cat ../my-06/sbxenv.yaml > sbxenv.yaml
 cat ../my-06/team.tsv > team.tsv
-for f in chapter.env PROMPT.md launch; do cat "../07-factory/$f" > "$f"; done
+for file in chapter.env PROMPT.md launch; do cat "../07-factory/$file" > "$file"; done
 chmod +x launch
-cat chapter.env
 ```
 
-`TASK=wad-104` selects a service filter. The default app fixture is the known
-assignment/resolution solution. To continue your own chapter-05 implementation:
+The recipe and team are copied unchanged. Open `chapter.env`: `TASK=wad-104` now
+asks for a service filter, and the browser port is 3108. There is no new kit to learn.
+
+Continue from the chapter-06 application you saved:
 
 ```bash
-# HOST — terminal A
-./launch wad-ch-07 "$WORKSHOP/.local/feature-app"
+# HOST — terminal A, in chapters/my-07
+./launch wad-ch-07 "$WORKSHOP/.local/reopen-app"
 ```
 
-Use `.local/reopen-app` instead if you saved your chapter-06 result there. If you
-need the supplied fixture, run `./launch wad-ch-07` without overrides. Choose one
-path, not all three. The starting source must contain the features the task assumes.
+The arguments choose a fresh sandbox name and your saved app, including the reopen
+behavior you just decided. If you stopped after chapter 05, use `"$WORKSHOP/.local/feature-app"`
+instead. If you did not save either result, run `./launch wad-ch-07` instead: it
+starts from the supplied assignment/resolution checkpoint. Choose the starting
+point that actually exists from your exercise.
 
-In terminal B, wait for role initialization, then submit once:
+## 3. Hand over the next task
+
+In your second host terminal, enter the sandbox:
+
+```bash
+sbx exec -it wad-ch-07 bash
+```
+
+Inside, look at the configured job and submit it after the roles are ready:
+
+```bash
+# SANDBOX shell
+cd ~/work
+cat task-id
+./bin/assign
+```
+
+The task ID should be `wad-104`. `assign` uses the same handoff as before. Follow the
+team at your own pace with `herdr agent read coordinator --lines 40`, then read the
+developer and QA conversations. Notice what changes and what stays the same when
+the task changes: the coordinator still routes, the developer still implements,
+and QA still reviews.
+
+When they finish, open <http://127.0.0.1:3108>. Try filtering by `checkout-api`. Does
+the result count follow the visible incidents? Do combined filters behave as you
+would expect? Use the app before reading the agents' conclusion.
+
+Exit the sandbox shell and read the host task:
 
 ```bash
 # HOST
-sbx exec wad-ch-07 /home/agent/work/bin/assign
-sbx exec wad-ch-07 herdr agent list
 "$CONTROL/bin/beans" --config "$CONTROL/beans/.beans.yml" \
   --beans-path "$CONTROL/beans/.beans" show wad-104
 ```
 
-When the team reports completion, open <http://127.0.0.1:3108>, filter by
-`checkout-api`, and inspect the result count. Compare the Bean note's commit with
-the commit in SBX and inspect QA's findings. Save the result:
+The configuration and data arguments point to the same host backlog. Only the task
+ID changed. Read the result note and compare it with what you tried in the browser.
 
-```bash
-# HOST — after the team finishes and commits
-sbx exec wad-ch-07 git -C /home/agent/work/app status --short
-sbx cp wad-ch-07:/home/agent/work/app "$WORKSHOP/.local/service-filter-app"
-```
+## 4. Keep the source and decide what to adapt
 
-## 3. Adapt it to your own application
-
-Replace the app source, startup helper and task contracts. Keep responsibilities
-clear: the host chooses a task and starts an environment; the sandbox team
-implements/reviews; MCP supplies deliberately scoped host tools; a human answers
-questions. Edit roles/models in `team.tsv` and skills in the policy package without
-rewriting the launcher. Add tools through small kits when they are needed.
-
-## 4. Stop without losing the work
-
-Copy committed source before cleanup. End each launch terminal with Ctrl-C, then
-stop only your named sandbox, for example:
+Once the team has committed its result, copy it out from your host terminal:
 
 ```bash
 # HOST
-sbx stop wad-ch-07
+sbx cp wad-ch-07:/home/agent/work/app "$WORKSHOP/.local/service-filter-app"
 ```
 
-A stop preserves sandbox files but terminates live processes. It is not a saved
-agent-session checkpoint. Keep the host backlog and copied repositories. Do not
-remove unrelated sandboxes or reset global policies during workshop cleanup.
+This preserves the app in a new host directory. Keep your `chapters/my-*` recipes
+as well. End the launch terminal with Ctrl-C and run `sbx stop wad-ch-07` when done.
+Stopping preserves files, but it ends the running processes; it is not a pause of
+a live model conversation.
 
-**You now have:** repeatable sandbox creation, container execution, shared skills,
-configurable agent roles, team coordination, a scoped host-task bridge and a human
-intervention path.
+For your own project, start with one change: replace the sample app and its startup
+helper, or write a task for a different feature. Decide which guidance belongs in
+skills, which tools belong in kits, and which host operations deserve an MCP tool.
+You can add independent acceptance checks if your workflow needs them; they do not
+have to be hidden inside the little host launcher.
 
-Next: [presenter extensions](../08-presenter/README.md), time permitting.
+Next: [explore what else SBX can do](../08-presenter/README.md), with the presenter.

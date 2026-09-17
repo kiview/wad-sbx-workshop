@@ -1,19 +1,23 @@
-# 2.5. Give every fresh worker the same guidance
+# 2.5. Give a fresh worker your team's guidance
 
-**Goal:** understand a mixin kit by making a tiny one, then add ACR and a small
-versioned coding policy. We want fresh agents to know our conventions without
-pasting the same instructions into every conversation.
+A fresh sandbox now has our code and task, but the agent still needs our team's
+coding guidance. We will try a tiny kit to learn how kits add tools to an
+environment, then use the ACR kit to install a package manager for agent guidance.
+Through ACR, we will give Claude a versioned coding policy and review skill, use
+that skill together, and only then automate its installation.
 
-## 1. Try a kit small enough to understand completely
+## 1. Make a kit whose effect you can see
 
-A [kit](https://docs.docker.com/ai/sandboxes/customize/kits/) describes setup and
-access requirements. A **mixin** adds something to a sandbox's base configuration.
-Create this kit on the host:
+A [mixin kit](https://docs.docker.com/ai/sandboxes/customize/kits/) adds setup and
+access requirements to a sandbox. On the host, make a directory for yours:
 
 ```bash
-# HOST
 mkdir -p "$WORKSHOP/chapters/my-hello-kit"
-cat > "$WORKSHOP/chapters/my-hello-kit/spec.yaml" <<'YAML'
+```
+
+In your editor, create `chapters/my-hello-kit/spec.yaml` with this content:
+
+```yaml
 schemaVersion: "2"
 kind: mixin
 name: workshop-hello
@@ -24,109 +28,141 @@ setup:
         mkdir -p "$HOME/.local/bin"
         printf '#!/bin/sh\necho "Hello from a kit"\n' > "$HOME/.local/bin/workshop-hello"
         chmod +x "$HOME/.local/bin/workshop-hello"
-YAML
-sbx kit validate "$WORKSHOP/chapters/my-hello-kit"
-sbx create claude --name wad-kit-first --skills off --cpus 4 --memory 8g \
-  --kit "$WORKSHOP/chapters/my-hello-kit"
-sbx exec wad-kit-first /home/agent/.local/bin/workshop-hello
-sbx stop wad-kit-first
 ```
 
-Expected: `Hello from a kit`. The install command runs **inside** the sandbox as
-`agent`, not on your host. This kit needs no extra network access. Its completed
-reference is in `chapters/examples/hello-kit`.
+Read it from the outside in. `kind: mixin` means “add this to an environment.”
+`setup.install` contains commands SBX will run **inside** that environment as the
+`agent` user. The three shell lines create a tool directory, write a tiny program
+and make it executable. `$HOME` here is the sandbox user's home, not your host home.
 
-## 2. Replace the toy capability with ACR
-
-Our real requirement is a policy plus a reusable review skill. The
-[ACR kit](https://github.com/shelajev/acr-sbx-kit) installs the tool that distributes
-these. The [small workshop policy](https://github.com/shelajev/coding-policy/tree/workshop)
-contains four rules and one review skill; it does not bring an orchestration system.
-
-Build on your previous recipe, adding a `kits` section:
+Ask SBX to validate your kit, then create a practice environment with it:
 
 ```bash
 # HOST
+sbx kit validate "$WORKSHOP/chapters/my-hello-kit"
+sbx create claude --name wad-kit-first --skills off --cpus 4 --memory 8g \
+  --kit "$WORKSHOP/chapters/my-hello-kit"
+sbx run --name wad-kit-first
+```
+
+Validation checks the kit definition. `--kit` adds it to the built-in Claude
+configuration. `create` prepares this environment without an app mount; `run`
+opens the agent in it. In Claude, try the installed command directly:
+
+```text
+!$HOME/.local/bin/workshop-hello
+```
+
+You should see `Hello from a kit`. You did not install the command after entering
+the sandbox: its creation recipe did. That is what we want for real tooling too.
+Exit Claude, then run `sbx stop wad-kit-first` on the host.
+
+## 2. Choose the real capability to distribute
+
+The [ACR kit](https://github.com/shelajev/acr-sbx-kit) installs ACR.
+Our [small policy package](https://github.com/shelajev/coding-policy/tree/workshop)
+contains four coding rules and one `review-change` skill. Open the policy and read
+the rules before giving them to the agent. Which would matter for the warm-up?
+
+The distinction matters: **the kit makes ACR available; the policy package supplies
+the content ACR installs**. ACR is not our team orchestrator.
+
+Prepare your next recipe on the host:
+
+```bash
 mkdir -p "$WORKSHOP/chapters/my-025"
 cd "$WORKSHOP/chapters/my-025"
-for f in sbxenv.yaml chapter.env PROMPT.md launch; do cat "../my-02/$f" > "$f"; done
+cat ../my-02/sbxenv.yaml > sbxenv.yaml
+for file in chapter.env PROMPT.md launch; do cat "../02.5-acr/$file" > "$file"; done
 chmod +x launch
-cat >> sbxenv.yaml <<'YAML'
+```
+
+This carries your environment forward and brings in this chapter's settings.
+In your editor, add the following top-level section to `sbxenv.yaml`:
+
+```yaml
 kits:
   - source: "git+https://github.com/shelajev/acr-sbx-kit.git#ref=f446b95bccabd879912db174c190ff09377b7c7b"
-YAML
-# Start with this chapter's settings, but install the policy manually first.
-sed 's/USE_ACR=1/USE_ACR=0/' ../02.5-acr/chapter.env > chapter.env
-cat ../02.5-acr/PROMPT.md > PROMPT.md
+```
+
+Instead of a local directory, `source` now names a Git repository at a fixed commit.
+SBX fetches that kit when creating the sandbox. Open `chapter.env` and change
+`USE_ACR=1` to `USE_ACR=0` for this first run. That keeps our helper from installing
+the policy automatically—we want to do it ourselves and see what it produces.
+
+Preview your composition:
+
+```bash
 sbx env plan sbxenv.yaml --env-arg name=wad-ch-02-5 \
   --env-arg port=3103 --env-arg "control_dir=$CONTROL"
 ```
 
-A Git source pins the kit so new environments get the same tool setup. The kit
-installs ACR; it is not itself the coding-policy package. Launch the recipe:
+Find the kit in the plan. These are the recipe arguments introduced in chapter 02.
+Then start it using the same app-delivery wrapper:
 
 ```bash
 # HOST — terminal A, in chapters/my-025
 ./launch wad-ch-02-5 "$WARMUP"
 ```
 
-In terminal B:
+Leave this terminal open. In terminal B, join the agent:
 
 ```bash
 # HOST
 sbx run --name wad-ch-02-5
 ```
 
-Now ask Claude:
+## 3. Install the policy together with Claude
 
-> Work in /home/agent/work/app. Install our coding policy using the commands below,
-> then show me agents.yaml, AGENTS.md and the installed review-change SKILL.md.
+Tell Claude:
 
-Give it these commands to run **inside the sandbox**:
+> Work in /home/agent/work/app. We installed ACR through a kit. Run `acr --version`
+> and explain what guidance this project currently has, without changing the app.
 
-```bash
-cd /home/agent/work/app
-acr --version
+Paste the following **as a message to Claude**, not into a Bash shell. It asks the
+agent to execute the commands; you do not need the `!` prefix used for direct shell mode.
+
+```text
+Work in /home/agent/work/app. Please run these commands to install our coding policy,
+then show me the generated guidance files:
+
 env -u GH_TOKEN -u GITHUB_TOKEN acr install \
   github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d \
   --agent claude-code --agent codex --freshness none --non-interactive
 env -u GH_TOKEN -u GITHUB_TOKEN acr realize
 ```
 
-Here `env -u` **removes** variables for this one command. `GH_TOKEN` and
-`GITHUB_TOKEN` normally supply GitHub credentials. This public policy needs neither;
-removing them prevents ACR from mistaking an SBX proxy placeholder for a real GitHub
-token. No tokens are being supplied, and no stored credentials are deleted.
+| Part | Why we use it |
+|---|---|
+| `env -u GH_TOKEN -u GITHUB_TOKEN` | Removes GitHub token variables for this command. This public download needs no token, and a proxy placeholder could otherwise be mistaken for one. |
+| `acr install github:...@...` | Selects the policy package at a fixed commit. |
+| `--agent claude-code --agent codex` | Requests guidance files for those agent formats. It does not install the assistants. |
+| `--freshness none` | Keeps this exercise on the selected policy revision without freshness checks. |
+| `--non-interactive` | Uses the choices supplied in the command without another questionnaire. |
+| `acr realize` | Materializes the agent-facing guidance in the project. |
 
-`install` records the package and selected agent targets; `realize` produces the
-agent-facing files.
+No real token is passed by those `env` options, and no stored credential is deleted.
+Ask Claude to show you `agents.yaml`, `AGENTS.md` and the installed review skill.
+Notice the difference between the package declaration and the files an agent reads.
 
-## 3. Use the skill, then make installation repeatable
+## 4. Use the guidance, then automate its installation
 
-In the same Claude conversation, ask:
+Continue the conversation:
 
-> Read AGENTS.md and the installed review-change skill. Use that skill to review
-> the warm-up against ~/work/task.json. Do not modify the app. Report the rules
-> applied and concrete findings. Do not install a browser for this exercise.
+> Read AGENTS.md and the installed review-change skill. Use the skill to review
+> the warm-up against ~/work/task.json. Explain a concrete finding and which rule
+> informed it. Do not modify the application.
 
-Look for the policy and skill being read; files merely existing is not evidence
-of their use. Exit Claude when done.
+Follow up on one finding. Can you connect the advice to the rule you read earlier?
+The point of sharing a skill is to influence how the agent works, not simply to
+place another file in the repository.
 
-For subsequent fresh launches, enable the supplied in-sandbox preparation step:
+Exit Claude. On the host, edit `chapters/my-025/chapter.env` back to `USE_ACR=1`. Open
+`chapters/support/bin/prepare` and find the `acr install` and `acr realize` lines.
+On future launches, that helper performs the installation you just tried manually.
+The current sandbox already has its policy; editing this file affects future runs.
 
-```bash
-# HOST — terminal B
-cat "$WORKSHOP/chapters/02.5-acr/chapter.env" \
-  > "$WORKSHOP/chapters/my-025/chapter.env"
-cat "$WORKSHOP/chapters/support/bin/prepare"
-```
+End terminal A's hold with Ctrl-C, then run `sbx stop wad-ch-02-5`. We can now give a
+fresh worker our guidance. Next we will use it with a different assistant.
 
-`USE_ACR=1` makes preparation run the commands you just tried. It takes effect on
-the **next** launch. We have changed a local configuration file, not a running
-script. The current sandbox already has its manually installed policy.
-
-**Result:** the recipe installs a kit and preparation installs the pinned skills
-package. End the terminal A hold and `sbx stop wad-ch-02-5`. Next we reuse this
-guidance in a second assistant.
-
-Next: [Pi and model configuration](../03-pi/README.md).
+Next: [bring in Pi](../03-pi/README.md).

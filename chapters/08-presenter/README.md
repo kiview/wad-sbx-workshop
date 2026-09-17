@@ -1,60 +1,85 @@
-# Presenter extensions: where the factory can go next
+# Presenter extensions: explore the boundaries you can change
 
-These demonstrations belong in the final open-lab slot. Attendees already have the
-factory; they do not need cloud access, an enrolled organization or a second-sandbox
-communication protocol to finish. Rehearse these separately before presenting them.
+You now have a small factory you can adapt to your own project. To finish, the
+presenter will show a few further possibilities: inspecting a sandbox, adding and
+removing live mounts, running in the cloud and applying organization governance.
+These are demonstrations rather than more setup for everyone. We will connect each
+one to a question about the factory you built and explain what extra access or
+configuration it needs.
 
-## Inspect the environment you built
+## Look at the environment as a whole
+
+From the host, choose a chapter sandbox that still exists:
 
 ```bash
-# HOST — choose one of your existing chapter sandboxes
 sbx inspect wad-ch-05
 ```
 
-Point to the assembled kits, published ports, mounts, access configuration and
-sessions. This is useful for explaining what exists and troubleshooting it. It is
-not a transcript of every agent action or proof that a task succeeded. Review the
-output before projecting it; it can identify local paths and account configuration.
+Ask the audience to find the kits, published port and workspace/mount configuration.
+Connect each item to the chapter where it was introduced. This is useful when
+someone asks “what did we actually create?” or “why can this agent reach that?”
+Review the output before projecting it because it can identify host paths and
+account configuration. It describes the environment, not the success of a task.
 
-## Runtime mount and unmount
+## Grant access to a directory while the sandbox exists
 
-The opening chapter deliberately omitted host mounts. Now demonstrate granting and
-revoking access to one new, non-sensitive directory. Keep the target sandbox's
-launcher/session open. On the host:
+Chapter 1 shared an app directory when creating the sandbox. The later factory
+recipes use private snapshots. Now suppose one of those workers needs an additional
+reference file: can we grant that access without rebuilding its environment?
+
+Open a shell in the selected sandbox and leave it open in terminal A:
 
 ```bash
-# HOST
+# HOST — terminal A
+sbx exec -it wad-ch-05 bash
+```
+
+This also starts it if it was stopped. In host terminal B, prepare a scratch folder
+and a message. Use the workshop setup script first if this is a new terminal.
+
+```bash
+# HOST — terminal B
 mkdir -p "$WORKSHOP/.local/mount-demo"
 printf 'A message from the host\n' > "$WORKSHOP/.local/mount-demo/message.txt"
 sbx mount wad-ch-05 "$WORKSHOP/.local/mount-demo:/home/agent/mailbox:ro"
-sbx exec wad-ch-05 cat /home/agent/mailbox/message.txt
-sbx exec wad-ch-05 sh -c 'echo changed > /home/agent/mailbox/message.txt'
 ```
 
-Expected: the read succeeds; the write fails because this mount is read-only.
-Then revoke it:
+`mkdir` and `printf` create the host data. `sbx mount` shares that directory at the
+specified path inside the sandbox. The trailing `ro` makes it read-only. Ask the
+audience to predict which of these operations will work, then try them in terminal A:
 
 ```bash
-# HOST — CLI spelling is umount
-sbx umount wad-ch-05 "$WORKSHOP/.local/mount-demo:/home/agent/mailbox"
-sbx exec wad-ch-05 test ! -e /home/agent/mailbox/message.txt
-echo $?
+# SANDBOX shell — terminal A
+cat /home/agent/mailbox/message.txt
+echo changed > /home/agent/mailbox/message.txt
 ```
 
-Expected: `0`, confirming that file is no longer visible there. The host file is
-still present. Use the same host path and target when unmounting.
+Reading should succeed and writing should fail. You have granted one kind of access
+to one directory, without giving the agent write access to it.
 
-**Extension idea, not a new workshop component:** mount one scratch directory into
-two sandboxes, and one can write a message the other reads. A shared directory is
-only transport. A real protocol still needs ownership, atomic publication, message
-IDs and wakeups. Our factory already has those concerns handled inside one sandbox
-by files plus Herdr; do not add a second protocol during this session. A read-write
-mount deliberately gives the sandbox write access to that host directory.
+Back on the host, revoke the mount:
 
-## Cloud, on the presenter's account
+```bash
+# HOST — terminal B
+sbx umount wad-ch-05 "$WORKSHOP/.local/mount-demo:/home/agent/mailbox"
+```
 
-Before the session, confirm account access, supported commands and costs. Show the
-current supported surface with:
+The spelling is `umount`; the arguments identify the same host directory and target
+path. Try `cat /home/agent/mailbox/message.txt` again in the sandbox. The host file
+still exists, but it is no longer visible through that mount.
+
+A possible extension is to mount the same scratch directory into two sandboxes so
+one can leave files for another. Discuss the idea rather than implementing a second
+messaging system now. Sharing storage does not by itself define who reads a message,
+when an agent wakes up, or how two writers coordinate. Those are the concerns we
+already addressed inside the factory with files and Herdr.
+
+Exit the inspection shell and stop the demo sandbox when finished.
+
+## Run somewhere other than your laptop
+
+Use a prepared cloud sandbox on an account with access. The question for the audience
+is what changes when the compute is remote and what remains familiar.
 
 ```bash
 # HOST
@@ -62,30 +87,41 @@ sbx --cloud --help
 sbx --cloud ls
 ```
 
-Use an already prepared cloud demo sandbox, substituting its name below:
+`--cloud` selects the cloud backend. The help output shows which commands that
+backend currently supports; the list shows your remote environments. Select the
+prepared demo by its name and open its agent:
 
 ```bash
-# HOST — replace CLOUD_DEMO_NAME with your prepared cloud sandbox name
-sbx --cloud exec CLOUD_DEMO_NAME bash -lc 'whoami; pwd'
-sbx --cloud ports CLOUD_DEMO_NAME
+# HOST — replace CLOUD_DEMO_NAME with that actual name
+sbx --cloud run --name CLOUD_DEMO_NAME
 ```
 
-If it has a prepared service listening on 8080, publish it with
-`sbx --cloud ports CLOUD_DEMO_NAME --publish 8080` and open the URL returned by the
-cloud control plane. Cloud port publishing takes the sandbox port, not the local
-`3106:8080` binding syntax. Do not assume that local host paths or the local Beans
-stdio process become reachable from a cloud sandbox. Moving the full factory's
-host integration to cloud is a separate design exercise.
+Talk to the agent and ask it to inspect the prepared app/environment. Exit when you
+are ready to show its service. If your prepared service listens on port 8080:
 
-This is a prepared presenter demo, not a verified chapter-05 cloud migration.
-Remove the demo's exposed port when done with
-`sbx --cloud ports CLOUD_DEMO_NAME --unpublish 8080`, and stop the cloud sandbox
-according to the account's supported lifecycle commands.
+```bash
+sbx --cloud ports CLOUD_DEMO_NAME --publish 8080
+```
 
-## Organization governance
+Open the URL returned by the cloud service. Unlike a local `3106:8080` mapping,
+cloud publishing names a sandbox port and returns a remote URL.
 
-On an enrolled presenter account, show a preconfigured named-tool rule, make the
-corresponding harmless allowed/denied call, and inspect the actual evidence.
-Identify what is enforced centrally versus what the local adapter itself restricts.
-Do not ask attendees to enroll an organization during the workshop. If access is
-unavailable, explain the extension without fabricating a live result.
+Ask what would happen to our **host-local Beans server** in this arrangement.
+It does not automatically move with the sandbox or become remotely reachable.
+Moving the whole factory requires designing that connection; this demo only shows
+the remote execution environment.
+
+Remove the published demo port afterward with
+`sbx --cloud ports CLOUD_DEMO_NAME --unpublish 8080`, and stop the cloud environment
+using the account's supported lifecycle commands. Attendees do not need cloud access
+to finish the workshop.
+
+## Add an organization's rules
+
+On an enrolled presenter account, show a prepared rule for a named tool. Ask the
+agent to make a harmless allowed call and a harmless denied one. Read the response
+together: what was blocked, who owns that rule, and where could an operator change it?
+
+Relate this to the earlier local network decision and the adapter's limited tool
+surface. They are different places to control access. If organization access is
+unavailable, discuss the design without presenting a simulated result as live.

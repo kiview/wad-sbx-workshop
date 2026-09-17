@@ -1,11 +1,10 @@
 # 2. Make starting a task repeatable
 
-**Goal:** describe the environment in a file, then connect a host task to it.
-In chapter 1 you started Claude and explained how to run the app. For the next job,
-we want to create the same environment and give the agent a written task.
-
-We will build this in two steps: **an SBX recipe**, then **a small script that
-combines that recipe with our app and task tracker**.
+Running Claude by hand lets us see what happens. Now we want to start another task
+without repeating the setup. We will first put sandbox settings in an `sbxenv.yaml`
+recipe and run it with SBX. Then we will add Beans for written tasks and a small
+host launcher that applies the recipe, supplies a task and delivers a private copy
+of the app. You will see the SBX command before using the wrapper.
 
 ## 1. Run the smallest SBX recipe
 
@@ -104,50 +103,50 @@ chmod +x launch
 
 `mkdir` creates your working directory; `cd` enters it. The loop copies the four
 reference files without changing the originals. `chmod` makes the launcher runnable.
-Open `sbxenv.yaml` in your editor.
+Open `sbxenv.yaml` in your editor. It is SBX's environment definition.
+`chapter.env` configures our workshop helper, `PROMPT.md` gives the agent the chapter's
+brief, and `launch` is the small entry point that connects those pieces.
 
 Compared with the tiny example, this recipe adds **arguments** and a **port mapping**.
 Arguments let the same file create differently named sandboxes. The port mapping
 connects a host browser port to the app's port 8080 inside SBX.
 
-**This is the actual SBX command that creates our workshop environment. Run it:**
+Preview the full recipe before asking our helper to create it:
 
 ```bash
 # HOST — in chapters/my-02
-sbx env create sbxenv.yaml \
-  --env-arg name=wad-recipe-preview \
+sbx env plan sbxenv.yaml \
+  --env-arg name=wad-ch-02 \
   --env-arg port=3102 \
-  --env-arg "control_dir=$CONTROL" \
-  --auto-approve
+  --env-arg "control_dir=$CONTROL"
 ```
 
 | Argument | Meaning |
 |---|---|
 | `sbxenv.yaml` | Read the environment recipe in this directory. |
-| `name=wad-recipe-preview` | Name the sandbox we are creating. |
+| `name=wad-ch-02` | Name the sandbox we will create. |
 | `port=3102` | Publish its app on host port 3102. |
 | `control_dir=$CONTROL` | Supply our host workshop-data path; MCP will use it later. This does not mount it. |
-| `--auto-approve` | Apply the recipe without another confirmation prompt. |
 
-You have created the environment. The recipe alone has not delivered our app or
-Bean, so there is no board to open yet. Remove this empty practice environment
-before the launcher creates the real task environment:
-
-```bash
-# HOST — confirm removal of this practice sandbox when prompted
-sbx rm wad-recipe-preview
-```
-
-`sbx env create` creates a new sandbox; it refuses an existing name. This cleanup
-also releases port 3102 for the actual run.
+Find those values in the plan. Planning has not started an app or occupied the port.
+You already created the tiny environment yourself; next we will let the launcher
+perform creation and app delivery together.
 
 ## 4. Add the small amount of host glue
 
 Open `../support/launch`. Its job is to:
 
 1. Read a Bean and export the committed app source.
-2. Run the **same `sbx env create` command above**, using the recipe's arguments.
+2. Create the environment through `sbx env create`, using the recipe's arguments.
 3. Send the app and task into SBX and run the supplied app-startup helper there.
+
+For reference, this is the SBX command the script executes for this job. **Read it;
+the launch step below runs it for you.** It changes `plan` to `create` and adds
+`--auto-approve` to apply the recipe without another confirmation:
+
+```text
+sbx env create sbxenv.yaml --env-arg name=wad-ch-02 --env-arg port=3102 --env-arg "control_dir=$CONTROL" --auto-approve
+```
 
 That is the host harness. It does not implement tasks or coordinate the agents.
 `chapter.env` picks the task and default port; `launch` is a short entry point to

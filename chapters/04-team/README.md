@@ -1,106 +1,170 @@
-# 4. Turn assistants into a team
+# 4. Let the assistants hand work to each other
 
-**Goal:** make the agents coordinate inside SBX. Herdr owns their sessions; role
-briefs define responsibilities; file messages carry durable assignments and reviews.
-The host remains a launcher.
+We have two assistants, but someone still has to give them roles and pass work
+between them. We will add [Herdr](https://github.com/herdrdev/herdr) through a kit
+to manage their sessions. Our file-message helpers preserve assignments and replies;
+a separate notification wakes the recipient. You will start the team manually,
+send a small request and follow its handoff before letting the launcher start
+future teams for you.
 
-## 1. Add the orchestration kit
+## 1. Give the environment a session manager
 
-Read the [Herdr kit](../kits/herdr/spec.yaml), then extend your existing recipe:
+Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it records a pinned executable,
+its installation and download access. This mixin supplies Herdr; it does not itself
+decide what the agents should do.
+
+Prepare the next working directory on the host:
 
 ```bash
-# HOST
-cat "$WORKSHOP/chapters/kits/herdr/spec.yaml"
-sbx kit validate "$WORKSHOP/chapters/kits/herdr"
 mkdir -p "$WORKSHOP/chapters/my-04"
 cd "$WORKSHOP/chapters/my-04"
 cat ../my-03/sbxenv.yaml > sbxenv.yaml
-cat >> sbxenv.yaml <<'YAML'
-  - source: ../kits/herdr
-YAML
-for f in chapter.env PROMPT.md launch team.tsv; do cat "../04-team/$f" > "$f"; done
+for file in chapter.env PROMPT.md launch team.tsv; do cat "../04-team/$file" > "$file"; done
 chmod +x launch
-cat team.tsv
-cat ../support/roles/coordinator.md ../support/roles/developer.md ../support/roles/qa.md
-cat ../support/bin/start-team
 ```
 
-Edit `team.tsv` now if chapter 03 required a different available model. Preserve
-its tab-separated columns. The baseline is Pi coordinator, Claude developer and
-Claude QA. Do not swap the developer to a harness without gateway configuration:
-that role will access MCP in the next chapter. The mixed-provider demonstration is
-linked from chapter 03 and can repeat this chapter's short relay exercise.
+You are carrying forward your recipe and adding this chapter's settings and team
+configuration. In your editor, append to the existing `kits` list:
 
-`start-team` starts a headless Herdr server, creates sessions, launches the configured
-harnesses and gives each its role. This supplied setup avoids making a terminal
-supervisor the focus of the workshop. Read the short script before running it.
-The three kits now contribute distinct capabilities: ACR, Pi and Herdr.
+```yaml
+  - source: ../kits/herdr
+```
 
-## 2. Start the three real sessions
+Your recipe now combines ACR for guidance, Pi for another assistant and Herdr for
+sessions. Before starting it, edit `chapter.env`: change `MODE=team` to
+`MODE=manual`. That asks our preparation helper to install everything and start the
+app, while leaving **you** to start the team in this first exercise.
+
+## 2. Decide who should do what
+
+Open `team.tsv`. It has one tab-separated row for each role:
+
+| Role | Responsibility | Initial harness |
+|---|---|---|
+| coordinator | Route work and questions; wait for replies | Pi |
+| developer | Change the app and report what was tested | Claude Code |
+| qa | Review the developer's change and request corrections | Claude Code |
+
+Put the working provider/model choice from chapter 03 into the Pi row. The default
+uses Anthropic for all roles. The [mixed-provider variation](../03-pi/MIXED-MODELS.md)
+lets you use separate providers when available.
+
+Now read the short files in `chapters/support/roles/`. Notice that the coordinator
+is told not to edit app code. QA reviews a particular commit, so it knows which
+version the developer is asking it to review. These responsibilities come from
+instructions, not from the model's name.
+
+Keep Claude as the developer for the main path: in the next chapter that role will
+use the configured MCP gateway client.
+
+## 3. Start the environment, then start the team
 
 ```bash
 # HOST — terminal A, in chapters/my-04
 ./launch wad-ch-04 "$WARMUP"
 ```
 
-In terminal B, check <http://127.0.0.1:3105>. Wait for all three agents to acknowledge
-their roles, then do the relay below. This is deliberately a small task: proving
-communication should not require implementing a whole feature.
-
-## Inspect and exercise coordination
+The launcher uses your updated SBX recipe and starts the app as before. In terminal B:
 
 ```bash
-# HOST — terminal B
-cd "$WORKSHOP/chapters/my-04"
-cat team.tsv
-cat ../kits/herdr/spec.yaml
-cat ../support/roles/*.md
-sbx exec wad-ch-04 herdr agent list
+# HOST
 sbx exec -it wad-ch-04 bash
 ```
 
-Inside the sandbox, export the shared location and send a small relay exercise:
+You now have a shell inside SBX. Set the message directory and look at the supplied
+team-startup helper:
 
 ```bash
-# SANDBOX
+# SANDBOX shell
+cd ~/work
 export FACTORY_DIR="$HOME/work/factory"
-handoff send --to coordinator --from human --kind assignment --body \
-  'Handoff exercise only: ask developer to read the app package.json and send its test script names back; ask QA to confirm those names. Report both replies to human. Do not implement the feature yet.'
-crew-notify coordinator
-handoff inbox human --json
+cat bin/start-team
+```
+
+The export tells the message tools where this team's shared files live. Preparation
+also made `handoff` and `crew-notify` available on the sandbox's command path, so we
+can use them by name. In the
+script, find `herdr server`, `herdr agent start` and `herdr agent prompt`. They start
+the session service, launch each configured harness, and deliver its role brief.
+The remaining lines connect those operations to the rows of `team.tsv`.
+
+Run the helper from the directory you are in:
+
+```bash
+./bin/start-team
+```
+
+Then look at the sessions:
+
+```bash
+herdr agent list
 herdr agent read coordinator --lines 30
 ```
 
-Allow model turns to finish before inspecting the result. The expected evidence is
-three real sessions plus messages from developer and QA, not merely a green Herdr
-status. `handoff` writes durable files; `crew-notify` wakes the recipient through
-Herdr. Codex status detection can be unreliable, so inspect files and terminal output.
+`list` shows who is present. `read` shows the end of an agent's actual terminal, so
+you can see its role acknowledgment. Look at `developer` and `qa` the same way.
+Wait for their introductions before giving them work.
 
-To start the real feature using the pre-MCP task snapshot, run `assign` in the sandbox.
-You can instead leave this as a quick coordination exercise and start the feature in
-chapter 05. Do not wait for the whole feature twice.
+## 4. Leave a message, then wake its recipient
 
-If a notification reports that the recipient is busy, inspect its terminal, let it
-finish, then retry `crew-notify ROLE`. If delivery was unconfirmed, inspect before
-sending another prompt. The helper retains a claim to avoid duplicate prompts.
+We will ask the team a small question before entrusting it with a feature. In your
+sandbox shell, leave this message for the coordinator:
 
-**Result:** a Pi coordinator routes work between developer and QA. The policy supplies
-coding guidance; Herdr supplies sessions; files supply durable handoffs.
-**Next limitation:** tasks are still copied into the sandbox, with no host write-back.
+```bash
+handoff send --to coordinator --from human --kind assignment --body \
+  'Ask developer to list the test scripts in package.json. Ask QA to check that list. Send me the combined answer. Do not change the app.'
+```
 
+The options say who receives it, who sent it, what kind of message it is, and its
+text. This command writes a message file. See it waiting:
 
-## Check the end state and move on
+```bash
+handoff inbox coordinator --json
+```
 
-In the human inbox, find the developer's script names and QA's confirmation. If
-needed, inspect each agent's terminal with `herdr agent read ROLE --lines 40`.
-`handoff inbox` observes messages; `handoff read` consumes pending deliveries.
-A file message and a wakeup are both needed: writing a file does not wake a model.
-These are shell tools; a harness's unrelated built-in messaging feature will not
-reach this team.
+The inbox is a view of the stored messages. The agent has not been interrupted just
+because a file appeared. Now notify it through Herdr:
 
-Do not start `assign` as well as the relay unless you want an extra feature run.
-Chapter 05 is where we start the main assignment/resolution feature. Once the relay
-is complete, leave the app unchanged and stop this sandbox after ending its hold:
-`sbx stop wad-ch-04`.
+```bash
+crew-notify coordinator
+```
 
-Next: [MCP and access controls](../05-mcp/README.md).
+That is the second half of delivery: give the existing session a turn so it can
+read its inbox. The coordinator will use these same helpers to contact developer
+and QA. Herdr handles the sessions; files carry the conversation.
+
+## 5. Follow the conversation
+
+Take a moment to read what the coordinator is doing:
+
+```bash
+herdr agent read coordinator --lines 40
+```
+
+Try the same command with `developer` and `qa`. You should be able to follow the
+request, the developer's answer, and QA checking it. When they have replied:
+
+```bash
+handoff inbox human --json
+```
+
+Read the result. Did the coordinator combine the answers? Did QA actually inspect
+the app? If a session is still working, give it time. A busy status alone tells you
+less than its conversation. Codex statuses can also be unreliable, which is one
+reason we keep the messages in files.
+
+If a wakeup says the agent is busy, let it finish before retrying. If delivery is
+uncertain, read the terminal before sending anything again. You do not need to
+understand the helper's retry machinery to understand the two-step interaction.
+
+## 6. Make this repeatable
+
+Exit the sandbox shell. On the host, edit your `chapters/my-04/chapter.env` back to
+`MODE=team`. On a future launch, preparation will call `start-team` for you. You
+have just performed the step that is being automated.
+
+We have a team that can discuss work. It still receives a copied task and cannot
+write a result back to the host backlog. Next we will connect that boundary with MCP.
+End the launcher with Ctrl-C, then run `sbx stop wad-ch-04` on the host.
+
+Next: [connect the host backlog](../05-mcp/README.md).

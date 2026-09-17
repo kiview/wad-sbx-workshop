@@ -5,8 +5,9 @@ The same incident triage board supplies the UI, API and PostgreSQL workload thro
 Docker's components are the lesson; the small host script is plumbing.
 
 Start with [chapter 00](00-setup/README.md), then follow each chapter's README
-from the top. Each explains the goal, the new concept, the commands to get there,
-and the result to observe. Host and sandbox commands are labelled.
+from the top. Each starts from a problem in the previous setup, introduces a capability, and
+lets you use it before making it automatic. Read the explanation around each
+command and take time to explore the result. Host and sandbox commands are labelled.
 
 The numbered directories are **completed infrastructure reference assemblies**.
 The walkthrough builds editable `chapters/my-*` recipes incrementally from the

@@ -1,14 +1,10 @@
 # 0. Get ready to build a software factory
 
-**Goal:** have standalone Docker Sandboxes and a usable coding-agent account, then
-download the sample application. We install the other tools when we introduce
-them. This workshop assembles Docker technologies; it does not install a single
-product called “Docker's Agentic Platform.”
-
-The application is an incident triage board: a browser UI, an API and PostgreSQL.
-Our agents build it. They are not incident-response agents operating production.
-The factory ends with a team implementing a task, reviewing it and writing a note
-back to the host backlog.
+We start by installing Docker Sandboxes and preparing access to a coding agent. We
+also download the incident triage board: a working browser UI, API and PostgreSQL
+database that our agents will extend. By the end of setup, you will have the source,
+a task backlog and the workshop tools on your laptop. Docker Desktop is not needed;
+the database container will run inside a sandbox.
 
 ## 1. Install the host prerequisites
 
@@ -26,6 +22,11 @@ brew install docker/tap/sbx@rc git jq coreutils gh
 sbx version
 sbx login
 ```
+
+`brew install` installs the host tools: SBX for environments, Git for source,
+jq for reading JSON, coreutils for checksums, and GitHub CLI for the private download.
+`sbx version` tells you which CLI you are running. `sbx login` signs in to Docker;
+Claude's model-account login happens separately in chapter 1.
 
 If SBX is already installed, check which executable `command -v sbx` selects before
 changing it. This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
@@ -87,10 +88,18 @@ source ./scripts/workshop-env.sh
 ```
 
 This sets the workshop paths and prepares your editable starter app in
-`.local/warmup-app`. It preserves an existing working copy. We **source** the script
-so its variables remain available in your current terminal. Later instructions use
-`$WORKSHOP` for this repository and `$WARMUP` for your working app; you do not need
-to type their full paths or copy a list of exports.
+`.local/warmup-app`. It also creates `host-only.txt` beside that directory for the
+file-isolation exercise. It preserves an existing app working copy. We **source** the script
+so its variables remain available in your current terminal. Later instructions use three path variables:
+
+| Variable | Location it names |
+|---|---|
+| `$WORKSHOP` | This workshop repository. |
+| `$WARMUP` | Your editable starter app, or the selected completed warm-up. |
+| `$CONTROL` | The host's workshop tools and Beans backlog. |
+
+The script supplies these paths so you do not need to retype them. In each new host
+terminal, return to this repository and source the script again before using them.
 
 ## How to use the terminals and chapter directories
 
@@ -98,6 +107,11 @@ A code block says **HOST**, **CLAUDE**, or **SANDBOX**. Do not run application c
 host. Keep one terminal connected to each live sandbox; use another for host
 commands. In this SBX build, background processes alone do not prevent idle stop.
 The later launcher deliberately stays in the foreground for this reason.
+
+At the start of a chapter, pause to name the problem the new component solves.
+After an exercise, look at its effect before running the next command. Commands
+marked CLAUDE or PI go into that assistant's interface; a sandbox shell is a normal
+terminal inside the environment. `exit` leaves that shell and returns to the host.
 
 You will create `chapters/my-*` directories to edit recipes. Keep them directly
 under `chapters/`, because the supplied launch wrapper and relative kit paths
