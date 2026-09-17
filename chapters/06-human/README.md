@@ -1,12 +1,13 @@
 # 6. Join the team when it needs a human decision
 
-Our team can implement a clear task. What should it do when two interpretations
-are reasonable? We will ask it to add reopening a resolved incident, but leave one
-product choice for us: should reopening clear the current resolution note?
+The next task is to let users reopen a resolved incident. There's a product
+decision to make first: should reopening clear the current resolution note or keep
+it? You'll tell the team to ask you before it starts implementing that behavior.
 
-The coordinator will ask. We will connect through SSH, answer in ordinary language,
-and watch the same team continue. SSH provides access to the running environment;
-our role instructions tell the team when to involve a human.
+When the question arrives, you'll join the running sandbox through SSH and send
+your answer to the coordinator. The same team should then continue using your
+decision. SSH gets you into the environment; the role instructions and messages
+handle the conversation.
 
 ## 1. Give it a task with a real choice
 
@@ -53,9 +54,10 @@ sbx setup ssh
 ssh wad-ch-06.sbx
 ```
 
-`setup ssh` configures the host's SSH integration. The second command opens another
-shell in this exact sandbox, not a new agent team. You do not need to find an IP
-address or install an SSH server in the app. See [SBX integrations](https://docs.docker.com/ai/sandboxes/integrations/).
+`setup ssh` configures the host's SSH integration. The second command opens an
+interactive shell in the running sandbox, alongside the existing agent sessions.
+You do not need to find an IP address or install an SSH server in the app.
+See [SBX integrations](https://docs.docker.com/ai/sandboxes/integrations/).
 
 Your HOST tab is temporarily an SSH session. Inside it:
 
@@ -63,8 +65,8 @@ Your HOST tab is temporarily an SSH session. Inside it:
 crew status
 ```
 
-You should see the same task and product question. The message tools know where
-the current team's files live; reconnecting does not require exports or new setup.
+You should see the same task and product question as in your SANDBOX tab.
+The message tools in this SSH shell read the existing team's files.
 
 ## 3. Give a product answer
 
@@ -75,9 +77,9 @@ crew reply "Clear resolutionNote when reopening. An open incident has no current
 crew watch
 ```
 
-You supply the decision and its reason. The helper delivers it to the coordinator;
-the coordinator records the task-specific decision and passes it to the developer
-and QA. You do not need to assemble a JSON message or know a run's attempt number.
+`crew reply` sends your answer to the coordinator, which records the decision
+for this task and passes it to the developer and QA. Both should now work from
+the same interpretation of reopening.
 
 Look for the choice being used in implementation and review. When the team reports
 that the app is ready, open <http://127.0.0.1:3102> and reopen a resolved incident.
@@ -99,7 +101,8 @@ sbx mcp rm wad-ch-06-beans
 
 The second command removes this sandbox's host MCP registration.
 
-A product decision can travel through the team's conversation. An access-policy
-change still requires the operator's host controls. You have now used both.
+For the next project, you can answer product questions through the same team
+conversation. If an agent needs more network access, use the host policy controls
+from chapter 05.
 
 Next: [use the factory on another project](../07-factory/README.md).

@@ -1,10 +1,9 @@
 # 1. Let an agent build inside a sandbox
 
-Our first step is to give one coding agent a place to work. We will launch Claude
-Code in SBX, sign in, and ask it to run and change the sample application. The app's
-source directory is shared with your laptop, so you can see its edits on the host.
-Commands and the database container run inside the sandbox. You will explore that
-boundary yourself before trusting an agent with a larger task.
+Start by opening Claude Code in a sandbox. You'll ask it to run the sample app,
+then give it a small coding task. First, try a few shell commands to see what it
+can access: the source directory is shared with your laptop, so edits appear in
+your editor, while commands and the database container run inside SBX.
 
 ## 1. Start Claude in your application
 
@@ -28,8 +27,8 @@ and follow the browser login. You can also type `/login` inside Claude. Existing
 SBX credentials may mean you are already authenticated. See
 [Claude authentication in SBX](https://docs.docker.com/ai/sandboxes/agents/claude-code/).
 
-The built-in Claude configuration starts with permission prompts bypassed—the
-“YOLO” mode for this exercise. SBX still enforces its own access boundaries.
+The built-in Claude configuration starts with permission prompts bypassed (the
+“YOLO” mode for this exercise). SBX still enforces its own access boundaries.
 
 ## 2. Try shell commands without leaving Claude
 
@@ -92,9 +91,9 @@ Give Claude this prompt:
 > Make the app available on 0.0.0.0:8080 and leave it running. Verify it responds.
 > Do not change application code yet. Explain what you started and why.
 
-Watch the commands it chooses. This is the value of giving the agent a real working
-environment: it can install dependencies and start the containers it needs.
-If it asks where to run something, all app commands belong inside this sandbox.
+Watch how Claude gets the app running: which dependencies does it install, and
+which containers does it start? Ask it to explain a command you don't recognize.
+If it asks where to run something, keep all app commands inside this sandbox.
 
 When it reports the app is ready, ask to see its health response. In Claude:
 
@@ -154,8 +153,9 @@ In HOST, remove the sandbox:
 sbx rm wad-manual
 ```
 
-**Result:** an agent ran the app and its database inside SBX, changed the code, and
-left the result in your working directory. Next we make launching a task repeatable.
+The sandbox is gone, but you can still open the changed code and its Git commit
+in `sample-app/`. In the next chapter, you'll give a new sandbox that same project
+and a written task.
 
 ## Skip to the completed chapter
 

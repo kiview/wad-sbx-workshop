@@ -1,8 +1,9 @@
 # 5. Give the team controlled access to host tools
 
-Our agents can work together, but their task is a snapshot. We want them to read
-current requirements from Beans and write a result note back to it. The backlog
-stays on the host; mounting the application does not expose those files.
+Each sandbox has started with a copy of its task. We want the team to read the
+current requirements from Beans and leave a result note when it finishes, so it
+needs access to the backlog on your host. That backlog sits outside the mounted
+application directory. In this chapter, you'll connect it through MCP.
 
 [MCP](https://modelcontextprotocol.io/docs/getting-started/intro) lets an assistant
 discover and call a server's named tools. [SBX's MCP gateway](https://docs.docker.com/ai/sandboxes/mcp-gateway/)
@@ -55,10 +56,11 @@ These fields describe both registration and attachment. You can also register an
 load servers with `sbx mcp add` and `sbx mcp load`; recording them here makes the
 connection part of every new factory environment.
 
-This is a trust decision. The MCP adapter is a host program with your host user's
-permissions. We trust its implementation to limit its tools to the selected
-backlog. The gateway supplies the connection; the adapter supplies that narrow
-interface. A protocol does not automatically make a powerful tool safe.
+The MCP adapter runs on your host with your user's permissions. Before starting
+it, look again at the tools it exposes: we rely on the adapter's code to restrict
+requests to those operations on the selected backlog. The gateway connects Claude
+to the program. Each request must still be handled within the limits the adapter
+defines.
 
 ## 3. Tell the team when to use its new tools
 
@@ -88,9 +90,10 @@ Ask the developer to append a Beans result note with the change, commit and actu
 check outcomes. Leave the task open. Send the human a summary and how to try it.
 ```
 
-The environment provides access. This prompt explains **when and why** the team
-should use it. Claude is our gateway-connected developer; Pi can ask that role for
-the requirements through the communication system we just built.
+With the server in the environment file, Claude can call its tools. The prompt
+gives the team a reason to use them: fetch this task, do the work and write back
+the result. Claude is the developer connected to the gateway, so Pi asks it for
+the requirements through the messages you tried in chapter 04.
 
 In HOST, preview the connection:
 
@@ -121,7 +124,7 @@ to inspect the gateway connection, then ask:
 
 Watch the tool calls. You should see the assignment-and-resolution requirements
 stored in the host backlog. Ask what information is required to resolve an incident.
-This proves the complete connection, rather than just a server registration.
+You should be able to match Claude's answer to the task in your host backlog.
 
 Type `/exit` to return to the SANDBOX shell. Now give the job to the team:
 
@@ -164,8 +167,8 @@ crew watch
 
 Redirects may introduce another destination; inspect the actual request before
 allowing it. If the original download already succeeds, the current policy permits
-it—there is no failure to fix. The lesson is that the agent reports a need and the
-host operator decides whether to grant it.
+it, so you can continue to the kit definition below. When a request is blocked,
+the agent can explain what it needs; you decide on the host whether to allow it.
 
 For a requirement you want every future worker to have, create
 `factory/browser-access/spec.yaml` in your editor:

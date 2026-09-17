@@ -1,10 +1,12 @@
 # Demonstration: different models for different responsibilities
 
-The role table separates responsibility from assistant, provider and model.
-**Use `gemini-3.8-flash` for every Gemini role in this workshop.** The
-presenter can show Pi using Gemini for coordination, Claude for development and
-Codex for review. Attendees still configure the roles even if all their working
-sessions use one provider.
+Repeat the team's request-and-review exchange with a different combination:
+Pi using Gemini to coordinate, Claude doing development and Codex reviewing.
+Keep the same roles and messages so the audience can follow a familiar task
+across the new assistants and providers.
+
+Use **`gemini-3.8-flash`** for every Gemini role in this workshop. Attendees configure
+each role even when their available accounts mean using one provider for all of them.
 
 ## What changes, and what does not?
 
@@ -52,10 +54,10 @@ crew ask "Ask developer to list the project's test commands, ask QA to check the
 crew watch
 ```
 
-Show `crew logs coordinator` and `crew logs qa` to identify the actual assistants.
-The observable result is a cross-provider handoff, not merely three model names
-in a file. If a provider lacks quota, explain the unavailable route and use the
-working team configuration; do not present a failed call as a successful model swap.
+Use `crew logs coordinator` and `crew logs qa` to show which assistants answered.
+Follow the replies back to the coordinator's combined answer so the audience can
+see the exchange across providers. If a provider is out of quota, explain which
+call failed and continue with the working team configuration.
 
 Exit the shell when finished. In HOST:
 

@@ -1,11 +1,12 @@
 # 4. Turn assistants into a team
 
-We can run assistants with shared guidance. Now we need them to divide work and
-communicate. [Herdr](https://github.com/herdrdev/herdr) manages their terminal
-sessions. Small file messages carry assignments and replies; a notification gives
-the recipient a turn to read them.
+So far, you've talked to each assistant yourself. For a team to work, someone
+needs to pass the developer's result to QA and bring questions back to you.
+We'll give those responsibilities to separate agent sessions managed by
+[Herdr](https://github.com/herdrdev/herdr). They exchange assignments and replies
+through files, with a notification to tell the recipient it has a message.
 
-We will see one message travel through the team before trusting it with a feature.
+You'll follow a small request through the team before asking it to change code.
 
 ## 1. Add session management
 
@@ -100,8 +101,8 @@ crew logs coordinator
 
 `list` should show coordinator, developer and QA. `crew logs` shows an assistant's
 terminal, useful for understanding its introduction or diagnosing a login problem.
-The `crew` helper is our small human interface to this team's messages; it is not
-an SBX command. `crew help` lists its operations.
+The workshop's `crew` helper lets you send messages to the team and read its
+replies. Use `crew help` to see its commands.
 
 ## 4. See a file message and its wakeup
 
@@ -117,9 +118,9 @@ coordinator. `watch` displays readable messages as the team passes work between
 roles. Expect a developer answer, a QA check and a combined reply to you. Press
 Ctrl-C to return to the shell; the agents continue running.
 
-If the conversation stays quiet, we want to distinguish an assistant still
-working from one waiting for login or failing a model request. Press Ctrl-C to
-leave the message view, then inspect the coordinator in the SANDBOX shell:
+If no reply appears, the assistant might still be working, waiting for login or
+having trouble reaching its model. Press Ctrl-C to leave the message view, then
+inspect the coordinator in the SANDBOX shell:
 
 ```bash
 crew status
@@ -135,21 +136,23 @@ instructor that output and your role table. Once the role can continue, use
 `crew watch` to follow replies. A quiet message view alone does not tell us whether
 an assistant has stopped.
 
-What happened underneath? These are the two operations the helper combines,
-shown as a **reference**, not another request to send:
+The helper saves the message and notifies the coordinator using these two
+operations. This block is a **reference** to help you read the helper; you have
+already sent the request with `crew ask`:
 
 ```text
 handoff send --to coordinator --from human --kind question --body "Your request"
 crew-notify coordinator
 ```
 
-A file is durable: the next role can read the exact request. But writing a file
-alone does not give a running assistant a new turn. Herdr's notification does that.
-This is also why explicit messages matter when a harness's busy/idle status is
-unreliable. You can inspect `~/work/factory/messages/` inside SBX to see the stored
-conversation. Agents use `crew send ROLE "message"` to combine storage and notification too.
-Future exercises use `crew` so neither you nor a model needs to remember a separate
-wakeup after every message.
+Saving the request in a file lets the recipient read it later, but the assistant
+might keep working without noticing that file. The notification gives it a turn
+to read the message. We can then follow the handoff through the stored messages,
+even when an assistant's busy/idle status is unreliable.
+
+Open `~/work/factory/messages/` inside SBX to see the stored conversation. Agents
+use `crew send ROLE "message"` to save and deliver their replies together, just as
+you use `crew ask`. We'll keep using these helpers for the rest of the workshop.
 
 ## 5. Make startup repeatable
 

@@ -1,11 +1,11 @@
 # Presenter extensions: explore the boundaries you can change
 
-You now have a small factory you can adapt to your own project. To finish, the
-presenter will show a few further possibilities: inspecting a sandbox, adding and
-removing live mounts, running in the cloud and applying organization governance.
-These are demonstrations rather than more setup for everyone. We will connect each
-one to a question about the factory you built and explain what extra access or
-configuration it needs.
+These notes give the presenter a choice of demonstrations to explore with the
+audience: sandbox inspection, live mounts, cloud execution and organization
+governance. Choose the ones you have prepared and have access to. For each,
+start with a question about the factory the attendees built and show what changes.
+Attendees can follow along on screen; completing the workshop doesn't depend on
+setting these up on their laptops.
 
 ## Look at the environment as a whole
 
@@ -65,8 +65,8 @@ cat /home/agent/mailbox/message.txt
 echo changed > /home/agent/mailbox/message.txt
 ```
 
-Reading should succeed and writing should fail. You have granted one kind of access
-to one directory, without giving the agent write access to it.
+Reading should succeed and writing should fail. Ask the audience which part of
+the mount command explains the difference before pointing back to `ro`.
 
 Back on the host, revoke the mount:
 

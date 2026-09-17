@@ -1,11 +1,11 @@
 # 2.5. Give every worker the same tools and guidance
 
-Our worker has the application and its task. How does it learn our team's coding
-conventions? We could paste them into every conversation. Instead, we will install
-a versioned policy and review skill, then make that preparation repeatable.
+The next agent can see your code and task, but it also needs to know how your team
+expects code to be written and reviewed. You'll give it a versioned coding policy
+and a review skill, then use them to review the warm-up change.
 
-There are two building blocks: an SBX **kit** prepares the environment; **ACR**
-installs the guidance the agent reads in a project.
+We'll start with a small SBX kit so you can see how installation works. Then you'll
+use a kit to install ACR, the tool that puts the policy and skill into your project.
 
 ## 1. Try a kit small enough to understand completely
 
@@ -49,8 +49,8 @@ sbx run claude "$(pwd)/sample-app" --name wad-kit-first --skills off --cpus 4 --
 !workshop-hello
 ```
 
-Expect `Hello from a kit`. The tool was installed during creation, not by your
-conversation. Exit with `/exit`. In HOST:
+Expect `Hello from a kit`. The tool was installed during sandbox creation as part
+of the kit setup. Exit with `/exit`. In HOST:
 
 ```bash
 sbx rm wad-kit-first
@@ -63,8 +63,8 @@ for agent guidance. Our [workshop policy package](https://github.com/shelajev/co
 contains four coding rules and a `review-change` skill. Open that package and read
 a rule: how would it help someone review the change you just made?
 
-The kit installs the **tool**. The package supplies the **rules and skill**. This
-separation lets you update shared guidance without inventing a new sandbox image.
+With ACR installed by the kit, you can choose which policy package to add to a
+project. Updating that shared guidance doesn't require building a new sandbox image.
 
 Add this section to `factory/sbxenv.yaml`:
 
@@ -129,8 +129,9 @@ mounted project. Ask Claude:
 > against ~/work/task.json. Explain one rule you checked and the code that supports
 > your conclusion. Report a problem only if you find one. Do not edit application code.
 
-Discuss its answer. Shared guidance is useful when you can connect the advice to
-an actual rule and change, not just because a file was installed.
+Look at the rule and the code Claude cites. Can you follow how it reached its
+conclusion? Ask it to explain if the connection is unclear; this is your chance
+to see how the installed guidance affects a review.
 
 ## 4. Make guidance part of future preparation
 

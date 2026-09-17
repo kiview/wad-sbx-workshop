@@ -1,9 +1,9 @@
 # 3. Give the factory a choice of assistant
 
-A coding team needs roles, but those roles need not all use the same assistant or
-model. SBX is a useful place to try those choices: a new assistant and its tools can
-live inside the sandbox instead of becoming another installation on your laptop.
-You can give it a real project, constrain its access and see how it behaves.
+You have a project and shared coding guidance ready for an agent. Let's try a
+different assistant with that same setup. SBX gives you somewhere to install its
+tools and try its models while controlling what it can access. The assistant's
+installation stays inside the sandbox; it can still work on your real project.
 
 We will install [Pi](https://pi.dev), an open-source coding assistant, and
 use it to explore the same application and coding policy. You can run the model
@@ -11,8 +11,8 @@ conversation with Anthropic API access, or follow a partner's or the presenter's
 conversation if you have only a Claude subscription. Everyone will compose the kit
 and configure team roles in the next chapter.
 
-We will keep the project, task and guidance the same, so the comparison is about
-how the assistant works rather than about a different starting point.
+Keeping the same project, task and guidance gives you a familiar change to discuss
+with Pi. You can compare how it finds the relevant code and explains its review.
 
 This introduces three separate choices: the assistant program, its model provider,
 and the particular model. Later we will assign those choices to team roles.
@@ -129,21 +129,22 @@ have changed the assistant while keeping the application, task and guidance.
 
 ## 5. Use this environment to try another model
 
-Pi separates the assistant interface from the model behind it. Type `/model` and
-look for another **Anthropic model your API account can use**. Select it if you
-have access; if you have only one usable model, keep it and continue. This exercise
-changes the model while keeping the provider connection you just configured.
+Keep Pi open and type `/model`. Look for another **Anthropic model your API
+account can use**, so you can try changing models with the provider connection
+already configured. Select it if you have access. If only one model is available
+to you, keep it and continue.
 
-Trying a different provider also requires its credential binding and network
-access in SBX. Choosing a model name alone does not supply those. The
-[mixed-provider demonstration](MIXED-MODELS.md) shows that additional configuration
-with Pi on Google, Claude and Codex. Its Gemini model is **`gemini-3.8-flash`**.
+To try a different provider, you'll also need to configure its credential binding
+and network access in SBX. Selecting a model name won't do that setup for you.
+You can see the additional configuration in the
+[mixed-provider demonstration](MIXED-MODELS.md), which runs Pi on Google with
+**`gemini-3.8-flash`**, alongside Claude and Codex.
 
-Compare something concrete: does the answer identify the right code, apply the
-shared rule, and support its conclusion? A different style of answer is not by
-itself evidence of a better review. For a clean comparison, start a fresh conversation
-with `/new` before repeating the request; that keeps the first answer out of context.
-Keep the working provider/model ID you want for your team.
+Before repeating the request, start a fresh conversation with `/new` so the first
+answer doesn't influence the next one. Then compare the reviews: does each answer
+find the relevant code, apply the shared rule and explain its conclusion? Judge
+those details as well as how easy the answer is to read. Keep the working
+provider/model ID you want to use for your team.
 
 This is a reusable way to evaluate tools: put an assistant's installation and
 network requirements in a kit, create its sandbox, give it a bounded task, and

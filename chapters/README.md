@@ -1,8 +1,8 @@
 # From one agent to a software factory
 
-Build one environment a capability at a time. Keep the same application in
-`sample-app/` and the evolving configuration in `factory/`. Each chapter explains
-what is missing, introduces a building block, and lets you use it.
+Start with one agent and add what it needs for the next task. You'll keep working
+in `sample-app/` throughout, with the sandbox and team configuration in `factory/`.
+Each chapter builds on the previous one, so you can see what each new tool changes.
 
 See [the factory you will build](../README.md#what-you-will-build) for the diagram
 connecting the host, sandbox, agent team and task backlog.
@@ -27,8 +27,8 @@ endorsements. [About the tool choices](../README.md#about-the-tool-choices).
 
 **HOST** stays at the workshop repository root. **SANDBOX** starts there too, then
 connects to the agent or shell. Keep that connection open while agents and services
-run: a sandbox may stop after its last client disconnects. A shell, Claude session
-or SSH connection provides that client; a separate keepalive terminal is unnecessary.
+run: a sandbox may stop after its last client disconnects. Your open shell,
+Claude session or SSH connection keeps a client connected.
 
 Use one workshop sandbox at a time. At the end of a chapter, leave its session and
 remove its environment with the command shown. This stops its processes and removes

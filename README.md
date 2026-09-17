@@ -1,8 +1,9 @@
 # Build a software factory with Docker Sandboxes
 
-Give a team of coding agents a task, watch them implement and review it, and step
-in when they need a product decision. In this two-hour workshop, you will build
-that workflow yourself, starting with one agent running inside Docker Sandboxes.
+In this two-hour workshop, you'll build a small software factory: a team of coding
+agents that takes a task, changes the code, reviews the result and asks for your
+help when it needs a product decision. You'll start with one agent in Docker
+Sandboxes and add the tools it needs to work as part of a team.
 
 ## What you will build
 
@@ -54,11 +55,12 @@ or Codex, with the provider and model chosen for each role. The source and task
 backlog stay on your laptop; agent sessions and application services run inside
 the sandbox.
 
-We will use a sample application throughout the workshop: a web app for tracking
-service incidents, with an API and a PostgreSQL database. Agents will add features,
-run commands and database containers inside their sandbox, review each other's changes, and write results
-back to your task backlog. The factory can work on other projects too; the sample app
-gives us a shared example while we build it.
+We'll use a sample web app for tracking service incidents, with an API and a
+PostgreSQL database. It gives everyone the same starting point: you can ask the
+agents to add a feature, try it in your browser and check their work against the
+task. Along the way, they'll run commands and database containers inside SBX,
+review changes and write results back to your backlog. Once the factory is working,
+you'll try it with a project of your own.
 
 ![The sample application you will extend](chapters/images/incident-triage-board.png)
 
@@ -87,12 +89,11 @@ Sandboxes.
 
 ## About the tool choices
 
-Docker Sandboxes provides the environment, kits, network controls and MCP gateway
-used in this workshop. The third-party tools—including Beans, ACR, Herdr, Pi,
-Claude Code and Codex—and the coding policy and team workflow reflect the author's
-personal choices for this example. Their inclusion does not imply endorsement or
-recommendation by Docker. You can apply the same Docker capabilities with tools
-and conventions that suit your own team.
+Docker Sandboxes provides the environment, kits, network controls and MCP gateway.
+The author chose Beans, ACR, Herdr, Pi, Claude Code and Codex for this example,
+along with the coding policy and team workflow. These choices are personal;
+Docker does not endorse or recommend them through this workshop. You can use the
+same Docker capabilities with your own tools and conventions.
 
 [Docker Agent](https://docs.docker.com/ai/docker-agent/) is another option for
 building agent teams, with roles, models, tools and delegation defined in YAML.

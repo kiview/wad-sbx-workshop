@@ -1,9 +1,9 @@
 # 2. Turn a one-off sandbox into a repeatable work environment
 
-You ran an agent, opened its app in a browser and kept its changes in `sample-app/`.
-Now we want the next worker to receive the same environment and a written task.
-We will describe SBX in a file, try a small task tracker, then connect the two with
-a short host launcher. The application stays in the same mounted directory.
+Your warm-up change is in `sample-app/`. Let's give a new agent that project and
+a written task without retyping the sandbox settings. You'll put those settings
+in an environment file, store the task in Beans, and use a short host script to
+bring them together. The new sandbox will mount the same application directory.
 
 ## 1. Describe the environment
 
@@ -53,9 +53,9 @@ sbx env run factory/sbxenv.yaml
 ```
 
 Read and approve the plan. This creates the environment and opens Claude.
-Ask the assistant to inspect the project
-and confirm your filter-count change is present. You have reused the actual files
-and history, not a fresh copy of the application.
+Ask the assistant to inspect the project and confirm your filter-count change is
+present. Claude is reading the files and Git history from your host, including
+the change you made in the previous chapter.
 
 Type `/exit` to leave Claude. In HOST:
 
@@ -134,7 +134,7 @@ USE_ACR=0
 SESSION=claude
 ```
 
-These are our helper's settings, not SBX syntax. They select the task, leave team
+These settings configure the host launcher. They select the task, leave team
 startup manual, leave guidance installation off, and open Claude for us.
 
 Create `factory/PROMPT.md`:
@@ -145,8 +145,9 @@ filter-count change is already present; do not implement it twice. Explain
 how the current code meets the task and what you would check.
 ```
 
-This file is the agent's instruction. The environment file provides the workspace;
-the task says what the change is; the prompt says how to approach today's exercise.
+The agent will read this prompt alongside the task. The task describes the
+filter-count change; the prompt asks the agent to check the work you already did.
+Your environment file supplies the workspace where it can inspect that code.
 
 ## 4. Run the small host launcher
 

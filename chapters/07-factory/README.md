@@ -1,11 +1,9 @@
 # 7. Give your factory another project
 
-The incident application was our shared example. The factory can work on another
-repository with the same environment, roles and communication. We need a project,
-a useful task and enough context for the agents to recognize a good result.
-
-This is open-lab time: choose a small feature or bug fix in a project you understand.
-A library or CLI is fine; the result need not be a web page.
+Now try the factory on a project you care about. Choose a small feature or bug
+fix in a repository you know well enough to judge the result. A library or CLI
+works too. You'll keep the environment, roles and communication you've built,
+then give the team a different project and task.
 
 ## 1. Choose the project
 
@@ -48,7 +46,8 @@ Add it to the host backlog:
 
 Beans prints the ID. Put it in the `TASK=` setting in `factory/chapter.env`.
 Keep `MODE=mcp`, `USE_ACR=1` and `SESSION=shell`; the gateway will read this task just
-as it read the sample tasks. This creates a local task, not an upstream issue.
+as it read the sample tasks. The new task lives in your workshop backlog on the
+host; creating it doesn't open an issue in the project's upstream repository.
 
 ## 3. Adapt the instructions, not the whole factory
 
@@ -70,14 +69,15 @@ a Beans result note with the change, commit and actual check outcomes; leave the
 task open. Send the human a summary and how to try it.
 ```
 
-Your task says **what** to change. This prompt describes **how** the team should
-approach an unfamiliar project. Add context the agents cannot discover, such as a
-reproduction or a design constraint. Let them discover installation commands.
+The team will read your task alongside this prompt, then inspect the repository
+to work out how to build and test it. Add anything it can't learn from the code,
+such as a reproduction or a design constraint. It can discover the installation
+commands from the project itself.
 
-The setup helper preserves existing `AGENTS.md` guidance. Review any policy you
-intend to add to another project rather than silently replacing its conventions.
-Project onboarding can later become a shared skill; frequently needed tools can
-become a kit. Start by observing what this project actually needs.
+The setup helper keeps an existing `AGENTS.md`. Read the project's guidance before
+adding another policy so you understand the conventions the agents should follow.
+As you watch them set up the project, look for instructions you'd want to reuse as
+a skill or tools you'd want to install through a kit next time.
 
 ## 4. Let the team work
 

@@ -1,11 +1,12 @@
 # 0. Get ready to build a software factory
 
-We start by installing Docker Sandboxes and preparing access to a coding agent. We
-also download the workshop's sample application and demo coding tasks. The app
-tracks service incidents and includes a browser UI, API and PostgreSQL database.
-Our agents will extend it as we build the factory. By the end of setup, you will
-have the sample source code, demo tasks and workshop tools on your laptop. Docker Desktop is not needed;
-the database container will run inside a sandbox.
+Let's get your laptop ready. You'll install Docker Sandboxes, check which agent
+account you'll use, and download the sample application and workshop tools.
+
+The sample app has a browser UI, an API and a PostgreSQL database for tracking
+service incidents. You'll ask the agents to extend it as we build the factory,
+keeping the source and tasks on your laptop. The app and its database container
+will run inside a sandbox, so you won't need Docker Desktop.
 
 ## 1. Install the host prerequisites
 
@@ -79,12 +80,11 @@ cd wad-sbx-workshop
 
 ### Download the application and the prebuilt tool
 
-`get-materials.sh` is **a helper supplied by this workshop**, not an SBX command.
-It downloads two things from our GitHub release: the sample application with saved
-versions for later exercises, and a tool that will let agents access the workshop's
-task tracker from inside a sandbox. We will connect that tool—the Beans MCP
-server—in chapter 05.
-It verifies their checksums. Nothing starts running yet.
+The workshop's `get-materials.sh` script downloads the sample application and
+saved versions you can use to catch up later. It also downloads the Beans MCP
+server, which will let agents in the sandbox read tasks from your host backlog
+in chapter 05. The script gets both from our GitHub release and verifies their
+checksums. At this stage, it only prepares files; you'll start the app in chapter 01.
 
 ```bash
 # HOST — from the workshop repository
