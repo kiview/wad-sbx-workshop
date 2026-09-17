@@ -35,8 +35,7 @@ fixture. Choose this command **instead of** the preceding launch:
 
 ```bash
 # HOST — alternative, same terminal A
-WORKSHOP_APP_REPO="$WORKSHOP/.local/feature-app" WORKSHOP_APP_REF=HEAD \
-  ./launch wad-ch-06
+./launch wad-ch-06 "$WORKSHOP/.local/feature-app"
 ```
 
 Leave the launcher running. In terminal B, open <http://127.0.0.1:3107>, wait for

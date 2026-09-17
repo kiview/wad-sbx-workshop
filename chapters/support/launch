@@ -7,12 +7,15 @@ source "$chapter/chapter.env"
 name="${1:-wad-ch-${CHAPTER//./-}}"
 [[ "$name" =~ ^[a-zA-Z0-9][a-zA-Z0-9-]+$ ]] || { echo 'Use an alphanumeric sandbox name'; exit 2; }
 control="$root/.local/chapters"
-app="${WORKSHOP_APP_REPO:-$root/.local/app}"
+# Optional second argument is a learner's committed app; otherwise use the chapter fixture.
+app="${2:-${WORKSHOP_APP_REPO:-$root/.local/app}}"
+app_ref="${WORKSHOP_APP_REF:-$APP_REF}"
+[ $# -lt 2 ] || app_ref=HEAD
 [ -x "$control/bin/beans" ] || { echo 'Run ../00-setup/setup first'; exit 2; }
 record="$control/runs/$name"
 [ ! -e "$record" ] || { echo 'Choose a fresh name; this run is preserved.'; exit 2; }
 mkdir -p "$record/payload/app" "$record/payload/bin" "$record/payload/roles"
-git -C "$app" archive "${WORKSHOP_APP_REF:-$APP_REF}" | tar xf - -C "$record/payload/app"
+git -C "$app" archive "$app_ref" | tar xf - -C "$record/payload/app"
 # Copy only workshop support and this chapter; no host backlog or credential files.
 COPYFILE_DISABLE=1 tar --no-xattrs -cf - -C "$root/chapters/support" bin roles | tar xf - -C "$record/payload"
 COPYFILE_DISABLE=1 tar --no-xattrs -cf - -C "$chapter" chapter.env PROMPT.md $(test ! -f "$chapter/team.tsv" || echo team.tsv) | tar xf - -C "$record/payload"

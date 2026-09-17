@@ -26,6 +26,7 @@ The separate application and prebuilt MCP server download from the private
 into ignored directories. No host Docker engine, Docker Desktop or Go build is
 needed. GitHub CLI access to this private repository is needed to download them.
 
+Use `source ./scripts/workshop-env.sh` to prepare each host terminal.
 Work in `chapters/my-*` directories. Generated state and model output stay under
 `.local/`; neither belongs in Git. The factory runs app code inside SBX. The host
 launcher starts the environment; it does not supervise, independently verify,

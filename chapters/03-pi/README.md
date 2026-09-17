@@ -47,7 +47,7 @@ fresh sandbox; we are not assuming a running sandbox hot-reloads edited YAML.
 
 ```bash
 # HOST — terminal A, in chapters/my-03
-WORKSHOP_APP_REPO="$WARMUP" WORKSHOP_APP_REF=HEAD ./launch wad-ch-03
+./launch wad-ch-03 "$WARMUP"
 ```
 
 ## 3. Prove an actual Pi model call
@@ -56,7 +56,7 @@ WORKSHOP_APP_REPO="$WARMUP" WORKSHOP_APP_REF=HEAD ./launch wad-ch-03
 # HOST — terminal B
 sbx exec wad-ch-03 pi --version
 sbx exec -it -w /home/agent/work/app wad-ch-03 \
-  env -u GH_TOKEN -u GITHUB_TOKEN ANTHROPIC_API_KEY=proxy-managed \
+  env ANTHROPIC_API_KEY=proxy-managed \
   pi --provider anthropic --model claude-sonnet-5 --approve
 ```
 

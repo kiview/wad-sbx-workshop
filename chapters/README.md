@@ -56,9 +56,11 @@ and supplied support into `~/work` in the sandbox. The Beans directory stays on 
 `./launch another-name` gives you a fresh sandbox without overwriting your previous run.
 Use `WORKSHOP_PORT=3200 ./launch another-name` if the normal port is occupied.
 
-To carry your own committed work forward, retrieve the previous sandbox's app with
+Chapter 1 mounts `$WARMUP`: its changes are already on the host. Later factory
+chapters use isolated source snapshots. To carry one of those results forward,
+retrieve the sandbox's app with
 `sbx cp NAME:/home/agent/work/app ./saved-app`, then launch the next chapter with
-`WORKSHOP_APP_REPO=/absolute/path/to/saved-app WORKSHOP_APP_REF=HEAD ./launch new-name`.
+`./launch new-name /absolute/path/to/saved-app`.
 This transfers committed source only. Commit inside SBX before copying. Don't execute
 agent-generated application code on the host.
 

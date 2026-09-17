@@ -43,8 +43,7 @@ assignment/resolution solution. To continue your own chapter-05 implementation:
 
 ```bash
 # HOST — terminal A
-WORKSHOP_APP_REPO="$WORKSHOP/.local/feature-app" WORKSHOP_APP_REF=HEAD \
-  ./launch wad-ch-07
+./launch wad-ch-07 "$WORKSHOP/.local/feature-app"
 ```
 
 Use `.local/reopen-app` instead if you saved your chapter-06 result there. If you

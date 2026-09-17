@@ -40,7 +40,7 @@ The three kits now contribute distinct capabilities: ACR, Pi and Herdr.
 
 ```bash
 # HOST — terminal A, in chapters/my-04
-WORKSHOP_APP_REPO="$WARMUP" WORKSHOP_APP_REF=HEAD ./launch wad-ch-04
+./launch wad-ch-04 "$WARMUP"
 ```
 
 In terminal B, check <http://127.0.0.1:3105>. Wait for all three agents to acknowledge

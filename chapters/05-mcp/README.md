@@ -82,7 +82,7 @@ the connection point; adding a gateway does not make every possible host server 
 
 ```bash
 # HOST — terminal A, in chapters/my-05
-WORKSHOP_APP_REPO="$WARMUP" WORKSHOP_APP_REF=HEAD ./launch wad-ch-05
+./launch wad-ch-05 "$WARMUP"
 ```
 
 In terminal B:

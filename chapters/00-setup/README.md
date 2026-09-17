@@ -42,66 +42,59 @@ when resources are limited. Git, jq and sha256sum must be on the host PATH:
 command -v sbx git jq sha256sum ssh
 ```
 
-## 2. Check model access before starting the team
+## 2. Have an agent account ready
 
-The supplied main path uses Claude Code plus Pi on Anthropic. Have a working
-Anthropic credential for Pi as well as access to Claude Code. A Claude subscription
-login does not by itself prove that Pi can make Anthropic API calls. Chapter 03
-checks an actual Pi response before you build a team.
+For chapter 1, use your Claude subscription: we will sign in with `/login` inside
+Claude Code. You do not need to create an API key for that chapter. If SBX already
+has an Anthropic API credential configured, it may use that instead.
 
-Configure credentials using SBX's agent login flow or its interactive secret store;
-never put a key into a recipe, role brief or committed file. For an API credential:
-
-```bash
-# HOST — enter the value at the prompt, not as a command argument
-sbx secret set anthropic
-```
-
-If your only provider is different, use the instructor's tested profile for that
-provider. The supplied baseline is not a promise that replacing a model name makes
-every harness support every login method. Everyone will configure independent roles;
-multiple paid providers are not required. Google/Gemini and Codex are demonstrated
-in the [mixed-model variation](../03-pi/MIXED-MODELS.md). A quota error is an account
-limit, not evidence of a broken handoff protocol.
+Later, Pi needs access to its chosen provider. We check that in chapter 03, when we
+introduce Pi. Having a Claude subscription does not automatically give another
+assistant Anthropic API access. The team configuration supports separate providers,
+with a one-provider route when that is what you have available.
 
 ## 3. Clone this private workshop and get its materials
 
-GitHub CLI access to the private repository is needed during rehearsal. Authenticate
-with `gh auth login` if needed, then:
+While the workshop is private, use GitHub CLI with an account that can access it.
+Run `gh auth login` if needed, then clone:
 
 ```bash
 # HOST
 gh repo clone shelajev/wad-sbx-workshop
 cd wad-sbx-workshop
+```
+
+### Download the application and the prebuilt tool
+
+`get-materials.sh` is **a helper supplied by this workshop**, not an SBX command.
+It downloads two things from our GitHub release: the incident-board application
+with its chapter checkpoints, and the prebuilt Beans MCP server used in chapter 05.
+It verifies their checksums. Nothing starts running yet.
+
+```bash
+# HOST — from the workshop repository
 ./scripts/get-materials.sh
 ```
 
-The download contains a Git bundle of the separate sample application (including
-fixture tags) and a prebuilt MCP adapter. Checksums are verified before installation.
-The app is cloned into `.local/app`; release binaries go into `dist/`. Both are
-ignored working data. You do not need Go, host Docker or another visible source repo.
+The application lives in `.local/app`, and the MCP download in `dist/`.
+You do not need to build either tool or install Go.
 
-In **each host terminal**, enter the workshop repository and set these variables:
+### Prepare this terminal with one command
 
 ```bash
-# HOST — replace this one path with your checkout
-cd /path/to/wad-sbx-workshop
-export WORKSHOP="$PWD"
-export APP_REPO="$WORKSHOP/.local/app"
-export CONTROL="$WORKSHOP/.local/chapters"
-export FACTORY_CONTROL_DIR="$CONTROL"
-export WARMUP="$WORKSHOP/.local/warmup-app"
-mkdir -p "$CONTROL"
-git -C "$APP_REPO" tag --list 'app-*'
+# HOST — run this in each new terminal, from the workshop repository
+source ./scripts/workshop-env.sh
 ```
 
-You should see `app-00-starter`, `app-01-warmup-solution` and
-`app-02-feature-solution` among the fixture tags. These are teaching checkpoints,
-not claimed output from your own agents.
+This sets the workshop paths and prepares your editable starter app in
+`.local/warmup-app`. It preserves an existing working copy. We **source** the script
+so its variables remain available in your current terminal. Later instructions use
+`$WORKSHOP` for this repository and `$WARMUP` for your working app; you do not need
+to type their full paths or copy a list of exports.
 
 ## How to use the terminals and chapter directories
 
-A code block says **HOST** or **SANDBOX**. Do not run application commands on the
+A code block says **HOST**, **CLAUDE**, or **SANDBOX**. Do not run application commands on the
 host. Keep one terminal connected to each live sandbox; use another for host
 commands. In this SBX build, background processes alone do not prevent idle stop.
 The later launcher deliberately stays in the foreground for this reason.
@@ -111,7 +104,6 @@ under `chapters/`, because the supplied launch wrapper and relative kit paths
 expect that layout. The numbered directories are completed reference assemblies.
 Their `./launch` commands let you catch up using a supplied app fixture.
 
-**Ready when:** SBX reports the intended version, Docker login works, a provider
-credential is available, and the app and its fixture tags are present.
+**Ready when:** SBX reports the intended version, Docker login works, your agent account is ready, and the app and its fixture tags are present.
 
 Next: [run an agent manually](../01-agent/README.md).

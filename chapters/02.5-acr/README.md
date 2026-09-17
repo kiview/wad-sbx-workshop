@@ -55,7 +55,8 @@ cat >> sbxenv.yaml <<'YAML'
 kits:
   - source: "git+https://github.com/shelajev/acr-sbx-kit.git#ref=f446b95bccabd879912db174c190ff09377b7c7b"
 YAML
-# Keep USE_ACR=0 for this first launch: install the policy yourself below.
+# Start with this chapter's settings, but install the policy manually first.
+sed 's/USE_ACR=1/USE_ACR=0/' ../02.5-acr/chapter.env > chapter.env
 cat ../02.5-acr/PROMPT.md > PROMPT.md
 sbx env plan sbxenv.yaml --env-arg name=wad-ch-02-5 \
   --env-arg port=3103 --env-arg "control_dir=$CONTROL"
@@ -66,51 +67,50 @@ installs ACR; it is not itself the coding-policy package. Launch the recipe:
 
 ```bash
 # HOST — terminal A, in chapters/my-025
-WORKSHOP_PORT=3103 WORKSHOP_APP_REPO="$WARMUP" WORKSHOP_APP_REF=HEAD \
-  ./launch wad-ch-02-5
+./launch wad-ch-02-5 "$WARMUP"
 ```
 
 In terminal B:
 
 ```bash
 # HOST
-sbx exec -it -w /home/agent/work/app wad-ch-02-5 bash
+sbx run --name wad-ch-02-5
 ```
 
-Now install and materialize the policy:
+Now ask Claude:
+
+> Work in /home/agent/work/app. Install our coding policy using the commands below,
+> then show me agents.yaml, AGENTS.md and the installed review-change SKILL.md.
+
+Give it these commands to run **inside the sandbox**:
 
 ```bash
-# SANDBOX
+cd /home/agent/work/app
 acr --version
 env -u GH_TOKEN -u GITHUB_TOKEN acr install \
   github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d \
   --agent claude-code --agent codex --freshness none --non-interactive
 env -u GH_TOKEN -u GITHUB_TOKEN acr realize
-cat agents.yaml
-cat AGENTS.md
-cat .claude/skills/acr__shelajev__coding-policy__review-change/SKILL.md
 ```
 
+Here `env -u` **removes** variables for this one command. `GH_TOKEN` and
+`GITHUB_TOKEN` normally supply GitHub credentials. This public policy needs neither;
+removing them prevents ACR from mistaking an SBX proxy placeholder for a real GitHub
+token. No tokens are being supplied, and no stored credentials are deleted.
+
 `install` records the package and selected agent targets; `realize` produces the
-agent-facing files. The public package needs no GitHub login. We unset token
-variables for these commands because a proxy placeholder is not a public GitHub
-credential. We neither print nor copy real secrets.
+agent-facing files.
 
 ## 3. Use the skill, then make installation repeatable
 
-```bash
-# SANDBOX — still in ~/work/app
-env -u GH_TOKEN -u GITHUB_TOKEN claude --dangerously-skip-permissions
-```
-
-Ask:
+In the same Claude conversation, ask:
 
 > Read AGENTS.md and the installed review-change skill. Use that skill to review
 > the warm-up against ~/work/task.json. Do not modify the app. Report the rules
 > applied and concrete findings. Do not install a browser for this exercise.
 
 Look for the policy and skill being read; files merely existing is not evidence
-of their use. Exit the agent and sandbox shell when done.
+of their use. Exit Claude when done.
 
 For subsequent fresh launches, enable the supplied in-sandbox preparation step:
 

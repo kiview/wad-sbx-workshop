@@ -1,131 +1,147 @@
-# 1. Let an agent act inside a sandbox
+# 1. Let an agent build inside a sandbox
 
-**Goal:** run an autonomous coding agent, see that the host filesystem is separate,
-start a database container inside SBX, and open the app through a published port.
-We start with direct commands so the later recipe has something concrete to replace.
-See [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/).
+**Goal:** open Claude Code in SBX, sign in, and ask it to run and change the incident
+board. The agent can run commands and containers freely inside its sandbox. Your
+application directory is shared with the host so you keep the resulting code.
 
-## 1. Create a sandbox without mounting your checkout
+## 1. Start Claude in your application
 
-```bash
-# HOST — terminal A
-sbx create claude --name wad-manual --skills off --cpus 4 --memory 8g
-sbx exec -it wad-manual bash
-```
-
-Leave this shell open. `create` without a workspace path gives us the isolated
-starting point we want. Do not replace it with `sbx run .`: that would deliberately
-share the current directory. Inside the new shell:
+In the terminal you prepared in chapter 00:
 
 ```bash
-# SANDBOX — terminal A
-whoami
-pwd
-docker version
+# HOST
+sbx run claude "$WARMUP" --name wad-manual --skills off --cpus 4 --memory 8g
 ```
 
-The Docker daemon here belongs to the sandbox. Your host does not need one.
+This creates the sandbox and opens Claude Code in your app directory. Keep this
+terminal open while working. If you already created `wad-manual` with the older
+mountless instructions, use a fresh name such as `wad-manual-mounted` throughout
+this chapter: reattaching does not change an existing sandbox's mounts.
 
-## 2. Check the filesystem boundary
+**Sign in:** if Claude asks you to authenticate, choose your subscription account
+and follow the browser login. You can also type `/login` inside Claude. Existing
+SBX credentials may mean you are already authenticated. See
+[Claude authentication in SBX](https://docs.docker.com/ai/sandboxes/agents/claude-code/).
 
-In a second host terminal, with the variables from chapter 00:
+The built-in Claude configuration starts with permission prompts bypassed—the
+“YOLO” mode for this exercise. SBX still enforces its own access boundaries.
+We do not need to launch the `claude` executable ourselves or supply token variables.
+
+## 2. Try shell commands without leaving Claude
+
+Claude's [`!` shell mode](https://code.claude.com/docs/en/interactive-mode#shell-mode-with--prefix)
+runs a command directly. Enter these one at a time **in Claude's input**, not in your
+host shell:
+
+```text
+!pwd
+!whoami
+!docker version
+```
+
+You are in the application directory, running as the sandbox user. Docker's server
+is inside SBX; you do not need a host Docker engine.
+
+Now check which files are shared:
+
+```text
+!printf 'Hello from SBX\n' > sandbox-message.txt
+!cat ../host-only.txt
+```
+
+The first command writes into the shared application directory. The second should
+fail: chapter 00 put that file beside the app, outside the directory you mounted.
+
+In a **second host terminal**, from the workshop repository:
 
 ```bash
-# HOST — terminal B
-mkdir -p "$CONTROL"
-printf 'host-only workshop marker\n' > "$CONTROL/host-marker.txt"
-sbx exec wad-manual test ! -e "$CONTROL/host-marker.txt"
-echo $?
+# HOST
+source ./scripts/workshop-env.sh
+cat "$WARMUP/sandbox-message.txt"
+cat "$WORKSHOP/.local/host-only.txt"
 ```
 
-Expected: `0`, meaning the same absolute path is absent inside SBX. We have not
-mounted that host directory. This demonstrates the boundary for this file; it is
-not a claim that no access can ever be granted through a mount or a tool.
+You can read both on the host. Edits inside the mounted app are bidirectional;
+unrelated host directories have not been shared. The same applies to deletions
+inside the mounted directory. Remove the demonstration file from Claude:
 
-## 3. Transfer the starter and its first task
-
-```bash
-# HOST — terminal B
-git -C "$APP_REPO" archive app-00-starter | sbx exec -i wad-manual bash -lc \
-  'mkdir -p "$HOME/work/app"; tar xf - -C "$HOME/work/app"'
-sbx exec -i wad-manual bash -lc 'cat > "$HOME/work/task.md"' \
-  < "$WORKSHOP/backlog/seed/wad-101--warm-up-active-filter-count.md"
+```text
+!rm sandbox-message.txt
 ```
 
-`-i` forwards stdin. Here we send an archive and a task, not a live host mount.
-Inside the shell you already opened:
-
-```bash
-# SANDBOX — terminal A
-cd ~/work/app
-git init
-git config user.name 'Workshop learner'
-git config user.email 'workshop@example.invalid'
-git add .
-git commit -m 'Workshop starter'
-npm ci --no-audit --fund=false
-./scripts/db-up.sh
-export DATABASE_URL=postgres://board:board@127.0.0.1:55432/board
-npm run db:migrate
-npm run db:seed
-docker ps
-PORT=8080 HOST=0.0.0.0 npm run dev
-```
-
-Leave the development server running. The database is a real PostgreSQL container;
-the agent can also start containers for its own checks inside this environment.
-
-```bash
-# HOST — terminal B
-sbx ports wad-manual --publish 3101:8080
-curl -fsS http://127.0.0.1:3101/healthz
-sbx exec -it -w /home/agent/work/app wad-manual \
-  env -u GH_TOKEN -u GITHUB_TOKEN claude --dangerously-skip-permissions
-```
-
-Open <http://127.0.0.1:3101>. Complete the first-use trust/login prompts if shown.
-This permission mode lets the agent execute without approving each action; the
-sandbox's filesystem and access policy still apply.
+## 3. Ask the agent to run the app
 
 Give Claude this prompt:
 
-> Read ~/work/task.md and implement only wad-101, the active-filter count warm-up.
-> Inspect the app first. Run the relevant checks inside this sandbox. Commit the
-> change and report what changed and the commit. Do not install a browser or run
-> the browser-test suite for this exercise.
+> Read README.md and get this application running inside the sandbox. Install its
+> dependencies, start its PostgreSQL Docker container, migrate and seed the database,
+> and start the web server on 0.0.0.0:8080 as a background process. Verify /healthz
+> responds successfully. Do not change the application yet. Tell me when it is ready.
 
-Watch the agent use files and tools. In the browser, try a filter and inspect the
-count after its change. We are learning the execution environment, not benchmarking
-models or running every possible test.
+Watch the commands it chooses. This is the value of giving the agent a real working
+environment: it can install dependencies and start the containers it needs.
+If it asks where to run something, all app commands belong inside this sandbox.
 
-## 4. Save the warm-up for the following chapters
-
-Exit the agent after it finishes, leaving terminal A's server running. Confirm that
-its changes are committed. If there are uncommitted changes, ask it to commit its
-intended result before copying.
+When it reports the app is ready, publish the web port from your second terminal:
 
 ```bash
-# HOST — terminal B
-sbx exec wad-manual git -C /home/agent/work/app status --short
-sbx exec wad-manual git -C /home/agent/work/app log -1 --oneline
-sbx cp wad-manual:/home/agent/work/app "$WARMUP"
-git -C "$WARMUP" log -1 --oneline
+# HOST
+sbx ports wad-manual --publish 3101:8080
 ```
 
-`$WARMUP` must be a new destination. If it exists from a previous rehearsal, choose
-another path rather than overwriting it. The launcher transfers committed source
-from it; copied dependencies are not used. Keep this repository as an artifact,
-without running its application code on the host.
+Open **<http://127.0.0.1:3101>**. You should see the incident list and severity/status
+filters. This is our starting application:
 
-After retrieving the work, stop the development server with Ctrl-C in terminal A,
-exit its shell, and run `sbx stop wad-manual` on the host.
+![Incident Triage Board with eight incidents and severity and status filters](../images/incident-triage-board.png)
 
-**Result:** you have a changed app and its committed source, created by an agent
-with a working container engine inside SBX. The commands are repetitive. Next we
-put the environment into a recipe and the task delivery into a tiny launcher.
+The browser runs on your host; the application and PostgreSQL run in SBX. The
+published port connects them. If the page does not load, ask Claude to check the
+server and `/healthz` before changing anything on the host.
 
-**Catch up:** use the supplied `app-01-warmup-solution` fixture in later chapters if
-the warm-up takes too long. Omit the `WORKSHOP_APP_REPO`/`WORKSHOP_APP_REF` overrides
-there; chapter 02 needs `WORKSHOP_APP_REF=app-01-warmup-solution` for that shortcut.
+## 4. Give the agent its first change
+
+Try a severity or status filter. Notice that the result count needs to follow the
+active filter. Give Claude this prompt:
+
+> Read WORKSHOP-TASK.md and implement the active-filter result-count task. Run the
+> relevant checks inside this sandbox, commit your change, and refresh the running
+> app so I can try it. Use “Workshop learner” and “workshop@example.invalid” as the
+> Git author if none is configured. Do not install a browser or run the browser-test
+> suite for this exercise. Report what changed and the commit.
+
+Try the filters again in your browser. Ask Claude to show the commit and explain
+what it checked. You can inspect it yourself without leaving Claude:
+
+```text
+!git status --short
+!git log -1 --oneline
+```
+
+The change is **already on your host** in `$WARMUP`. There is no `sbx cp` step because
+this working directory is mounted. The next chapter uses that committed source.
+
+When done, exit Claude and stop this sandbox from the host:
+
+```bash
+# HOST
+sbx stop wad-manual
+```
+
+**Result:** an agent ran the app and its database inside SBX, changed the code, and
+left the result in your working directory. Next we make launching a task repeatable.
+
+## Skip to the completed chapter
+
+If you want the completed warm-up without doing the exercise, run this from the
+workshop repository in your host terminal:
+
+```bash
+source ./scripts/workshop-env.sh --completed
+```
+
+This selects a separate working copy containing the supplied solution. Your own
+work is preserved. Continue with chapter 02. In another terminal, ordinary
+`source ./scripts/workshop-env.sh` picks up the same selection. The shortcut prepares
+code; it does not start a sandbox or claim that an agent implemented it.
 
 Next: [recipes and the host launcher](../02-launcher/README.md).
