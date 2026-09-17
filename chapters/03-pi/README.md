@@ -124,7 +124,7 @@ instructor on the provider route before continuing to the automated team.
 
 Ask Pi:
 
-> Look around this project and explain what the incident board does. Do not change
+> Look around this project and explain what this sample application does. Do not change
 > anything yet. Where is the active-filter result count calculated?
 
 Let it inspect the files and answer. Follow up in your own words if its explanation

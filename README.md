@@ -6,13 +6,13 @@ that workflow yourself, starting with one agent running inside Docker Sandboxes.
 
 ## What you will build
 
-We will use an incident triage board as our sample application: a web UI with an
-API and a PostgreSQL database. Agents will add features, run commands and database
-containers inside their sandbox, review each other's changes, and write results
-back to your task backlog. The factory can work on other projects too; the board
+We will use a sample application throughout the workshop: a web app for tracking
+service incidents, with an API and a PostgreSQL database. Agents will add features,
+run commands and database containers inside their sandbox, review each other's changes, and write results
+back to your task backlog. The factory can work on other projects too; the sample app
 gives us a shared example while we build it.
 
-![The incident triage board you will extend](chapters/images/incident-triage-board.png)
+![The sample application you will extend](chapters/images/incident-triage-board.png)
 
 You will leave with sandbox recipes, reusable kits, coding guidance and a team
 configuration you can adapt to your own project.
@@ -24,11 +24,11 @@ Each chapter adds something the factory needs:
 | Step | What you will learn |
 |---|---|
 | Run one agent | Use SBX interactively, explore file isolation and shared files, run containers, and open the app through a published port. |
-| Repeat the setup | Describe an environment with sbxenv and connect it to a Beans task with a small host script. |
+| Repeat the setup | Describe an environment with sbxenv and connect it to a demo task in the Beans task tracker with a small host script. |
 | Share tools and guidance | Build a simple kit, then use the ACR kit to install a coding policy and review skill. |
 | Choose your assistants | Add Pi through a kit and configure the assistant, provider and model for each role. |
 | Form a team | Use Herdr to manage sessions and pass assignments between a coordinator, developer and reviewer. |
-| Connect to host tools | Give the team scoped access to Beans through the MCP gateway and explore network controls. |
+| Connect to host tools | Give the team scoped access to the task tracker through the MCP gateway and explore network controls. |
 | Bring in a human | Join through SSH, answer a product question and let the team continue. |
 | Run another job | Reuse your factory, try the changed app and bring the source back to your laptop. |
 

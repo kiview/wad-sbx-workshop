@@ -1,7 +1,7 @@
 # From one agent to a software factory
 
 Start with an assistant you can let act. Finish with a team you can give work.
-The same incident triage board supplies the UI, API and PostgreSQL workload throughout.
+The same sample application supplies the UI, API and PostgreSQL workload throughout.
 You will assemble the environment and tools that let the team do that work.
 
 Start with [chapter 00](00-setup/README.md), then follow each chapter's README
@@ -28,7 +28,7 @@ not Docker endorsements. See [about the tool choices](../README.md#about-the-too
 | [02.5-acr](02.5-acr) | First kit: distribute guidance | Four coding rules and a review skill materialized by ACR |
 | [03-pi](03-pi) | Add another assistant with a kit | Pi reads the same policy; role/provider choices are explicit |
 | [04-team](04-team) | Add Herdr with another kit | Coordinator → developer → QA, using files plus wakeups |
-| [05-mcp](05-mcp) | Bridge to the host through MCP | Team fetches a real Bean and appends its result note |
+| [05-mcp](05-mcp) | Bridge to the host through MCP | Team reads a demo task from the host and appends its result note |
 | [06-human](06-human) | Intervene through SSH | A recorded human decision resumes the same team |
 | [07-factory](07-factory) | Give the factory another task | Changed app, review, task note and retrievable source |
 

@@ -106,7 +106,7 @@ sbx --cloud ports CLOUD_DEMO_NAME --publish 8080
 Open the URL returned by the cloud service. Unlike a local `3106:8080` mapping,
 cloud publishing names a sandbox port and returns a remote URL.
 
-Ask what would happen to our **host-local Beans server** in this arrangement.
+Ask what would happen to our **workshop task-access server running on the host** in this arrangement.
 It does not automatically move with the sandbox or become remotely reachable.
 Moving the whole factory requires designing that connection; this demo only shows
 the remote execution environment.

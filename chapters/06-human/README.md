@@ -1,8 +1,8 @@
 # 6. Join the team when a requirement needs a human
 
 What should happen when the task leaves a product decision unanswered? For our next
-feature, the team must ask what to do with an old resolution note when reopening an
-incident. We will use SSH to enter the existing sandbox, read the question and
+demo task, the team will add a way to reopen a resolved incident in the sample app.
+It must ask what to do with the old resolution note. We will use SSH to enter the existing sandbox, read the question and
 record our answer through the same file-message convention. The team can then
 continue with a requirement we supplied, rather than guessing one.
 

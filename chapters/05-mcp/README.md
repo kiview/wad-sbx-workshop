@@ -1,8 +1,8 @@
 # 5. Give the team a tool for the host backlog
 
 The team can work from a task snapshot. Now we want it to read the current task and
-write its result back to Beans on the host. We will connect a small Beans MCP server
-through [SBX's MCP gateway](https://docs.docker.com/ai/sandboxes/mcp-gateway/),
+write its result back to our workshop task tracker on the host. We will connect
+the tracker's tool server (Beans MCP) through [SBX's MCP gateway](https://docs.docker.com/ai/sandboxes/mcp-gateway/),
 inspect its tools with Claude, then give the team an assignment. Because this
 crosses the sandbox boundary, we will also examine which operations we allow and
 how to change access deliberately.
@@ -134,7 +134,7 @@ connections, then return to the conversation and ask:
 > Use the Beans MCP tools to list the workshop tasks and read wad-102. Explain the
 > requested feature to me. Do not implement it or change the backlog yet.
 
-Watch which tools Claude calls. You should be discussing the host's actual task,
+Watch which tools Claude calls. You should be discussing the demo task stored on the host,
 with the requirements supplied by Beans. Read them together:
 what must assignment do, and what information is required to resolve an incident?
 
@@ -241,7 +241,7 @@ you do not need organization access to complete this local exercise. See
 When the team reports completion, open **<http://127.0.0.1:3106>** and try assigning
 and resolving an incident. Does the behavior match the task you read earlier?
 
-In host terminal C, where you sourced the workshop variables, read the same Bean again:
+In host terminal C, where you sourced the workshop variables, read the same demo task again:
 
 ```bash
 "$CONTROL/bin/beans" --config "$CONTROL/beans/.beans.yml" \

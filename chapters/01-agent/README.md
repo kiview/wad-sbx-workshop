@@ -1,7 +1,7 @@
 # 1. Let an agent build inside a sandbox
 
 Our first step is to give one coding agent a place to work. We will launch Claude
-Code in SBX, sign in, and ask it to run and change the incident board. The app's
+Code in SBX, sign in, and ask it to run and change the sample application. The app's
 source directory is shared with your laptop, so you can see its edits on the host.
 Commands and the database container run inside the sandbox. You will explore that
 boundary yourself before trusting an agent with a larger task.
@@ -117,8 +117,9 @@ server and `/healthz` before changing anything on the host.
 
 ## 4. Give the agent its first change
 
-Try a severity or status filter. Notice that the result count needs to follow the
-active filter. Give Claude this prompt:
+Our first demo task is a small change to the sample application: make its result
+count follow the active filter. This is the warm-up exercise referred to in later
+chapters. Try a severity or status filter, then give Claude this prompt:
 
 > Read WORKSHOP-TASK.md and implement the active-filter result-count task. Run the
 > relevant checks inside this sandbox, commit your change, and refresh the running

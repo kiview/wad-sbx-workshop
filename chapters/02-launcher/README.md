@@ -2,7 +2,7 @@
 
 Running Claude by hand lets us see what happens. Now we want to start another task
 without repeating the setup. We will first put sandbox settings in an `sbxenv.yaml`
-recipe and run it with SBX. Then we will add Beans for written tasks and a small
+recipe and run it with SBX. Then we will add a task tracker, Beans, for our demo tasks and a small
 host launcher that applies the recipe, supplies a task and delivers a private copy
 of the app. You will see the SBX command before using the wrapper.
 
@@ -76,7 +76,7 @@ The first script downloads the pinned Beans executable. The second creates our
 practice backlog with four tasks. `--disposable` identifies it as workshop data;
 later we will let the agents append result notes through MCP.
 
-Read the warm-up task:
+Read the demo task from the first coding exercise:
 
 ```bash
 # HOST
@@ -161,7 +161,7 @@ Now let the launcher create and prepare the task environment:
 
 The first argument names the sandbox. The second selects your committed app from
 chapter 1 (or its completed shortcut). The script runs the same SBX creation command with
-`name=wad-ch-02`, then supplies the app and task and starts the board.
+`name=wad-ch-02`, then supplies the sample app and demo task and starts the app.
 It exports committed files, so ask the chapter-1 agent to commit first if needed.
 
 Leave this terminal open: its final SBX connection keeps the sandbox awake.

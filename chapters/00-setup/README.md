@@ -1,9 +1,10 @@
 # 0. Get ready to build a software factory
 
 We start by installing Docker Sandboxes and preparing access to a coding agent. We
-also download the incident triage board: a working browser UI, API and PostgreSQL
-database that our agents will extend. By the end of setup, you will have the source,
-a task backlog and the workshop tools on your laptop. Docker Desktop is not needed;
+also download the workshop's sample application and demo coding tasks. The app
+tracks service incidents and includes a browser UI, API and PostgreSQL database.
+Our agents will extend it as we build the factory. By the end of setup, you will
+have the sample source code, demo tasks and workshop tools on your laptop. Docker Desktop is not needed;
 the database container will run inside a sandbox.
 
 ## 1. Install the host prerequisites
@@ -48,7 +49,7 @@ For chapter 1, use your Claude subscription: we will sign in with `/login` insid
 Claude Code. You do not need to create an API key for that chapter. If SBX already
 has an Anthropic API credential configured, it may use that instead.
 
-Later, Pi needs access to its chosen provider. We check that in chapter 03, when we
+Later, we will add a second coding assistant, Pi, which needs access to its chosen provider. We check that in chapter 03, when we
 introduce Pi. Having a Claude subscription does not automatically give another
 assistant Anthropic API access. The team configuration supports separate providers,
 with a one-provider route when that is what you have available.
@@ -67,8 +68,10 @@ cd wad-sbx-workshop
 ### Download the application and the prebuilt tool
 
 `get-materials.sh` is **a helper supplied by this workshop**, not an SBX command.
-It downloads two things from our GitHub release: the incident-board application
-with its chapter checkpoints, and the prebuilt Beans MCP server used in chapter 05.
+It downloads two things from our GitHub release: the sample application with saved
+versions for later exercises, and a tool that will let agents access the workshop's
+task tracker from inside a sandbox. We will connect that tool—the Beans MCP
+server—in chapter 05.
 It verifies their checksums. Nothing starts running yet.
 
 ```bash
@@ -76,7 +79,7 @@ It verifies their checksums. Nothing starts running yet.
 ./scripts/get-materials.sh
 ```
 
-The application lives in `.local/app`, and the MCP download in `dist/`.
+The sample application lives in `.local/app`, and the task-access tool in `dist/`.
 You do not need to build either tool or install Go.
 
 ### Prepare this terminal with one command
@@ -94,8 +97,8 @@ so its variables remain available in your current terminal. Later instructions u
 | Variable | Location it names |
 |---|---|
 | `$WORKSHOP` | This workshop repository. |
-| `$WARMUP` | Your editable starter app, or the selected completed warm-up. |
-| `$CONTROL` | The host's workshop tools and Beans backlog. |
+| `$WARMUP` | Your working copy of the sample app for the first coding exercise. |
+| `$CONTROL` | The workshop tools and demo-task backlog on your host. |
 
 The script supplies these paths so you do not need to retype them. In each new host
 terminal, return to this repository and source the script again before using them.

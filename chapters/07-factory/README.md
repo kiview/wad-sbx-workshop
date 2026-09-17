@@ -2,7 +2,7 @@
 
 We have connected repeatable environments, coding guidance, agent roles, backlog
 tools and a way to ask a human for help. Now we will reuse that setup for another
-job: adding a service filter to the board. You will follow the team, try its change
+demo task: adding a service filter to the sample application. You will follow the team, try its change
 in the browser and bring the source home. This is open-lab time; if your earlier
 job is still running, follow that conversation and try its result first.
 
