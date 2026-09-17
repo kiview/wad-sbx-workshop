@@ -19,7 +19,7 @@ tests, historical reports and the larger reference implementation. Here:
 | `chapters/support` | Shared launcher, sandbox helpers and role briefs |
 | `scripts` | Download materials, install host tools and seed Beans |
 | `backlog/seed` | Four tasks used by the workshop |
-| `kits/multi-provider` | Mixed-provider team variation |
+| `chapters/kits/multi-provider` | Mixed-provider team variation |
 
 The separate application and prebuilt MCP server download from the private
 [materials release](https://github.com/shelajev/wad-sbx-workshop/releases/tag/materials-v0.1.0)
@@ -45,3 +45,8 @@ adapter's build provenance. New packaging does not imply a new adapter build.
 
 Local checks: `chapters/check` validates recipes against the installed SBX CLI and
 checks fixture refs after materials download. It does not run a team or model calls.
+
+## License
+
+Workshop source is licensed under [Apache 2.0](LICENSE). Downloaded third-party
+components retain their own licenses and notices.

@@ -4,7 +4,7 @@ Everyone sets up separate roles. The default uses one Anthropic model so it work
 with one provider. The presenter variation below runs Pi on Google, Claude as the
 developer and Codex as QA. The developer stays gateway-capable in the MCP chapters.
 
-The supplied sandbox kit `../../kits/multi-provider` declares provider credentials
+The supplied sandbox kit `../kits/multi-provider` declares provider credentials
 and installs Codex. OAuth declarations belong in a sandbox kit, not a mixin; Pi and
 Herdr remain separate mixins. No API key belongs in this repository. Configure the
 `anthropic`, `openai` and `gemini` services in SBX. Existing `google` secrets can be

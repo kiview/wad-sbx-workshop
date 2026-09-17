@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 chapter="$(cd "$(dirname "$0")" && pwd)"
-export WORKSHOP_BASE_KIT="$chapter/../../kits/multi-provider"
+export WORKSHOP_BASE_KIT="$chapter/../kits/multi-provider"
 export WORKSHOP_TEAM="${WORKSHOP_TEAM:-$chapter/team-mixed.tsv}"
 export WORKSHOP_PORT="${WORKSHOP_PORT:-3205}"
 exec "$chapter/launch" "${1:-wad-ch-04-mixed}"
