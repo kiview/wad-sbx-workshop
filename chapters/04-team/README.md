@@ -7,6 +7,18 @@ a separate notification wakes the recipient. You will start the team manually,
 send a small request and follow its handoff before letting the launcher start
 future teams for you.
 
+### Another way to build a team
+
+[Docker Agent](https://docs.docker.com/ai/docker-agent/) is Docker's open-source
+framework for defining agent teams in YAML. Each agent can have its own model,
+instructions and tools, and delegate work to other agents. It is available as a
+standalone binary, so Docker Desktop is not required.
+
+You could build an SBX-based team around Docker Agent by packaging it in a kit and
+configuring its tools and provider access. Here we use Herdr to coordinate Claude
+Code and Pi sessions, following the author's own setup. The focus is the same:
+give your chosen team an environment, shared guidance and controlled access to tools.
+
 ## 1. Give the environment a session manager
 
 Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it records a pinned executable,

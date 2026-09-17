@@ -44,6 +44,11 @@ personal choices for this example. Their inclusion does not imply endorsement or
 recommendation by Docker. You can apply the same Docker capabilities with tools
 and conventions that suit your own team.
 
+[Docker Agent](https://docs.docker.com/ai/docker-agent/) is another option for
+building agent teams, with roles, models, tools and delegation defined in YAML.
+This workshop uses Herdr to coordinate coding assistants; the SBX environment and
+access-control concepts apply whichever team framework you choose.
+
 ## Get started
 
 Bring a **Mac with Apple silicon**, a terminal, a browser and model access. The
