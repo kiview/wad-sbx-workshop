@@ -1,0 +1,35 @@
+schemaVersion: "1"
+name: "${{ env.args.name }}"
+agent: claude
+args:
+  name:
+    required: true
+  port:
+    required: true
+  control_dir:
+    required: true
+sandboxOptions:
+  skills: off
+  cpus: 4
+  memory: 8g
+ports:
+  - sandbox: 8080
+    host: ${{ env.args.port }}
+    protocol: tcp4
+    hostIP: 127.0.0.1
+kits:
+  - source: "git+https://github.com/shelajev/acr-sbx-kit.git#ref=f446b95bccabd879912db174c190ff09377b7c7b"
+  - source: ../kits/pi
+  - source: ../kits/herdr
+mcp:
+  servers:
+    - name: "${{ env.args.name }}-beans"
+      command: "${{ env.args.control_dir }}/bin/beans-mcp"
+      args:
+        - --beans-bin
+        - "${{ env.args.control_dir }}/bin/beans"
+        - --beans-config
+        - "${{ env.args.control_dir }}/beans/.beans.yml"
+        - --beans-data
+        - "${{ env.args.control_dir }}/beans/.beans"
+        - --enable-presenter-note-tool

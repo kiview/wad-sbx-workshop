@@ -1,0 +1,10 @@
+schemaVersion: "2"
+kind: mixin
+name: workshop-hello
+setup:
+  install:
+    - user: agent
+      command: |
+        mkdir -p "$HOME/.local/bin"
+        printf '#!/bin/sh\necho "Hello from a kit"\n' > "$HOME/.local/bin/workshop-hello"
+        chmod +x "$HOME/.local/bin/workshop-hello"

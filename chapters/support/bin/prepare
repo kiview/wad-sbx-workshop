@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SANDBOX: app/bootstrap only. Agents own implementation, tests and result reporting.
+set -euo pipefail
+cd "$HOME/work"
+source chapter.env
+chmod +x bin/*
+mkdir -p factory/evidence "$HOME/.local/bin"
+ln -sfn "$HOME/work/roles" factory/roles
+for tool in "$HOME/work/bin/"*; do ln -sf "$tool" "$HOME/.local/bin/$(basename "$tool")"; done
+export PATH="$HOME/work/bin:$PATH"
+trust-workspace "$HOME/work" "$HOME/work/app"
+cd app
+git init -q
+git config user.name 'Workshop learner'
+git config user.email 'workshop@example.invalid'
+git add . && git commit -qm 'Supplied chapter starting fixture'
+if [ "$USE_ACR" = 1 ]; then
+  env -u GH_TOKEN -u GITHUB_TOKEN acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --agent claude-code --agent codex --freshness none --non-interactive
+  env -u GH_TOKEN -u GITHUB_TOKEN acr realize
+fi
+npm ci --no-audit --fund=false > ../factory/evidence/npm-install.log 2>&1
+board > ../factory/evidence/board-start.log 2>&1
+if [ "$MODE" = team ] || [ "$MODE" = mcp ] || [ "$MODE" = human ]; then
+  start-team
+fi

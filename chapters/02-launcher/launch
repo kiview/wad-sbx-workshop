@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+chapter="$(cd "$(dirname "$0")" && pwd)"
+exec "$chapter/../support/launch" "$chapter" "$@"

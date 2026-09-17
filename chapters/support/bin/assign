@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SANDBOX: submit the chapter's task to the existing team once.
+set -euo pipefail
+export FACTORY_DIR="$HOME/work/factory" WORKSPACE_DIR="$HOME/work" PATH="$HOME/work/bin:$PATH"
+source "$WORKSPACE_DIR/chapter.env"
+handoff send --to coordinator --from human --kind assignment --body "Work on $TASK. Mode: $MODE. Read $WORKSPACE_DIR/PROMPT.md and your role brief at $WORKSPACE_DIR/roles/coordinator.md."
+crew-notify coordinator

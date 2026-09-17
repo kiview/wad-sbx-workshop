@@ -1,0 +1,1 @@
+Read your role brief. Use handoff files and crew-notify to coordinate. Follow the actual task contract. In MCP mode obtain it via the developer gateway role before coding. After QA review, refresh the board and append a result note to the Bean; do not close it.

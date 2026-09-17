@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Real installed-CLI validation; no test doubles and no model calls.
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+command -v sbx >/dev/null || { echo 'NOT RUN: sbx is required'; exit 2; }
+for script in "$root/chapters/support/launch" "$root/chapters/support/bin/"* "$root/chapters/00-setup/setup" "$root/chapters/0"*/launch; do
+  bash -n "$script"
+done
+sbx kit validate "$root/chapters/examples/hello-kit" --json
+sbx env plan "$root/chapters/examples/minimal-env/sbxenv.yaml" >/dev/null
+for kit in pi herdr; do sbx kit validate "$root/chapters/kits/$kit" --json; done
+for chapter in "$root/chapters/0"*/chapter.env; do
+  source "$chapter"
+  git -C "$root/.local/app" rev-parse --verify "$APP_REF^{commit}" >/dev/null
+  sbx env plan "${chapter%/*}/sbxenv.yaml" --env-arg name=wad-chapter-plan \
+    --env-arg "port=$PORT" --env-arg "control_dir=$root/.local/chapters" >/dev/null
+  printf 'VALID recipe + fixture: %s\n' "${chapter%/*}"
+done
+echo 'PASS: syntax, kit validation, fixture refs and real SBX environment plans. This is not an end-to-end run.'
