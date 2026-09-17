@@ -58,7 +58,10 @@ uses an **Anthropic API key**, configured on the host through SBX. A Claude
 subscription alone does not supply that API access. If you only have a Claude
 subscription, you can build all three team roles with Claude Code; chapter 04
 provides that configuration. You can still install Pi and explore its interface,
-or pair with someone who has provider access for the Pi conversation.
+or pair with someone who has provider access for the Pi conversation. Chapter 03
+marks the model exercises to follow with a partner or presenter, then brings
+everyone back together for team setup. You will still build the kits and configure
+each role yourself.
 
 With additional accounts, you can choose different models for development and
 review. Configure the roles even if you initially give them the same model.

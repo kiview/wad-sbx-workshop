@@ -43,8 +43,9 @@ shell is for a concrete investigation; it is not a permanent part of the workflo
 
 The numbered directories contain completed reference configurations. A catch-up
 command puts the chosen configuration in **the same `factory/` directory**, so the
-next incremental chapter starts from the right state. Exit and remove the current
-sandbox before changing configuration or replacing its mounted project.
+next incremental chapter starts from the right state. First, exit the current
+sandbox session and follow that chapter's cleanup instructions. In chapters 05–07,
+cleanup includes removing the host MCP registration as well as the sandbox.
 
 For example, to start chapter 03 with the ACR/Pi environment already assembled:
 
@@ -53,8 +54,24 @@ For example, to start chapter 03 with the ACR/Pi environment already assembled:
 ./scripts/use-chapter.sh 03-pi
 ```
 
-This saves your previous configuration under `.local/` and updates `factory/`.
-It leaves `sample-app/` unchanged. In your SANDBOX tab:
+This saves your previous configuration under `.local/` and prints its location.
+It replaces the environment definition, chapter settings and task prompt with
+the reference versions. Your existing `factory/team.tsv` is kept, so your working
+assistant and model choices carry forward. `sample-app/` is unchanged.
+
+If you added your own kits, open the saved `sbxenv.yaml` and compare its `kits`
+list with the new `factory/sbxenv.yaml`. Add back the entries you still want.
+For example, if you created the browser-access kit in chapter 05, keep its access
+rules for future workers by adding this entry under the new file's `kits` list:
+
+```yaml
+  - source: ./browser-access
+```
+
+The kit directory itself remains in `factory/`; this entry tells SBX to apply it.
+The reference file supplies the chapter's standard kits, so keep those too.
+
+For the chapter-03 example above, continue in your SANDBOX tab:
 
 ```bash
 ./scripts/launch-factory.sh wad-ch-03
@@ -72,16 +89,44 @@ the SSH chapter without doing the earlier feature:
 ```
 
 This also replaces `sample-app/` with the completed feature, saving its previous
-contents under `.local/` and printing the backup location. Then launch `wad-ch-06`
-and submit its task as chapter 06 describes. The path you work in remains `sample-app/`.
+contents under `.local/` and printing the backup location. Before launching, check
+`factory/team.tsv`. If you have not configured a team before, catch-up supplies
+the reference Pi/Anthropic coordinator and two Claude roles. Choose the
+[all-Claude configuration](04-team/README.md#2-give-the-assistants-different-responsibilities)
+if you have only subscription access. Restore any extra kit entries as described
+above. Then launch `wad-ch-06` and submit its task as chapter 06 describes.
+The path you work in remains `sample-app/`.
 
 ## Repeating a chapter
 
-To recreate a chapter after changing kits or environment settings, exit its session
-and use that chapter's `sbx env rm` command in HOST. Run its launcher again with the
-same name. Your app's current edits remain; use a checkpoint only if you want to
-replace them. Removing a sandbox also removes its in-sandbox conversation, so read
-any result or question you need before removal.
+Changing the environment file affects the next creation. To try your changes,
+finish the current conversation, exit its session and use the chapter's cleanup
+commands in HOST. Read any result or question you need before removal: the mounted
+source stays, but the in-sandbox conversation and running services do not.
 
-If creation failed, inspect `sbx ls` first. Remove only the named workshop environment
-if it exists; then retry its launch. Do not remove unrelated sandboxes.
+For example, after chapter 05:
+
+```bash
+# HOST
+sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-05
+sbx mcp rm wad-ch-05-beans
+```
+
+The first command removes the sandbox; the second removes its host tool
+registration. This SBX release keeps that registration after sandbox removal.
+Chapters 06 and 07 show the corresponding names for their environments. Earlier
+chapters have no MCP registration to remove.
+
+Then run the chapter's launcher again from the SANDBOX tab, at the workshop root.
+It creates the environment from your updated configuration. Your app's current
+edits remain; use a checkpoint only if you want to replace them.
+
+If creation failed, run `sbx ls` in HOST to see whether the named workshop sandbox
+was created. Follow its cleanup commands before retrying; remove only this
+workshop's environment and, where applicable, its MCP registration.
+
+If the error says port 3102 is already in use, check whether you left the previous
+chapter's sandbox running. Every chapter uses that same host port so you can keep
+one browser address throughout the workshop. Finish and remove the previous
+workshop sandbox before launching the next. If none is using it, ask the instructor
+to help identify the other local service; do not stop an unrelated process blindly.

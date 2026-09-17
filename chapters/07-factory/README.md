@@ -105,8 +105,9 @@ crew watch
 ```
 
 Use `crew reply "your answer"` for a product question. Use HOST for a scoped network
-policy change, as in chapter 05. `crew logs developer` opens the latest terminal
-output if a tool or login needs attention.
+policy change, as in chapter 05. `crew logs developer` shows the assistant's current
+terminal output if a tool or login needs attention; it does not attach an interactive
+session to that assistant.
 
 ## 5. Inspect the result in your working copy
 

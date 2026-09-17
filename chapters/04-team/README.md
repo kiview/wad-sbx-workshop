@@ -117,6 +117,24 @@ coordinator. `watch` displays readable messages as the team passes work between
 roles. Expect a developer answer, a QA check and a combined reply to you. Press
 Ctrl-C to return to the shell; the agents continue running.
 
+If the conversation stays quiet, we want to distinguish an assistant still
+working from one waiting for login or failing a model request. Press Ctrl-C to
+leave the message view, then inspect the coordinator in the SANDBOX shell:
+
+```bash
+crew status
+crew logs coordinator
+```
+
+`status` shows the task stage and messages addressed to you. `logs` shows the
+assistant's current terminal output; it does not open an interactive conversation
+with that assistant. If the coordinator has handed work to the developer, inspect
+`crew logs developer` next; use `crew logs qa` for the review. Look for an active
+request, an authentication prompt or an API error. If you need help, show the
+instructor that output and your role table. Once the role can continue, use
+`crew watch` to follow replies. A quiet message view alone does not tell us whether
+an assistant has stopped.
+
 What happened underneath? These are the two operations the helper combines,
 shown as a **reference**, not another request to send:
 

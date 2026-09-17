@@ -89,9 +89,16 @@ Find the ACR kit and the unchanged application mount. In your SANDBOX tab:
 ./scripts/launch-factory.sh wad-ch-02-5
 ```
 
-SBX may also ask you to approve the kit's credential bindings. Read the named
-service and destination hosts before approving. The public policy download used
-here does not require you to supply a GitHub token.
+SBX may also ask you to approve the kit's credential bindings. In the linked kit's
+`spec.yaml`, find `credentials`: it declares an **optional** service named
+`acr-github`, for private repositories, higher API limits and publishing. Its
+`inject` entries name the GitHub API, archive and upload hosts that may receive
+that credential.
+
+Read those service and destination names in the approval prompt. A binding
+describes where a configured credential may be used; it does not mean every
+download needs one. Our policy package is public, so you do not need to create a
+GitHub token or run a secret-setup command for this exercise.
 
 ## 3. Install and inspect shared guidance
 

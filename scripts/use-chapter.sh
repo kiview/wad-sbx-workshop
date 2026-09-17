@@ -15,6 +15,14 @@ for file in sbxenv.yaml chapter.env PROMPT.md; do cp "$root/chapters/$chapter/$f
 # Adjust reference paths from chapters/NN/ to factory/.
 sed -i.bak -e 's|../kits/|../chapters/kits/|g' -e 's|../../scripts/|../scripts/|g' -e 's|../../sample-app|../sample-app|g' "$root/factory/sbxenv.yaml"
 rm "$root/factory/sbxenv.yaml.bak"
-if [ -f "$root/chapters/$chapter/team.tsv" ]; then cp "$root/chapters/$chapter/team.tsv" "$root/factory/team.tsv"; else rm -f "$root/factory/team.tsv"; fi
+if [ -f "$root/factory/team.tsv" ]; then
+  echo 'Kept factory/team.tsv: your assistant, provider and model choices are unchanged.'
+elif [ -f "$root/chapters/$chapter/team.tsv" ]; then
+  cp "$root/chapters/$chapter/team.tsv" "$root/factory/team.tsv"
+  echo 'Added the reference team. Check factory/team.tsv against your accounts before launching (chapter 04 shows the all-Claude option).'
+fi
 [ $# -lt 2 ] || "$root/scripts/prepare-app.sh" "$2"
 echo 'Ready: factory/. Your sample-app/ is unchanged unless you selected a checkpoint.'
+if [ -n "${backup:-}" ]; then
+  echo 'The environment file now contains the reference kits. Restore any extra kit entries from your configuration backup before launching.'
+fi

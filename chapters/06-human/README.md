@@ -25,7 +25,9 @@ The coordinator records the human's choice for the developer and QA, then resume
 implementation and review. Preserve the historical resolution entry either way.
 ```
 
-The task is now different; the environment, tools and team are the same.
+The existing prompt reads the task ID supplied by `TASK`, so it now asks for
+`wad-103`. The added paragraph tells the team which decision belongs to you.
+The environment, tools and team are the same.
 In the SANDBOX tab, at the workshop root:
 
 ```bash

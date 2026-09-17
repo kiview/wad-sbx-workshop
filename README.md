@@ -54,8 +54,11 @@ access-control concepts apply whichever team framework you choose.
 ## Get started
 
 Bring a **Mac with Apple silicon**, a terminal, a browser and model access. The
-first exercise uses Claude Code with your Claude account. Later, you will configure
-Pi's provider access; [chapter 00](chapters/00-setup/README.md#2-have-an-agent-account-ready)
+first exercise uses Claude Code with your Claude account. Later, Anthropic API
+access lets you try Pi yourself; with subscription access alone, follow that model
+conversation with a partner or presenter and run your own team using Claude Code
+for all three roles. Everyone configures the roles and their models.
+[Chapter 00](chapters/00-setup/README.md#2-have-an-agent-account-ready)
 explains the account requirements. Docker containers run inside SBX, so you do not
 need Docker Desktop or a host Docker engine.
 

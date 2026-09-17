@@ -134,6 +134,8 @@ Submission waits for the roles to be ready. Expect the developer to fetch the ta
 implement it, and pass it through QA. If a role needs attention, `crew logs developer`
 (or `qa` or `coordinator`) shows its terminal. Ctrl-C leaves the message view;
 it does not stop the agents. `crew status` shows the stage and replies addressed to you.
+If you see no progress, use the [quiet-team walkthrough](../04-team/README.md#4-see-a-file-message-and-its-wakeup)
+to inspect the role that should act next before sending another request.
 
 ## 5. Let the human handle a request for more access
 

@@ -6,7 +6,10 @@ live inside the sandbox instead of becoming another installation on your laptop.
 You can give it a real project, constrain its access and see how it behaves.
 
 We will install [Pi](https://pi.dev), an open-source coding assistant, and
-have a conversation with it about the same application and coding policy.
+use it to explore the same application and coding policy. You can run the model
+conversation with Anthropic API access, or follow a partner's or the presenter's
+conversation if you have only a Claude subscription. Everyone will compose the kit
+and configure team roles in the next chapter.
 
 We will keep the project, task and guidance the same, so the comparison is about
 how the assistant works rather than about a different starting point.
@@ -24,7 +27,7 @@ Open `chapters/kits/pi/spec.yaml`. Read these parts before using the whole file:
 | `permissions.network.allow` | Permit the download hosts and model API endpoints it needs. |
 | `setup.install` | Download the right build, verify its checksum and install it as the sandbox user. |
 
-The longer architecture and checksum code makes that small installation recipe
+The longer architecture and checksum code makes that installation step
 portable. You do not need to rewrite it. The important choices are **what to
 install**, **where it may connect**, and **which user runs setup**.
 
@@ -71,8 +74,19 @@ You should see the version selected by the kit. Now we will use the actual assis
 
 ## 3. Connect an assistant to a provider
 
-Claude subscription login and Pi's API access are separate. If you have an
-Anthropic API key, register it from HOST:
+Claude subscription login and Pi's API access are separate. Choose your route
+before starting a model conversation:
+
+- **Have Anthropic API access?** Follow this section, then try the prompts in
+  sections 4 and 5 yourself.
+- **Have only a Claude subscription?** You have already installed Pi and checked
+  its version. Follow sections 4 and 5 with a partner or the presenter: look for
+  the code and policy rule Pi uses to support its answer. You do not need to set a
+  secret or send Pi a model request on your machine. Then go to
+  [finish this chapter](#6-finish-this-chapter). In chapter 04, use the all-Claude
+  role table to build and run your own team.
+
+For the API route, register your Anthropic key from HOST:
 
 ```bash
 sbx secret set anthropic
@@ -83,7 +97,8 @@ service is already configured. SBX keeps the real credential on the host and inj
 it into permitted model requests. Allowing a network host and providing a credential
 solve different problems: the request needs both permission and authentication.
 
-In the SANDBOX shell, start Pi with the provider and model you want to try:
+In the SANDBOX shell, start Pi with the Anthropic provider and the model used in
+this example:
 
 ```bash
 pi --provider anthropic --model claude-sonnet-5
@@ -95,11 +110,6 @@ want to see that mechanism. No real key is written into the project.
 
 Accept the workspace trust prompt if shown. In Pi, type `/model` to see available
 models and choose one your account can use. Keep that model ID for the next chapter.
-
-**Only have a Claude subscription?** You can explore Pi's interface, then use the
-three-Claude team configuration in chapter 04. For a real Pi model conversation,
-pair with someone who has API access or use the presenter's demonstration. Do not
-enter a subscription token as an API key.
 
 ## 4. Use the same guidance with a different assistant
 
@@ -119,10 +129,15 @@ have changed the assistant while keeping the application, task and guidance.
 
 ## 5. Use this environment to try another model
 
-Pi separates the assistant interface from the model behind it. Type `/model` to
-inspect the choices your provider offers. If you have access to another model,
-select it and ask the same review question. For Gemini in this workshop, always
-use **`gemini-3.8-flash`**; the mixed-provider exercise uses that model.
+Pi separates the assistant interface from the model behind it. Type `/model` and
+look for another **Anthropic model your API account can use**. Select it if you
+have access; if you have only one usable model, keep it and continue. This exercise
+changes the model while keeping the provider connection you just configured.
+
+Trying a different provider also requires its credential binding and network
+access in SBX. Choosing a model name alone does not supply those. The
+[mixed-provider demonstration](MIXED-MODELS.md) shows that additional configuration
+with Pi on Google, Claude and Codex. Its Gemini model is **`gemini-3.8-flash`**.
 
 Compare something concrete: does the answer identify the right code, apply the
 shared rule, and support its conclusion? A different style of answer is not by
@@ -136,9 +151,14 @@ inspect what it actually does. When you remove the sandbox, its installed tools
 and running processes go away. The mounted project and its edits remain, so use
 a separate checkout when an experiment should not affect work you want to keep.
 
-Type `/quit` to return to the sandbox shell. The [Pi command reference](https://github.com/earendil-works/pi/blob/v0.85.1/packages/coding-agent/README.md#commands)
-explains its other interactive controls. Type `exit` to return to the host shell
-in this tab. In HOST:
+## 6. Finish this chapter
+
+If you opened Pi, type `/quit` to return to the sandbox shell. The
+[Pi command reference](https://github.com/earendil-works/pi/blob/v0.85.1/packages/coding-agent/README.md#commands)
+explains its other interactive controls. If you followed someone else's model
+conversation, your SANDBOX tab is already at its shell prompt.
+
+Type `exit` in the SANDBOX shell to return to the host. In HOST:
 
 ```bash
 sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-03
