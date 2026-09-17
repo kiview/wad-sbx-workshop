@@ -24,7 +24,7 @@ Each chapter adds something the factory needs:
 | Step | What you will learn |
 |---|---|
 | Run one agent | Use SBX interactively, explore file isolation and shared files, run containers, and open the app through a published port. |
-| Repeat the setup | Describe an environment with sbxenv and connect it to a demo task in the Beans task tracker with a small host script. |
+| Repeat the setup | Describe an environment with sbxenv and connect it to a demo task in our task tracker, Beans, with a small host script. |
 | Share tools and guidance | Build a simple kit, then use the ACR kit to install a coding policy and review skill. |
 | Choose your assistants | Add Pi through a kit and configure the assistant, provider and model for each role. |
 | Form a team | Use Herdr to manage sessions and pass assignments between a coordinator, developer and reviewer. |
@@ -77,7 +77,7 @@ edit, what to run and what to look for afterward.
 
 | Directory | What is inside |
 |---|---|
-| `chapters/00-setup` through `07-factory` | Walkthroughs and completed reference configurations |
+| `chapters/00-setup` through `08-presenter` | Walkthroughs, reference configurations and presenter demonstrations |
 | `chapters/examples` and `chapters/kits` | Small examples and reusable kits |
 | `chapters/support` | Launcher, sandbox helpers and agent role instructions |
 | `scripts` | Material downloads and host setup helpers |

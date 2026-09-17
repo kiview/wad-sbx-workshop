@@ -45,8 +45,16 @@ host shell:
 You are in the application directory, running as the sandbox user. Docker's server
 is inside SBX; you do not need a host Docker engine.
 
-Before trying the next commands, predict which file the host will see and which
-one the sandbox can read. Then check which files are shared:
+We want to see which files are shared with the sandbox. In a **second host
+terminal**, create a file outside the sample application:
+
+```bash
+# HOST — from the workshop repository
+printf 'A note outside the shared app.\n' > host-only.txt
+```
+
+Only `sample-app/` is mounted. Predict whether Claude can read this neighbouring
+file, then enter these commands in **Claude's input** in the first terminal:
 
 ```text
 !printf 'Hello from SBX\n' > sandbox-message.txt
@@ -54,9 +62,9 @@ one the sandbox can read. Then check which files are shared:
 ```
 
 The first command writes into the shared application directory. The second should
-fail: chapter 00 put that file beside the app, outside the directory you mounted.
+fail: you created that file outside the directory you mounted.
 
-In a **second host terminal**, from the workshop repository:
+Back in your **second host terminal**:
 
 ```bash
 # HOST

@@ -140,8 +140,7 @@ why it considers the warm-up correct? These are useful questions for a reviewer,
 not just a check that the API returned text.
 
 If you get an authentication or quota error, pause here and resolve the provider
-choice with the instructor. Installing another orchestrator will not fix account
-access. The [mixed-provider variation](MIXED-MODELS.md) shows the intended
+choice with the instructor. The [mixed-provider variation](MIXED-MODELS.md) shows the intended
 Pi/Google, Claude/Anthropic and Codex/OpenAI combination when accounts permit it.
 
 ## 5. Turn your choices into roles

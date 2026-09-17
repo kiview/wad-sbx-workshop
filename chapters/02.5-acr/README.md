@@ -69,14 +69,18 @@ the content ACR installs**.
 
 We want the agent to review the first exercise using shared coding guidance. It
 should inspect the existing implementation rather than implement the task again.
-The supplied `PROMPT.md` expresses that review request; `chapter.env` keeps the
-first demo task selected and enables policy installation on future launches.
+First we will install the policy together with Claude so we can inspect the files
+ACR produces. Then we will automate that step for future sandboxes. The supplied
+`PROMPT.md` expresses the review request; `chapter.env` selects the first demo task.
 Load those instructions:
 
 ```bash
 cp chapters/02.5-acr/chapter.env factory/chapter.env
 cp chapters/02.5-acr/PROMPT.md factory/PROMPT.md
 ```
+
+Set `USE_ACR=0` in `factory/chapter.env` for this first run. That leaves policy
+installation to us rather than running it during startup.
 
 The sandbox also needs the tool that installs our guidance. Add this `kits`
 section to `factory/sbxenv.yaml` so SBX installs ACR when creating the environment:
@@ -87,9 +91,8 @@ kits:
 ```
 
 Instead of a local directory, `source` now names a Git repository at a fixed commit.
-SBX fetches that kit when creating the sandbox. Open `factory/chapter.env` and change
-`USE_ACR=1` to `USE_ACR=0` for this first run. That keeps our helper from installing
-the policy automatically—we want to do it ourselves and see what it produces.
+SBX fetches that kit when creating the sandbox. The kit installs the ACR tool;
+our conversation with Claude will use it to install the policy.
 
 Preview your composition:
 

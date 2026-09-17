@@ -63,7 +63,8 @@ will receive its own copy of the app. Your chapter-1 edits remain in the host's
 
 ## 2. Give the host a task list
 
-We use [Beans](https://github.com/hmans/beans), a small file-based task tracker.
+Our workshop tasks live in a small file-based task tracker,
+[Beans](https://github.com/hmans/beans).
 The task is a written contract an agent can read, rather than a prompt we keep retyping.
 
 ```bash

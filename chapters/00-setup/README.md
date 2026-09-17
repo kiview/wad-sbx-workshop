@@ -79,8 +79,8 @@ It verifies their checksums. Nothing starts running yet.
 ./scripts/get-materials.sh
 ```
 
-The sample application lives in `.local/app`, and the task-access tool in `dist/`.
-You do not need to build either tool or install Go.
+The application checkpoints are stored in `.local/app`. The prebuilt task-access
+tool is downloaded to `dist/`; we will install it for the factory in chapter 05.
 
 ### Find your workshop files
 

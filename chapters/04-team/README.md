@@ -28,7 +28,8 @@ decide what the agents should do.
 We want three sessions with different responsibilities: coordination,
 implementation and review. `team.tsv` chooses the assistant and model for each
 role. The supplied prompt tells the agents to read their role instructions and
-use our message helpers to pass work. The startup settings enable team creation.
+use our message helpers to pass work. We will start the sessions ourselves first
+to see how Herdr creates the team, then enable automatic startup.
 Put that team definition and those instructions in place:
 
 ```bash
@@ -36,6 +37,9 @@ cp chapters/04-team/chapter.env factory/chapter.env
 cp chapters/04-team/PROMPT.md factory/PROMPT.md
 cp chapters/04-team/team.tsv factory/team.tsv
 ```
+
+Set `MODE=manual` in `factory/chapter.env`. This lets the launcher prepare the
+sandbox and app while leaving team startup to us.
 
 Those files describe the team; the sandbox still needs the program that manages
 its sessions. Add Herdr to the `kits` list in `factory/sbxenv.yaml` so SBX installs
@@ -45,10 +49,8 @@ it alongside the assistants:
   - source: ../chapters/kits/herdr
 ```
 
-Your environment file now combines ACR for guidance, Pi for another assistant and Herdr for
-sessions. Before starting it, edit `factory/chapter.env`: change `MODE=team` to
-`MODE=manual`. That asks our preparation helper to install everything and start the
-app, while leaving **you** to start the team in this first exercise.
+Your environment file now combines ACR for guidance, Pi for another assistant and
+Herdr for managing sessions.
 
 ## 2. Decide who should do what
 

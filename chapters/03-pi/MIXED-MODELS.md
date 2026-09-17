@@ -45,6 +45,7 @@ From the host:
 
 Open the short `launch-mixed` script first if you want to see its choices. It selects
 the sandbox kit, this role table and browser port 3205, then uses the shared launcher.
+This separate port lets you compare the variation with a factory running on 3102.
 The script uses `sbx create KIT --kit MIXIN` to select the custom sandbox kit and
 apply its mixins.
 
@@ -68,9 +69,8 @@ Read each role's introduction. You are looking at three assistant sessions using
 the role choices from the table. Repeat the message-and-wakeup exercise in chapter
 04: the communication mechanism stays the same even though the models differ.
 
-If Gemini reports a quota limit, use the working one-provider team for the exercise;
-the current presenter Google account has previously hit that limit. Changing the
-handoff protocol cannot provide more account quota.
+If a provider reports a quota limit, select an available model or use the
+one-provider team for the exercise. Keep the same role and handoff configuration.
 
 Exit the shell, end the launch terminal and stop `my-mixed-team` when done. Return
 to the normal environment file for chapter 05: the custom-base variation still needs additional

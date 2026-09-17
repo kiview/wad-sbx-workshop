@@ -48,13 +48,19 @@ flowchart LR
 
 ## Run a completed reference chapter (catch-up)
 
-From the workshop root, run the chapter launcher, for example
-`./chapters/03-pi/launch`. Leave that terminal open and follow the chapter in a second
-host terminal, also at the workshop root. Setup is shared; environment files
-are separate. The launcher uses no workspace mounts. It transfers a pinned app fixture
-and supplied support into `~/work` in the sandbox. The Beans directory stays on the host.
-`./chapters/03-pi/launch another-name` gives you a fresh sandbox without overwriting your previous run.
-Stop the previous sandbox before launching another one; the factory exercises use port 3102.
+The main walkthrough uses `./scripts/launch-factory.sh` with the configuration
+you build in `factory/`. If you want to try a chapter's completed setup instead,
+its reference launcher supplies that setup and an app checkpoint. For example:
+
+```bash
+# HOST — from the workshop repository
+./chapters/03-pi/launch wad-ch-03
+```
+
+Stop the previous sandbox first to free port 3102. Leave this terminal open, then
+join the sandbox at [chapter 03, step 3](03-pi/README.md#3-enter-the-sandbox-and-start-pi-yourself).
+This runs the supplied configuration; it does not update the files in your own
+`factory/` directory. The task tracker remains on the host.
 
 Chapter 1 mounts `sample-app/`: its changes are already on the host. Later factory
 chapters use isolated source snapshots. To carry one of those results forward,
@@ -66,9 +72,9 @@ agent-generated application code on the host.
 
 ## The pieces you will use
 
-`support/launch` starts the sandbox and supplies its task and source code.
-`support/bin` contains the helpers for starting the app, managing Herdr sessions
-and passing messages. `support/roles` describes the coordinator, developer and QA
+`chapters/support/launch` starts the sandbox and supplies its task and source code.
+`chapters/support/bin` contains the helpers for starting the app, managing Herdr sessions
+and passing messages. `chapters/support/roles` describes the coordinator, developer and QA
 responsibilities. You will inspect these pieces as you introduce them, then reuse
 them for the next task.
 

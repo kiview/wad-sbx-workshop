@@ -262,7 +262,7 @@ permissions:
 Save that as `factory/browser-access/spec.yaml` on the host if you want to keep
 it, validate it with `sbx kit validate`, and add `./browser-access` to a future
 environment file's kits. You have moved a manual operator decision into a declared environment
-requirement. Editing a environment file does not change the running sandbox.
+requirement. Editing an environment file does not change the running sandbox.
 
 An enrolled organization can add central AI governance. The presenter may show it
 at the end. Network access and named MCP-tool governance are different controls;
