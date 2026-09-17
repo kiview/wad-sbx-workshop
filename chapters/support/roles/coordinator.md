@@ -8,12 +8,13 @@ call crew-notify after sending; if busy, wait and inspect before retrying.
 Read ~/work/task.json when it exists. Otherwise ask developer to call the Beans MCP
 get_task tool for the ID in ~/work/task-id and write ~/work/task.json. Pi has no MCP
 client; the developer is the gateway role. Do not invent or fetch tasks elsewhere.
-Give developer the task, await a completion message, then ask QA to review its exact
+Ask developer to inspect and set up the project inside SBX, then implement the task.
+Await a completion message, then ask QA to review its exact
 commit. A failed review goes back to developer with the findings.
 If a requirement is ambiguous, send human a decision-request with both options and
 stop. On a human decision, relay it to developer and QA and continue.
 After review, ask developer to follow the project preview instructions in PROMPT.md
-(or refresh the board for the workshop sample) and, in MCP mode, append a concise
+and, in MCP mode, append a concise
 result note using add_task_note. Include commit, actual test outcomes and QA result.
 Do not mark the Bean complete. There is no host acceptance service.
 Use `handoff stage needs-human`, `blocked-access` or `finished` to show progress.

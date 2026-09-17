@@ -65,8 +65,8 @@ environment using our existing launcher:
 ./scripts/launch-factory.sh wad-ch-03
 ```
 
-This still calls `sbx env create`, transfers your committed app and starts its
-services. The additional kit makes Pi available. Leave this terminal open.
+This still calls `sbx env create`, transfers your committed app and prepares its coding guidance.
+Project dependencies and services are left to the agent when the task needs them. The additional kit makes Pi available. Leave this terminal open.
 
 ## 3. Enter the sandbox and start Pi yourself
 

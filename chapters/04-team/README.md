@@ -39,7 +39,7 @@ cp chapters/04-team/team.tsv factory/team.tsv
 ```
 
 Set `MODE=manual` in `factory/chapter.env`. This lets the launcher prepare the
-sandbox and app while leaving team startup to us.
+sandbox and app source while leaving team startup to us.
 
 Those files describe the team; the sandbox still needs the program that manages
 its sessions. Add Herdr to the `kits` list in `factory/sbxenv.yaml` so SBX installs
@@ -81,7 +81,7 @@ use the configured MCP gateway client.
 ./scripts/launch-factory.sh wad-ch-04
 ```
 
-The launcher uses your updated SBX environment file and starts the app as before. In terminal B:
+The launcher uses your updated SBX environment file and supplies the app source. This handoff exercise only reads files; no app server needs to run. In terminal B:
 
 ```bash
 # HOST

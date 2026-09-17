@@ -90,18 +90,17 @@ Read the demo task from the first coding exercise:
 
 ## 3. Build the app's environment file
 
-We want each launch to create a sandbox, make the sample app available in the
-browser, and give the agent a specific coding task. Three files describe those
+We want each launch to create a sandbox, supply the sample app and give the agent a specific coding task. Three files describe those
 choices:
 
 | File | What it tells the system to do |
 |---|---|
 | `factory/sbxenv.yaml` | Tells SBX which agent environment to create and which application port to publish. |
-| `factory/chapter.env` | Tells our launcher which demo task to load and which startup steps to run. |
+| `factory/chapter.env` | Tells our launcher which demo task to load and whether to prepare coding guidance or start the team. |
 | `factory/PROMPT.md` | Gives a coding agent instructions for approaching that task. The team will read this when we introduce task assignment. |
 
 The supplied starting configuration names the sandbox through an argument,
-publishes the app on port 3102, and selects the first demo task. Put those settings
+publishes a port for the app on 3102, and selects the first demo task. Put those settings
 in place:
 
 ```bash
@@ -136,7 +135,7 @@ Open `chapters/support/launch`. Its job is to:
 
 1. Read a Bean and export the committed app source.
 2. Create the environment through `sbx env create`, using the environment file's arguments.
-3. Send the app and task into SBX and run the supplied app-startup helper there.
+3. Send the app and task into SBX and prepare the workspace for the agent.
 
 For reference, this is the SBX command the script executes for this job. **Read it;
 the launch step below runs it for you.** It changes `plan` to `create` and adds
@@ -147,7 +146,7 @@ sbx env create factory/sbxenv.yaml --env-arg name=wad-ch-02 --auto-approve
 ```
 
 That is the host harness: start an environment and give it the source and task.
-`factory/chapter.env` picks the task and startup behavior.
+`factory/chapter.env` picks the task and agent preparation.
 `scripts/launch-factory.sh` calls this shared helper with your `factory/` directory.
 For this chapter, `TASK=wad-101` selects the warm-up.
 
@@ -160,7 +159,7 @@ Now let the launcher create and prepare the task environment:
 
 The argument names the sandbox. The launcher takes your committed app from
 `sample-app/` and reads the configuration in `factory/`. The script runs the same SBX creation command with
-`name=wad-ch-02`, then supplies the sample app and demo task and starts the app.
+`name=wad-ch-02`, then supplies the sample app and demo task. The agent will handle project setup.
 It exports committed files, so ask the chapter-1 agent to commit first if needed.
 
 Leave this terminal open: its final SBX connection keeps the sandbox awake.
@@ -178,9 +177,13 @@ This opens Claude in the environment we created. Tell it:
 
 > Work in /home/agent/work/app. Read /home/agent/work/task.json. Explain the task
 > and check that our warm-up change is already present. Do not implement it again.
+> Read the project setup instructions, install dependencies and start its supporting
+> services inside this sandbox. Start the app on 0.0.0.0:8080, verify that it responds,
+> and leave it running. Tell me what you ran and why.
 
-Open **<http://127.0.0.1:3102>**. You should see your app, started by the supplied
-setup helper. We now have a repeatable environment plus delivery of a task and code.
+Watch Claude discover the dependencies and run the setup commands. The launcher
+published a port; it did not install project dependencies or start a web server.
+When Claude reports that the app is ready, open **<http://127.0.0.1:3102>**. We now have a repeatable environment plus delivery of a task and code.
 A fresh worker still does not know our coding conventions; that is the next chapter.
 
 Exit Claude when done, end terminal A's waiting command with Ctrl-C, then stop:

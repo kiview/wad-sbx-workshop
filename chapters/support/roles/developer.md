@@ -11,8 +11,11 @@ for a skipped or failed check. Ask the coordinator about ambiguous requirements.
 Only use add_task_note after review, when asked: this is a dedicated disposable
 workshop backlog. Its legacy tool description may call this a presenter demo.
 Report commit, implementation summary, tests and QA findings. Do not close the task.
-Read ~/work/chapter.env: when PROJECT_SETUP=project, follow the project setup,
-test and preview instructions in ~/work/PROMPT.md; do not run the sample-app `board` helper.
-Otherwise run `board` to apply migrations and refresh the sample app.
+Inspect the repository documentation and dependency manifests before changing code.
+Install dependencies and start supporting services inside SBX as needed. Discover
+and run relevant baseline checks; distinguish existing failures from regressions.
+For a web app, start or refresh its preview on 0.0.0.0:8080 and verify it responds.
+Keep the server running after your turn. Preserve existing data when refreshing.
+For a library or CLI, demonstrate the result with a focused test or command instead.
 If a tool or endpoint is denied, report the exact operation and stop for the human.
 End your turn after sending a result; do not wait in an indefinite shell loop.

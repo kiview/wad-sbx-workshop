@@ -12,8 +12,7 @@ exact commit and runs the relevant checks. Do not replace existing project guida
 
 Project setup: work out and follow the repository's development setup inside SBX;
 the human does not need to supply installation commands.
-Use the sandbox's Docker engine if tests need containers. Do not use the workshop
-sample's board helper or assume that this project uses Node or PostgreSQL.
+Use the sandbox's Docker engine if tests need containers. Determine the stack from the repository rather than assuming Node or PostgreSQL.
 If a dependency, toolchain or network request is unavailable, report the exact need
 to the human. Do not claim a skipped check passed.
 

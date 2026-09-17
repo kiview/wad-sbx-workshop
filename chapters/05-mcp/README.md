@@ -151,7 +151,7 @@ sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-05
 ```
 
 Look for the MCP server in the plan. The launcher then calls `sbx env create`,
-prepares the app and starts the team, as before. Leave this terminal open.
+supplies the app source and starts the team, as before. Leave this terminal open.
 
 ## 4. Explore the tools in Claude before assigning work
 
@@ -203,7 +203,9 @@ its session. Once all roles have finished their introductions, run it once:
 ```
 
 The coordinator routes the job. The Claude developer can reach the gateway, so it
-reads the Bean and supplies the task to the team. Pi does not need its own MCP
+reads the Bean and supplies the task to the team. The developer also inspects the
+project documentation, installs dependencies and starts the services it needs
+inside SBX. Watch those commands: project setup is part of the agent's work. Pi does not need its own MCP
 client in this setup: it can ask the gateway-capable role to obtain the information.
 
 Follow the developer and reviewer from the same shell:
@@ -220,7 +222,7 @@ a result note through MCP.
 
 ## 6. Handle a legitimate request for more access
 
-While the feature runs, consider another normal development need: downloading a
+Once the developer has installed the project dependencies, consider another normal development need: downloading a
 browser. Our observed example is Chromium's download from `cdn.playwright.dev`.
 From your sandbox shell:
 

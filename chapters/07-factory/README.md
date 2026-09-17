@@ -74,9 +74,8 @@ the MCP connection you already configured.
 
 ## 3. Tell the factory which project workflow to use
 
-The earlier chapters automatically installed the sample app's Node dependencies
-and started its PostgreSQL database and web server. Another project needs its own
-setup. Use these launcher settings and starting prompt:
+As before, the agents will inspect and set up the project themselves. Change the
+selected task and give the team a prompt for working in the new repository:
 
 ```bash
 cp chapters/07-factory/chapter.env factory/chapter.env
@@ -87,9 +86,7 @@ Open `factory/chapter.env` and replace `TASK=replace-with-your-task-id` with the
 Beans just printed. Notice the two settings that matter here:
 
 - `MODE=mcp` keeps task retrieval and result notes connected to your host backlog.
-- `PROJECT_SETUP=project` skips the sample app's dependency installation and server
-  startup. The launcher supplies the source and starts the team; the agents follow
-  this project's setup instructions.
+- `TASK` selects your new requirements rather than a sample-app exercise.
 
 Read `factory/PROMPT.md`. It asks the team to inspect the repository, determine its
 dependencies, get it running, and establish how to test it before making changes.
@@ -129,8 +126,8 @@ sbx env create factory/sbxenv.yaml --env-arg name=wad-my-project --auto-approve
 
 Then it transfers your committed source, prompt and task ID, installs the coding
 guidance and starts the roles. The launcher does that sequence for you; do not run
-the second command again. Leave terminal A open. No sample-app database or web
-server is started in project mode.
+the second command again. Leave terminal A open. The agents will install project dependencies and start any needed services when
+you submit the task.
 
 In another host terminal, join through SSH:
 

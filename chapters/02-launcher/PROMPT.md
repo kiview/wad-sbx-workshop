@@ -1,1 +1,1 @@
-Read ~/work/task.json. Implement the count-label warm-up in ~/work/app, run the specified checks, commit the change and run board to refresh the preview. Report actual outcomes.
+Read ~/work/task.json and inspect ~/work/app, including its setup instructions. Install dependencies and start required services inside SBX. Check whether the count-label warm-up is already implemented; do not repeat completed work. If changes are needed, run relevant checks and commit them. Start the app on 0.0.0.0:8080, verify it responds and leave it running. Report actual outcomes.
