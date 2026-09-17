@@ -8,18 +8,16 @@ continue with a requirement we supplied, rather than guessing one.
 
 ## 1. Set up a task with a real choice
 
-On the host, carry your recipe and team forward:
+Keep your recipe and team; update the instructions for the next demo task:
 
 ```bash
-mkdir -p "./chapters/my-06"
-cat chapters/my-05/sbxenv.yaml > chapters/my-06/sbxenv.yaml
-cat chapters/my-05/team.tsv > chapters/my-06/team.tsv
-for file in chapter.env PROMPT.md launch; do cat "chapters/06-human/$file" > "chapters/my-06/$file"; done
-chmod +x chapters/my-06/launch
+for file in chapter.env PROMPT.md; do
+  cat "chapters/06-human/$file" > "factory/$file"
+done
 ```
 
-The copies keep the infrastructure and provider choices you assembled. Open
-`chapter.env`: the task is now `wad-103`. Open `chapters/my-06/PROMPT.md`: it asks the coordinator
+Your infrastructure and provider choices stay in place. Open
+`factory/chapter.env`: the task is now `wad-103`. Open `factory/PROMPT.md`: it asks the coordinator
 to bring the ambiguous requirement to you **before** implementation.
 
 The question is what to do with the old resolution note when reopening an incident.
@@ -32,12 +30,13 @@ assignment and resolution:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-06/launch wad-ch-06
+./scripts/prepare-app.sh app-02-feature-solution
+./scripts/launch-factory.sh wad-ch-06
 ```
 
 This starts from the supplied assignment-and-resolution checkpoint. To continue
 from your own completed chapter-05 result, use
-`./chapters/my-06/launch wad-ch-06 "./.local/feature-app"` **instead of** that command.
+`./scripts/launch-factory.sh wad-ch-06 "./.local/feature-app"` instead of those two commands.
 Leave the launch terminal open.
 
 ## 2. Open the SSH doorway
@@ -145,7 +144,7 @@ herdr agent read developer --lines 40
 ```
 
 Look for the chosen behavior being relayed and implemented. When QA reviews, it
-should use the same choice. Open <http://127.0.0.1:3107> when the team refreshes the
+should use the same choice. Open <http://127.0.0.1:3102> when the team refreshes the
 app and try reopening a resolved incident. The important result is that your
 answer changed what the team built.
 

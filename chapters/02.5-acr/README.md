@@ -12,10 +12,10 @@ A [mixin kit](https://docs.docker.com/ai/sandboxes/customize/kits/) adds setup a
 access requirements to a sandbox. On the host, make a directory for yours:
 
 ```bash
-mkdir -p "./chapters/my-hello-kit"
+mkdir -p "./factory/hello-kit"
 ```
 
-In your editor, create `chapters/my-hello-kit/spec.yaml` with this content:
+In your editor, create `factory/hello-kit/spec.yaml` with this content:
 
 ```yaml
 schemaVersion: "2"
@@ -39,9 +39,9 @@ Ask SBX to validate your kit, then create a practice environment with it:
 
 ```bash
 # HOST
-sbx kit validate "./chapters/my-hello-kit"
+sbx kit validate "./factory/hello-kit"
 sbx create claude --name wad-kit-first --skills off --cpus 4 --memory 8g \
-  --kit "./chapters/my-hello-kit"
+  --kit "./factory/hello-kit"
 sbx run --name wad-kit-first
 ```
 
@@ -67,17 +67,16 @@ the rules before giving them to the agent. Which would matter for the warm-up?
 The distinction matters: **the kit makes ACR available; the policy package supplies
 the content ACR installs**.
 
-Prepare your next recipe on the host:
+Keep `factory/sbxenv.yaml` and update the task instructions for this exercise:
 
 ```bash
-mkdir -p "./chapters/my-025"
-cat chapters/my-02/sbxenv.yaml > chapters/my-025/sbxenv.yaml
-for file in chapter.env PROMPT.md launch; do cat "chapters/02.5-acr/$file" > "chapters/my-025/$file"; done
-chmod +x chapters/my-025/launch
+for file in chapter.env PROMPT.md; do
+  cat "chapters/02.5-acr/$file" > "factory/$file"
+done
 ```
 
 This carries your environment forward and brings in this chapter's settings.
-In your editor, add the following top-level section to `sbxenv.yaml`:
+In your editor, add the following top-level section to `factory/sbxenv.yaml`:
 
 ```yaml
 kits:
@@ -85,23 +84,22 @@ kits:
 ```
 
 Instead of a local directory, `source` now names a Git repository at a fixed commit.
-SBX fetches that kit when creating the sandbox. Open `chapters/my-025/chapter.env` and change
+SBX fetches that kit when creating the sandbox. Open `factory/chapter.env` and change
 `USE_ACR=1` to `USE_ACR=0` for this first run. That keeps our helper from installing
 the policy automatically—we want to do it ourselves and see what it produces.
 
 Preview your composition:
 
 ```bash
-sbx env plan chapters/my-025/sbxenv.yaml --env-arg name=wad-ch-02-5 \
-  --env-arg port=3103 --env-arg "control_dir=$(pwd)/.local/chapters"
+sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02-5
 ```
 
-Find the kit in the plan. These are the recipe arguments introduced in chapter 02.
+Find the kit in the plan. The name is the same recipe argument introduced in chapter 02.
 Then start it using the same app-delivery wrapper:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-025/launch wad-ch-02-5 "$(pwd)/sample-app"
+./scripts/launch-factory.sh wad-ch-02-5
 ```
 
 Leave this terminal open. In terminal B, join the agent:
@@ -155,7 +153,7 @@ Continue the conversation:
 Follow up on one finding. Can you connect the advice to the rule you read earlier?
 The shared skill gives both assistants the same review procedure.
 
-Exit Claude. On the host, edit `chapters/my-025/chapter.env` back to `USE_ACR=1`. Open
+Exit Claude. On the host, edit `factory/chapter.env` back to `USE_ACR=1`. Open
 `chapters/support/bin/prepare` and find the `acr install` and `acr realize` lines.
 On future launches, that helper performs the installation you just tried manually.
 The current sandbox already has its policy; editing this file affects future runs.

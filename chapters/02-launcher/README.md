@@ -14,10 +14,10 @@ From your workshop repository, create a practice directory:
 
 ```bash
 # HOST
-mkdir -p chapters/my-first-env
+mkdir -p factory
 ```
 
-Create `chapters/my-first-env/sbxenv.yaml` with this content:
+Create `factory/sbxenv.yaml` with this content:
 
 ```yaml
 schemaVersion: "1"
@@ -41,8 +41,8 @@ Preview it, then create it:
 
 ```bash
 # HOST
-sbx env plan chapters/my-first-env/sbxenv.yaml
-sbx env create chapters/my-first-env/sbxenv.yaml --auto-approve
+sbx env plan factory/sbxenv.yaml
+sbx env create factory/sbxenv.yaml --auto-approve
 sbx run --name wad-env-first
 ```
 
@@ -89,49 +89,34 @@ Read the demo task from the first coding exercise:
 
 ## 3. Build the app's environment recipe
 
-We will keep this exercise's sandbox configuration in `chapters/my-02/`. This
-lets you change the settings while keeping the supplied example available to
-compare with. Create the directory and copy the starting files:
+Keep working in `factory/sbxenv.yaml`. Replace its contents with the supplied
+application recipe, and add the task settings and agent instructions beside it:
 
 ```bash
 # HOST — from the workshop repository
-mkdir -p chapters/my-02
-for file in sbxenv.yaml chapter.env PROMPT.md launch; do
-  cat "chapters/02-launcher/$file" > "chapters/my-02/$file"
+for file in sbxenv.yaml chapter.env PROMPT.md; do
+  cat "chapters/02-launcher/$file" > "factory/$file"
 done
-chmod +x chapters/my-02/launch
 ```
 
-`mkdir` creates your chapter directory. The loop copies the four reference files
-into it while keeping your terminal at the workshop root. `chmod` makes the launcher runnable.
-Open `chapters/my-02/sbxenv.yaml` in your editor. It is SBX's environment definition.
-`chapter.env` configures our workshop helper, `PROMPT.md` gives the agent the chapter's
-brief, and `launch` is the small entry point that connects those pieces.
+Open `factory/sbxenv.yaml`. This is the same file you will extend throughout the
+workshop. `factory/chapter.env` selects the task and startup behavior, and
+`factory/PROMPT.md` supplies the task instructions.
 
-Compared with the tiny example, this recipe adds **arguments** and a **port mapping**.
-Arguments let the same file create differently named sandboxes. The port mapping
-connects a host browser port to the app's port 8080 inside SBX.
+Compared with the tiny example, this recipe makes the sandbox name an argument and
+publishes the application's port 8080 at `http://127.0.0.1:3102` on your laptop.
+The port stays the same throughout the factory exercises. Stop each chapter's
+sandbox before starting the next one so that port is available.
 
-Preview the full recipe before asking our helper to create it:
+Preview the recipe:
 
 ```bash
-# HOST — from the workshop repository
-sbx env plan chapters/my-02/sbxenv.yaml \
-  --env-arg name=wad-ch-02 \
-  --env-arg port=3102 \
-  --env-arg "control_dir=$(pwd)/.local/chapters"
+sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-02
 ```
 
-| Argument | Meaning |
-|---|---|
-| `chapters/my-02/sbxenv.yaml` | Read your chapter recipe. |
-| `name=wad-ch-02` | Name the sandbox we will create. |
-| `port=3102` | Publish its app on host port 3102. |
-| `control_dir=$(pwd)/.local/chapters` | Supply our host workshop-data path; MCP will use it later. This does not mount it. |
-
-Find those values in the plan. Planning has not started an app or occupied the port.
-You already created the tiny environment yourself; next we will let the launcher
-perform creation and app delivery together.
+`factory/sbxenv.yaml` selects your environment file. `--env-arg name=wad-ch-02`
+supplies the name declared in its `args` section. Find the port mapping in the plan;
+it comes from the file, so you do not need to pass it on the command line.
 
 ## 4. Add the small amount of host glue
 
@@ -146,22 +131,23 @@ the launch step below runs it for you.** It changes `plan` to `create` and adds
 `--auto-approve` to apply the recipe without another confirmation:
 
 ```text
-sbx env create chapters/my-02/sbxenv.yaml --env-arg name=wad-ch-02 --env-arg port=3102 --env-arg "control_dir=$(pwd)/.local/chapters" --auto-approve
+sbx env create factory/sbxenv.yaml --env-arg name=wad-ch-02 --auto-approve
 ```
 
 That is the host harness: start an environment and give it the source and task.
-`chapter.env` picks the task and default port; `launch` is a short entry point to
-this shared script. For this chapter, `TASK=wad-101` selects the warm-up.
+`factory/chapter.env` picks the task and startup behavior.
+`scripts/launch-factory.sh` calls this shared helper with your `factory/` directory.
+For this chapter, `TASK=wad-101` selects the warm-up.
 
 Now let the launcher create and prepare the task environment:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-02/launch wad-ch-02 "$(pwd)/sample-app"
+./scripts/launch-factory.sh wad-ch-02
 ```
 
-The first argument names the sandbox. The second selects your committed app from
-chapter 1 (or its completed shortcut). The script runs the same SBX creation command with
+The argument names the sandbox. The launcher takes your committed app from
+`sample-app/` and reads the configuration in `factory/`. The script runs the same SBX creation command with
 `name=wad-ch-02`, then supplies the sample app and demo task and starts the app.
 It exports committed files, so ask the chapter-1 agent to commit first if needed.
 

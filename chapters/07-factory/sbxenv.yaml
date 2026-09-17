@@ -4,17 +4,13 @@ agent: claude
 args:
   name:
     required: true
-  port:
-    required: true
-  control_dir:
-    required: true
 sandboxOptions:
   skills: off
   cpus: 4
   memory: 8g
 ports:
   - sandbox: 8080
-    host: ${{ env.args.port }}
+    host: 3102
     protocol: tcp4
     hostIP: 127.0.0.1
 kits:
@@ -24,12 +20,12 @@ kits:
 mcp:
   servers:
     - name: "${{ env.args.name }}-beans"
-      command: "${{ env.args.control_dir }}/bin/beans-mcp"
+      command: "${{ env.fileDir }}/../../.local/chapters/bin/beans-mcp"
       args:
         - --beans-bin
-        - "${{ env.args.control_dir }}/bin/beans"
+        - "${{ env.fileDir }}/../../.local/chapters/bin/beans"
         - --beans-config
-        - "${{ env.args.control_dir }}/beans/.beans.yml"
+        - "${{ env.fileDir }}/../../.local/chapters/beans/.beans.yml"
         - --beans-data
-        - "${{ env.args.control_dir }}/beans/.beans"
+        - "${{ env.fileDir }}/../../.local/chapters/beans/.beans"
         - --enable-presenter-note-tool

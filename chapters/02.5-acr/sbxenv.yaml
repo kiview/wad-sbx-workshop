@@ -4,17 +4,13 @@ agent: claude
 args:
   name:
     required: true
-  port:
-    required: true
-  control_dir:
-    required: true
 sandboxOptions:
   skills: off
   cpus: 4
   memory: 8g
 ports:
   - sandbox: 8080
-    host: ${{ env.args.port }}
+    host: 3102
     protocol: tcp4
     hostIP: 127.0.0.1
 kits:

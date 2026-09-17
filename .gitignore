@@ -5,3 +5,4 @@ chapters/my-*/
 .DS_Store
 sample-app/
 host-only.txt
+factory/

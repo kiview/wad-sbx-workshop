@@ -25,30 +25,28 @@ Open `chapters/kits/herdr/spec.yaml`. Like the Pi kit, it records a pinned execu
 its installation and download access. This mixin supplies Herdr; it does not itself
 decide what the agents should do.
 
-Prepare the next working directory on the host:
+Add the team configuration and update the exercise instructions:
 
 ```bash
-mkdir -p "./chapters/my-04"
-cat chapters/my-03/sbxenv.yaml > chapters/my-04/sbxenv.yaml
-for file in chapter.env PROMPT.md launch team.tsv; do cat "chapters/04-team/$file" > "chapters/my-04/$file"; done
-chmod +x chapters/my-04/launch
+for file in chapter.env PROMPT.md team.tsv; do
+  cat "chapters/04-team/$file" > "factory/$file"
+done
 ```
 
-You are carrying forward your recipe and adding this chapter's settings and team
-configuration. In your editor, append to the existing `kits` list:
+Your existing recipe stays in place. You have added a team configuration beside it. In your editor, append to the existing `kits` list:
 
 ```yaml
-  - source: ../kits/herdr
+  - source: ../chapters/kits/herdr
 ```
 
 Your recipe now combines ACR for guidance, Pi for another assistant and Herdr for
-sessions. Before starting it, edit `chapters/my-04/chapter.env`: change `MODE=team` to
+sessions. Before starting it, edit `factory/chapter.env`: change `MODE=team` to
 `MODE=manual`. That asks our preparation helper to install everything and start the
 app, while leaving **you** to start the team in this first exercise.
 
 ## 2. Decide who should do what
 
-Open `chapters/my-04/team.tsv`. It has one tab-separated row for each role:
+Open `factory/team.tsv`. It has one tab-separated row for each role:
 
 | Role | Responsibility | Initial harness |
 |---|---|---|
@@ -72,7 +70,7 @@ use the configured MCP gateway client.
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-04/launch wad-ch-04 "$(pwd)/sample-app"
+./scripts/launch-factory.sh wad-ch-04
 ```
 
 The launcher uses your updated SBX recipe and starts the app as before. In terminal B:
@@ -168,7 +166,7 @@ uncertain, read the terminal before sending anything again.
 
 ## 6. Make this repeatable
 
-Exit the sandbox shell. On the host, edit your `chapters/my-04/chapter.env` back to
+Exit the sandbox shell. On the host, edit your `factory/chapter.env` back to
 `MODE=team`. On a future launch, preparation will call `start-team` for you. You
 have just performed the step that is being automated.
 

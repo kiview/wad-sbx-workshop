@@ -54,7 +54,7 @@ host terminal, also at the workshop root. Setup is shared; recipes
 are separate. The launcher uses no workspace mounts. It transfers a pinned app fixture
 and supplied support into `~/work` in the sandbox. The Beans directory stays on the host.
 `./chapters/03-pi/launch another-name` gives you a fresh sandbox without overwriting your previous run.
-Use `WORKSHOP_PORT=3200 ./chapters/03-pi/launch another-name` if the normal port is occupied.
+Stop the previous sandbox before launching another one; the factory exercises use port 3102.
 
 Chapter 1 mounts `sample-app/`: its changes are already on the host. Later factory
 chapters use isolated source snapshots. To carry one of those results forward,

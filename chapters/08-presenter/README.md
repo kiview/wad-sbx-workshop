@@ -103,7 +103,7 @@ are ready to show its service. If your prepared service listens on port 8080:
 sbx --cloud ports CLOUD_DEMO_NAME --publish 8080
 ```
 
-Open the URL returned by the cloud service. Unlike a local `3106:8080` mapping,
+Open the URL returned by the cloud service. Unlike a local `3102:8080` mapping,
 cloud publishing names a sandbox port and returns a remote URL.
 
 Ask what would happen to our **workshop task-access server running on the host** in this arrangement.

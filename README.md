@@ -69,6 +69,9 @@ Or browse the [chapter guide](chapters/README.md) to see the whole journey.
 Run host commands from this repository root. The sample application is in
 `sample-app/`.
 
+From chapter 02, you will build one configuration in `factory/`, adding tools and
+capabilities to the same `factory/sbxenv.yaml` as you go.
+
 Follow each chapter from the top. Each step tells you which files to create or
 edit, what to run and what to look for afterward.
 

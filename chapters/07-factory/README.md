@@ -28,28 +28,26 @@ Your recipes and role instructions are the reusable part.
 On the host:
 
 ```bash
-mkdir -p "./chapters/my-07"
-cat chapters/my-06/sbxenv.yaml > chapters/my-07/sbxenv.yaml
-cat chapters/my-06/team.tsv > chapters/my-07/team.tsv
-for file in chapter.env PROMPT.md launch; do cat "chapters/07-factory/$file" > "chapters/my-07/$file"; done
-chmod +x chapters/my-07/launch
+for file in chapter.env PROMPT.md; do
+  cat "chapters/07-factory/$file" > "factory/$file"
+done
 ```
 
-The recipe and team are copied unchanged. Open `chapters/my-07/chapter.env`: `TASK=wad-104` now
-asks for a service filter, and the browser port is 3108. There is no new kit to learn.
+The recipe and team stay unchanged. Open `factory/chapter.env`: `TASK=wad-104` now
+asks for a service filter, and the browser port is 3102. There is no new kit to learn.
 
 Continue from the chapter-06 application you saved:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-07/launch wad-ch-07 "./.local/reopen-app"
+./scripts/launch-factory.sh wad-ch-07 "./.local/reopen-app"
 ```
 
 The arguments choose a fresh sandbox name and your saved app, including the reopen
 behavior you just decided. If you stopped after chapter 05, use `"./.local/feature-app"`
-instead. If you did not save either result, run `./chapters/my-07/launch wad-ch-07` instead: it
-starts from the supplied assignment/resolution checkpoint. Choose the starting
-point that actually exists from your exercise.
+instead. If you did not save either result, run
+`./scripts/prepare-app.sh app-02-feature-solution`, then
+`./scripts/launch-factory.sh wad-ch-07` to use the supplied checkpoint.
 
 ## 3. Hand over the next task
 
@@ -74,7 +72,7 @@ developer and QA conversations. Notice what changes and what stays the same when
 the task changes: the coordinator still routes, the developer still implements,
 and QA still reviews.
 
-When they finish, open <http://127.0.0.1:3108>. Try filtering by `checkout-api`. Does
+When they finish, open <http://127.0.0.1:3102>. Try filtering by `checkout-api`. Does
 the result count follow the visible incidents? Do combined filters behave as you
 would expect? Use the app before reading the agents' conclusion.
 

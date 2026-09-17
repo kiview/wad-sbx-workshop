@@ -27,23 +27,21 @@ than building a new image during the workshop.
 
 ## 2. Add Pi to your existing recipe
 
-On the host, create the next working directory:
+Keep your environment recipe and update the exercise instructions:
 
 ```bash
-mkdir -p "./chapters/my-03"
-cat chapters/my-025/sbxenv.yaml > chapters/my-03/sbxenv.yaml
-for file in chapter.env PROMPT.md launch; do cat "chapters/03-pi/$file" > "chapters/my-03/$file"; done
-chmod +x chapters/my-03/launch
+for file in chapter.env PROMPT.md; do
+  cat "chapters/03-pi/$file" > "factory/$file"
+done
 ```
 
-These commands create your chapter directory and copy your previous recipe.
-Your terminal stays at the workshop root. The loop brings in this chapter's task/settings and launch entry point;
-`chmod` makes that entry point executable.
+This updates the task settings and prompt. Your environment recipe keeps the ACR
+kit you added in the previous chapter.
 
-In your editor, add this entry to the **existing** `kits` list in `chapters/my-03/sbxenv.yaml`:
+In your editor, add this entry to the **existing** `kits` list in `factory/sbxenv.yaml`:
 
 ```yaml
-  - source: ../kits/pi
+  - source: ../chapters/kits/pi
 ```
 
 Keep the ACR entry. You are composing two capabilities, not replacing one with the
@@ -52,17 +50,15 @@ other. The relative path is resolved from this recipe's directory.
 Preview the recipe:
 
 ```bash
-sbx env plan chapters/my-03/sbxenv.yaml --env-arg name=wad-ch-03 \
-  --env-arg port=3104 --env-arg "control_dir=$(pwd)/.local/chapters"
+sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-03
 ```
 
-These are the same arguments from chapter 02: a sandbox name, a browser port and
-the host workshop-data location. Find the Pi kit in the plan. Then create the app
+Only the sandbox name changes; the recipe supplies the port and installed kits. Find the Pi kit in the plan. Then create the app
 environment using our existing launcher:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-./chapters/my-03/launch wad-ch-03 "$(pwd)/sample-app"
+./scripts/launch-factory.sh wad-ch-03
 ```
 
 This still calls `sbx env create`, transfers your committed app and starts its
@@ -149,7 +145,7 @@ Pi/Google, Claude/Anthropic and Codex/OpenAI combination when accounts permit it
 Type `/quit` to leave Pi, then `exit` to leave the sandbox shell. Note down the
 working model ID you selected. Read `chapters/04-team/team.tsv` as an example—leave
 this reference file unchanged. In the next chapter you will edit your own copy at
-`chapters/my-04/team.tsv`. Each row separates four choices:
+`factory/team.tsv`. Each row separates four choices:
 
 | Choice | Question it answers |
 |---|---|

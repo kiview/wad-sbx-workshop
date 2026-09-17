@@ -72,22 +72,38 @@ sbx mcp rm wad-beans-intro
 
 ## 3. Put the connection in the recipe
 
-Prepare the chapter directory on the host:
+Keep the existing recipe and team configuration; update the task instructions:
 
 ```bash
-mkdir -p "./chapters/my-05"
-cat chapters/my-04/sbxenv.yaml > chapters/my-05/sbxenv.yaml
-cat chapters/my-04/team.tsv > chapters/my-05/team.tsv
-for file in chapter.env PROMPT.md launch; do cat "chapters/05-mcp/$file" > "chapters/my-05/$file"; done
-chmod +x chapters/my-05/launch
+for file in chapter.env PROMPT.md; do
+  cat "chapters/05-mcp/$file" > "factory/$file"
+done
 ```
 
 You are keeping your kits and model choices. The supplied chapter settings select
 `wad-102`, the assignment/resolution feature, and `MODE=mcp`. That mode delivers
 only a task ID: the agents must obtain the task through the new tool.
 
-Open the supplied `chapters/05-mcp/sbxenv.yaml`. Copy its **`mcp:` section** to the
-end of your `chapters/my-05/sbxenv.yaml`. Read it before saving:
+Add the following section to `factory/sbxenv.yaml`:
+
+```yaml
+mcp:
+  servers:
+    - name: "${{ env.args.name }}-beans"
+      command: "${{ env.fileDir }}/../.local/chapters/bin/beans-mcp"
+      args:
+        - --beans-bin
+        - "${{ env.fileDir }}/../.local/chapters/bin/beans"
+        - --beans-config
+        - "${{ env.fileDir }}/../.local/chapters/beans/.beans.yml"
+        - --beans-data
+        - "${{ env.fileDir }}/../.local/chapters/beans/.beans"
+        - --enable-presenter-note-tool
+```
+
+`${{ env.fileDir }}` is the directory containing the recipe. The paths point to
+our workshop tools and tasks in `.local/chapters/`, one level above `factory/`.
+SBX resolves them to absolute host paths.
 
 - `command` is the same host program you registered manually.
 - `args` selects the same backlog.
@@ -110,9 +126,8 @@ Preview the updated environment and then launch it:
 
 ```bash
 # HOST — terminal A, from the workshop repository
-sbx env plan chapters/my-05/sbxenv.yaml --env-arg name=wad-ch-05 \
-  --env-arg port=3106 --env-arg "control_dir=$(pwd)/.local/chapters"
-./chapters/my-05/launch wad-ch-05 "$(pwd)/sample-app"
+sbx env plan factory/sbxenv.yaml --env-arg name=wad-ch-05
+./scripts/launch-factory.sh wad-ch-05
 ```
 
 Look for the MCP server in the plan. The launcher then calls `sbx env create`,
@@ -224,8 +239,8 @@ permissions:
     allow: [cdn.playwright.dev]
 ```
 
-Save that as `chapters/my-browser-access/spec.yaml` on the host if you want to keep
-it, validate it with `sbx kit validate`, and add `../my-browser-access` to a future
+Save that as `factory/browser-access/spec.yaml` on the host if you want to keep
+it, validate it with `sbx kit validate`, and add `./browser-access` to a future
 recipe's kits. You have moved a manual operator decision into a declared environment
 requirement. Editing a recipe does not change the running sandbox.
 
@@ -236,7 +251,7 @@ you do not need organization access to complete this local exercise. See
 
 ## 7. See the result on both sides
 
-When the team reports completion, open **<http://127.0.0.1:3106>** and try assigning
+When the team reports completion, open **<http://127.0.0.1:3102>** and try assigning
 and resolving an incident. Does the behavior match the task you read earlier?
 
 In host terminal C, from the workshop repository, read the same demo task again:

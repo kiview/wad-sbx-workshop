@@ -12,8 +12,7 @@ for kit in pi herdr multi-provider; do sbx kit validate "$root/chapters/kits/$ki
 for chapter in "$root/chapters/0"*/chapter.env; do
   source "$chapter"
   git -C "$root/.local/app" rev-parse --verify "$APP_REF^{commit}" >/dev/null
-  sbx env plan "${chapter%/*}/sbxenv.yaml" --env-arg name=wad-chapter-plan \
-    --env-arg "port=$PORT" --env-arg "control_dir=$root/.local/chapters" >/dev/null
+  sbx env plan "${chapter%/*}/sbxenv.yaml" --env-arg name=wad-chapter-plan >/dev/null
   printf 'VALID recipe + fixture: %s\n' "${chapter%/*}"
 done
 echo 'PASS: syntax, kit validation, fixture refs and real SBX environment plans. This is not an end-to-end run.'
