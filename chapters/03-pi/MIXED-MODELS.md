@@ -46,9 +46,8 @@ cd "$WORKSHOP/chapters/04-team"
 
 Open the short `launch-mixed` script first if you want to see its choices. It selects
 the sandbox kit, this role table and browser port 3205, then uses the shared launcher.
-For this RC, custom sandbox kits use the `sbx create KIT --kit MIXIN` path: environment
-planning accepts them, but `sbx env create` did not create that custom agent in our
-rehearsal. This is why the variation uses a different creation command.
+The script uses `sbx create KIT --kit MIXIN` to select the custom sandbox kit and
+apply its mixins.
 
 Leave the launcher open. In another host terminal:
 
@@ -76,4 +75,4 @@ handoff protocol cannot provide more account quota.
 
 Exit the shell, end the launch terminal and stop `my-mixed-team` when done. Return
 to the normal recipe for chapter 05: the custom-base variation still needs additional
-gateway-client configuration before it can replace that chapter's tested MCP route.
+gateway-client configuration before it can replace that chapter's Claude MCP connection.

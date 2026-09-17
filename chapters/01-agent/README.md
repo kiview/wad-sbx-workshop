@@ -19,9 +19,8 @@ sbx run claude "$WARMUP" --name wad-manual --skills off --cpus 4 --memory 8g
 `--name` gives the environment a reusable name. `--skills off` keeps the exercise
 independent of host-installed skills; the final options give it four CPUs and 8 GB.
 This creates the sandbox and opens Claude Code in your app directory. Keep this
-terminal open while working. If you already created `wad-manual` with the older
-mountless instructions, use a fresh name such as `wad-manual-mounted` throughout
-this chapter: reattaching does not change an existing sandbox's mounts.
+terminal open while working. If you repeat this exercise, choose a fresh sandbox
+name to create a new environment with these settings.
 
 **Sign in:** if Claude asks you to authenticate, choose your subscription account
 and follow the browser login. You can also type `/login` inside Claude. Existing
@@ -160,6 +159,6 @@ source ./scripts/workshop-env.sh --completed
 This selects a separate working copy containing the supplied solution. Your own
 work is preserved. Continue with chapter 02. In another terminal, ordinary
 `source ./scripts/workshop-env.sh` picks up the same selection. The shortcut prepares
-code; it does not start a sandbox or claim that an agent implemented it.
+code. You will use this completed app as the starting point for the next chapter.
 
 Next: [recipes and the host launcher](../02-launcher/README.md).

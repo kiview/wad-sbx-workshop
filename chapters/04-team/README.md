@@ -150,12 +150,10 @@ handoff inbox human --json
 
 Read the result. Did the coordinator combine the answers? Did QA actually inspect
 the app? If a session is still working, give it time. A busy status alone tells you
-less than its conversation. Codex statuses can also be unreliable, which is one
-reason we keep the messages in files.
+less than its conversation; read the messages to follow the work.
 
 If a wakeup says the agent is busy, let it finish before retrying. If delivery is
-uncertain, read the terminal before sending anything again. You do not need to
-understand the helper's retry machinery to understand the two-step interaction.
+uncertain, read the terminal before sending anything again.
 
 ## 6. Make this repeatable
 

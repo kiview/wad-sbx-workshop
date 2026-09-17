@@ -107,7 +107,6 @@ a live model conversation.
 For your own project, start with one change: replace the sample app and its startup
 helper, or write a task for a different feature. Decide which guidance belongs in
 skills, which tools belong in kits, and which host operations deserve an MCP tool.
-You can add independent acceptance checks if your workflow needs them; they do not
-have to be hidden inside the little host launcher.
+
 
 Next: [explore what else SBX can do](../08-presenter/README.md), with the presenter.

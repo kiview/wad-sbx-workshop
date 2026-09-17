@@ -36,8 +36,8 @@ assignment and resolution:
 ./launch wad-ch-06
 ```
 
-This is a deliberate teaching checkpoint, not your earlier agents' output. If you
-saved a completed chapter-05 result and want to continue it instead, use
+This starts from the supplied assignment-and-resolution checkpoint. To continue
+from your own completed chapter-05 result, use
 `./launch wad-ch-06 "$WORKSHOP/.local/feature-app"` **instead of** that command.
 Leave the launch terminal open.
 

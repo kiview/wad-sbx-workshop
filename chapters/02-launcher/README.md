@@ -148,7 +148,7 @@ the launch step below runs it for you.** It changes `plan` to `create` and adds
 sbx env create sbxenv.yaml --env-arg name=wad-ch-02 --env-arg port=3102 --env-arg "control_dir=$CONTROL" --auto-approve
 ```
 
-That is the host harness. It does not implement tasks or coordinate the agents.
+That is the host harness: start an environment and give it the source and task.
 `chapter.env` picks the task and default port; `launch` is a short entry point to
 this shared script. For this chapter, `TASK=wad-101` selects the warm-up.
 
@@ -165,7 +165,6 @@ chapter 1 (or its completed shortcut). The script runs the same SBX creation com
 It exports committed files, so ask the chapter-1 agent to commit first if needed.
 
 Leave this terminal open: its final SBX connection keeps the sandbox awake.
-The script is waiting, not supervising the task.
 
 ## 5. Open the agent and inspect what it received
 

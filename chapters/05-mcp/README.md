@@ -93,8 +93,7 @@ end of your `chapters/my-05/sbxenv.yaml`. Read it before saving:
 - `command` is the same host program you registered manually.
 - `args` selects the same backlog.
 - The server name uses this sandbox's name so separate runs have separate registrations.
-- `--enable-presenter-note-tool` enables appending notes. The name is historical;
-  we use it for the learner exercise too.
+- `--enable-presenter-note-tool` enables the tool for appending task notes.
 
 ### Decide what the agent should be allowed to change
 
@@ -136,7 +135,7 @@ connections, then return to the conversation and ask:
 > requested feature to me. Do not implement it or change the backlog yet.
 
 Watch which tools Claude calls. You should be discussing the host's actual task,
-not a task invented from the application source. Read the requirements together:
+with the requirements supplied by Beans. Read them together:
 what must assignment do, and what information is required to resolve an incident?
 
 Exit this exploration conversation when you understand the task. We will now give
@@ -251,8 +250,8 @@ In host terminal C, where you sourced the workshop variables, read the same Bean
 
 This is the same task-reading command from chapter 02. This time it should include
 the team's result note: what changed, the commit and the review/check outcomes.
-The agents have written back through the bridge. Their note remains their report;
-we have not added a separate host acceptance service.
+The agents have written back through the bridge. Read their note to see what they
+changed and how they checked it.
 
 Back in terminal B, inspect the working tree and latest commit:
 

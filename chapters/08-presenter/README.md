@@ -123,5 +123,4 @@ agent to make a harmless allowed call and a harmless denied one. Read the respon
 together: what was blocked, who owns that rule, and where could an operator change it?
 
 Relate this to the earlier local network decision and the adapter's limited tool
-surface. They are different places to control access. If organization access is
-unavailable, discuss the design without presenting a simulated result as live.
+surface. Compare who configures each control and which operations it governs.

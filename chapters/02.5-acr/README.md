@@ -65,7 +65,7 @@ contains four coding rules and one `review-change` skill. Open the policy and re
 the rules before giving them to the agent. Which would matter for the warm-up?
 
 The distinction matters: **the kit makes ACR available; the policy package supplies
-the content ACR installs**. ACR is not our team orchestrator.
+the content ACR installs**.
 
 Prepare your next recipe on the host:
 
@@ -154,8 +154,7 @@ Continue the conversation:
 > informed it. Do not modify the application.
 
 Follow up on one finding. Can you connect the advice to the rule you read earlier?
-The point of sharing a skill is to influence how the agent works, not simply to
-place another file in the repository.
+The shared skill gives both assistants the same review procedure.
 
 Exit Claude. On the host, edit `chapters/my-025/chapter.env` back to `USE_ACR=1`. Open
 `chapters/support/bin/prepare` and find the `acr install` and `acr realize` lines.

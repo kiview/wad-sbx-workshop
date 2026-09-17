@@ -8,13 +8,12 @@ the database container will run inside a sandbox.
 
 ## 1. Install the host prerequisites
 
-The rehearsed host is macOS on Apple silicon. Other platforms need a separate
-rehearsal; a downloadable SBX binary alone does not verify these workshop scripts.
+These instructions use macOS on Apple silicon.
 Use the [standalone SBX installation instructions](https://docs.docker.com/ai/sandboxes/install/).
 No host Docker engine or Docker Desktop is required. Docker containers will run
 **inside** the sandbox.
 
-For the macOS rehearsal, install the release-candidate channel and host utilities:
+Install the release-candidate channel and host utilities:
 
 ```bash
 # HOST
@@ -32,7 +31,7 @@ If SBX is already installed, check which executable `command -v sbx` selects bef
 changing it. This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
 may now deliver a later release; use the assets and installation guidance on the
 [pinned release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2)
-when reproducing this rehearsal. Do not install two conflicting CLI versions.
+to install that version. Keep one SBX executable on your PATH.
 
 You also need a browser, SSH, a Bash-compatible terminal, internet access and enough
 available memory for a 4-CPU/8-GB sandbox. Run one main chapter sandbox at a time

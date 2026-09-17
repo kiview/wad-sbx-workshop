@@ -1,51 +1,67 @@
 # Build a software factory with Docker Sandboxes
 
-A two-hour workshop: start one agent in an isolated environment, then add
-repeatable recipes, shared skills, another assistant, Herdr coordination, host task
-access through MCP, and human intervention through SSH.
+Give a team of coding agents a task, watch them implement and review it, and step
+in when they need a product decision. In this two-hour workshop, you will build
+that workflow yourself, starting with one agent running inside Docker Sandboxes.
 
-**Start with [chapter 00](chapters/00-setup/README.md).**
-Read chapters from the top; each introduces its capability before assembling the
-finished version. [All chapters](chapters/README.md) ·
-[Presenter extras](chapters/08-presenter/README.md)
+## What you will build
 
-This is the private workshop edition. The original development repository retains
-tests, historical reports and the larger reference implementation. Here:
+Your factory will work on an incident triage board: a web application with an API
+and a PostgreSQL database. Agents will add features to the board, run commands and
+database containers inside their sandbox, review each other's changes, and write
+results back to your task backlog.
 
-| Directory | Purpose |
+![The incident triage board you will extend](chapters/images/incident-triage-board.png)
+
+You will leave with sandbox recipes, reusable kits, coding guidance and a team
+configuration you can adapt to your own project.
+
+## What you will learn
+
+Each chapter adds something the factory needs:
+
+| Step | What you will learn |
 |---|---|
-| `chapters/00-setup` through `07-factory` | Instructions and completed reference states |
-| `chapters/examples`, `chapters/kits` | Small teaching examples and mixins |
-| `chapters/support` | Shared launcher, sandbox helpers and role briefs |
-| `scripts` | Download materials, install host tools and seed Beans |
-| `backlog/seed` | Four tasks used by the workshop |
-| `chapters/kits/multi-provider` | Mixed-provider team variation |
+| Run one agent | Use SBX interactively, explore file isolation and shared files, run containers, and open the app through a published port. |
+| Repeat the setup | Describe an environment with sbxenv and connect it to a Beans task with a small host script. |
+| Share tools and guidance | Build a simple kit, then use the ACR kit to install a coding policy and review skill. |
+| Choose your assistants | Add Pi through a kit and configure the assistant, provider and model for each role. |
+| Form a team | Use Herdr to manage sessions and pass assignments between a coordinator, developer and reviewer. |
+| Connect to host tools | Give the team scoped access to Beans through the MCP gateway and explore network controls. |
+| Bring in a human | Join through SSH, answer a product question and let the team continue. |
+| Run another job | Reuse your factory, try the changed app and bring the source back to your laptop. |
 
-The separate application and prebuilt MCP server download from the private
-[materials release](https://github.com/shelajev/wad-sbx-workshop/releases/tag/materials-v0.1.0)
-into ignored directories. No host Docker engine, Docker Desktop or Go build is
-needed. GitHub CLI access to this private repository is needed to download them.
+The workshop closes with presenter demonstrations of live mounts, cloud sandboxes
+and organization governance.
 
-Use `source ./scripts/workshop-env.sh` to prepare each host terminal.
-Work in `chapters/my-*` directories. Generated state and model output stay under
-`.local/`; neither belongs in Git. The factory runs app code inside SBX. The host
-launcher starts the environment; it does not supervise, independently verify,
-merge, or automatically close tasks.
+## Get started
 
-## Rehearsal status
+Bring a **Mac with Apple silicon**, a terminal, a browser and model access. The
+first exercise uses Claude Code with your Claude account. Later, you will configure
+Pi's provider access; [chapter 00](chapters/00-setup/README.md#2-have-an-agent-account-ready)
+explains the account requirements. Docker containers run inside SBX, so you do not
+need Docker Desktop or a host Docker engine.
 
-The source chapter assemblies were exercised on macOS/Apple silicon with
-SBX v0.45.0-rc2. The new instructions and this trimmed distribution still need a
-full learner rehearsal. Other host platforms are not advertised as rehearsed.
-Gemini access currently has a known account quota limitation. Cloud and organization
-governance remain presenter-only extensions.
+This repository and its downloadable materials currently require GitHub access.
+Installation and authentication are part of the workshop.
 
-This edition derives from workshop commit `4c5e5f3`; its app bundle preserves app
-commit `e15230f` and fixture tags. The materials manifest identifies the prebuilt
-adapter's build provenance. New packaging does not imply a new adapter build.
+**[Start with chapter 00: setup →](chapters/00-setup/README.md)**
 
-Local checks: `chapters/check` validates recipes against the installed SBX CLI and
-checks fixture refs after materials download. It does not run a team or model calls.
+Or browse the [chapter guide](chapters/README.md) to see the whole journey.
+
+## How to use this repository
+
+Follow each chapter from the top. You will build your own configuration in
+`chapters/my-*`; the numbered chapter directories contain completed reference
+configurations. Supplied app checkpoints let you catch up and keep exploring.
+
+| Directory | What is inside |
+|---|---|
+| `chapters/00-setup` through `07-factory` | Walkthroughs and completed reference configurations |
+| `chapters/examples` and `chapters/kits` | Small examples and reusable kits |
+| `chapters/support` | Launcher, sandbox helpers and agent role instructions |
+| `scripts` | Material downloads and host setup helpers |
+| `backlog/seed` | Tasks for the agents to work on |
 
 ## License
 
