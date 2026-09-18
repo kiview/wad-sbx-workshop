@@ -57,6 +57,11 @@ jobs:
         with:
           go-version-file: mcp/beans/go.mod
           cache-dependency-path: mcp/beans/go.sum
+      - name: Select adapter version
+        id: version
+        run: |
+          . scripts/versions.env
+          echo "value=$BEANS_MCP_VERSION" >> "$GITHUB_OUTPUT"
       - run: ./scripts/build-mcp.sh --release
       - name: Verify checksums
         run: |
@@ -66,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: beans-mcp-release
-          path: dist/beans-mcp/*/
+          path: dist/beans-mcp/${{ steps.version.outputs.value }}/
           if-no-files-found: error
   publish:
     if: startsWith(github.ref, 'refs/tags/beans-mcp-v')

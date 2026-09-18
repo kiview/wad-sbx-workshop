@@ -24,7 +24,9 @@ From the workshop repository, run:
 
 The installer downloads the pinned adapter release and verifies its SHA-256
 checksum. Chapter 00 also downloads it through `get-materials.sh`; chapter 05
-uses `install-mcp.sh --from-local` to install that verified download.
+uses `install-mcp.sh --from-local` to install that verified download. Restart any
+sandbox already using the adapter after an upgrade so its gateway starts the new
+executable.
 
 Release binaries cover Windows x64, macOS ARM64/x64 and Linux ARM64/x64. Windows
 uses `beans.exe` and `beans-mcp.exe`; the workshop wrapper runs through Git Bash.
