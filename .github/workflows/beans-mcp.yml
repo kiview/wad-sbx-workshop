@@ -20,10 +20,17 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-go@v5
         with:
           go-version-file: mcp/beans/go.mod
           cache-dependency-path: mcp/beans/go.sum
+      - name: Check sample-app preparation
+        run: |
+          ./scripts/get-materials.sh
+          bash scripts/tests/app-cli-paths.sh
       - name: Install real Beans and build the native adapter
         run: |
           ./scripts/install-beans.sh

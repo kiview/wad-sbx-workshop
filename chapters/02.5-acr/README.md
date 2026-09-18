@@ -59,7 +59,24 @@ sbx rm wad-kit-first
 ## 2. Use a kit to supply a real tool
 
 The [ACR kit](https://github.com/shelajev/acr-sbx-kit) installs a package manager
-for agent guidance. Our [workshop policy package](https://github.com/shelajev/coding-policy/tree/workshop)
+for agent guidance. Before adding this Git-hosted kit, check the allowed publishers
+in HOST:
+
+```bash
+sbx settings get kit.allowedSources
+```
+
+The kit needs `github.com/shelajev/` in that list. On a personal installation whose
+current list is exactly `["docker.io/"]`, approve the workshop publisher with:
+
+```bash
+sbx settings set kit.allowedSources '["docker.io/","github.com/shelajev/"]'
+```
+
+This permits kits from that GitHub publisher. Preserve any other existing entries
+when adding it; on a managed installation, ask your administrator to approve it.
+
+Our [workshop policy package](https://github.com/shelajev/coding-policy/tree/workshop)
 contains four coding rules and a `review-change` skill. Open that package and read
 a rule: how would it help someone review the change you just made?
 

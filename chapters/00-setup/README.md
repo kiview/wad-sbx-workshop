@@ -102,10 +102,11 @@ Never put actual keys or OAuth tokens in the workshop's files.
 
 ## 3. Clone the workshop and get its materials
 
-Choose a directory whose full path contains no spaces, then download the workshop
-repository. The bundled application's migration and seed entry points currently
-skip execution when their path contains spaces, leaving the database empty.
-This fixture limitation applies on every host platform.
+Clone the workshop repository. Material setup patches each fresh sample-app
+checkpoint so migration and seed commands work in paths containing spaces and
+browser checks fail when Chromium cannot start. The fixes are recorded as a local
+`Workshop setup` commit before you start the exercises; existing application work
+is preserved.
 
 ```bash
 # HOST
