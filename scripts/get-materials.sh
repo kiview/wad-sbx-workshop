@@ -4,23 +4,20 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 . "$ROOT/scripts/common.sh"
 . "$ROOT/scripts/versions.env"
-asset="$(beans_mcp_asset)"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 release_url="https://github.com/shelajev/wad-sbx-workshop/releases/download/materials-v0.1.0"
-for name in incident-triage-board.bundle "$asset" SHA256SUMS LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
+for name in incident-triage-board.bundle SHA256SUMS; do
   curl --fail --location --silent --show-error --retry 3 "$release_url/$name" --output "$work/$name"
 done
-for name in incident-triage-board.bundle "$asset" LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
+for name in incident-triage-board.bundle; do
   expected="$(awk -v n="$name" '$2 == n {print $1}' "$work/SHA256SUMS")"
   [ -n "$expected" ] || die "No published checksum for $name"
   actual="$(sha256_file "$work/$name")"
   [ "$actual" = "$expected" ] || die "Checksum mismatch: $name"
 done
-mkdir -p "$ROOT/.local" "$ROOT/dist/beans-mcp/$BEANS_MCP_VERSION"
-for name in "$asset" SHA256SUMS LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
-  copy_file "$work/$name" "$ROOT/dist/beans-mcp/$BEANS_MCP_VERSION/$name"
-done
+mkdir -p "$ROOT/.local"
+"$ROOT/scripts/download-mcp.sh"
 if [ -e "$ROOT/.local/app" ]; then
   info 'Keeping your existing .local/app; no application files changed.'
 else
