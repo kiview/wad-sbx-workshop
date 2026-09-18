@@ -7,13 +7,20 @@ then give the team a different project and task.
 
 ## 1. Choose the project
 
-In HOST, clone your chosen repository. Replace the URL with its actual clone URL:
+Pick a repository you can clone and a change small enough to try during the
+remaining workshop time. A familiar public project is a useful starting point:
+you can judge the result without first learning a new codebase.
+
+In HOST, clone it. Replace `https://github.com/OWNER/REPOSITORY.git` with its actual
+clone URL; keep `projects/my-project` as the local directory for these instructions:
 
 ```bash
 mkdir -p projects
 git clone --config core.autocrlf=false --config core.eol=lf https://github.com/OWNER/REPOSITORY.git projects/my-project
 ```
 
+`mkdir` creates a place for your chosen project. The Git options keep text files
+with Linux-compatible line endings for the tools inside SBX, including on Windows.
 This working copy will be mounted directly, including its Git history. The
 application from the earlier chapters remains in `sample-app/`. Work on only this
 new project in the next sandbox; there is no separate output copy to retrieve.
@@ -44,8 +51,8 @@ Add it to the host backlog:
 ./scripts/beans create "My project's first factory task" --type task --status todo --body-file factory/TASK.md
 ```
 
-Beans prints the ID. Put it in the `TASK=` setting in `factory/chapter.env`.
-Keep `MODE=mcp`, `USE_ACR=1` and `SESSION=shell`; the gateway will read this task just
+Beans prints the new task's ID. In `factory/chapter.env`, replace `wad-103` on
+the `TASK=` line with that ID. Keep `MODE=mcp`, `USE_ACR=1` and `SESSION=shell`; the gateway will read this task just
 as it read the sample tasks. The new task lives in your workshop backlog on the
 host; creating it doesn't open an issue in the project's upstream repository.
 
@@ -74,8 +81,8 @@ to work out how to build and test it. Add anything it can't learn from the code,
 such as a reproduction or a design constraint. It can discover the installation
 commands from the project itself.
 
-The setup helper keeps an existing `AGENTS.md`. Read the project's guidance before
-adding another policy so you understand the conventions the agents should follow.
+`AGENTS.md`, if this project has one, contains instructions for coding assistants.
+The setup helper keeps it. Read the project's guidance before adding another policy so you understand the conventions the agents should follow.
 As you watch them set up the project, look for instructions you'd want to reuse as
 a skill or tools you'd want to install through a kit next time.
 
@@ -125,7 +132,8 @@ and compare the behavior with your requirements. The existing history and new
 commits are in this working copy. Decide what to keep through your normal review
 process; the workshop does not publish changes upstream.
 
-When finished, exit the SANDBOX shell. In HOST:
+When finished, press Ctrl-C to leave `crew watch`, then type `exit` to leave
+the SANDBOX shell. In HOST:
 
 ```bash
 sbx env rm factory/sbxenv.yaml --env-arg name=wad-my-project --env-arg "app=$(pwd)/projects/my-project"

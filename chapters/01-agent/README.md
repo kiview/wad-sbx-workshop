@@ -18,14 +18,17 @@ sbx run claude "$(pwd)/sample-app" --name wad-manual --skills off --cpus 4 --mem
 application to share, and `--name` gives the environment a reusable name. `--skills off` keeps the exercise
 independent of host-installed skills; the final options give it four CPUs and 8 GB.
 This creates the sandbox and opens Claude Code in your app directory. Keep this
-terminal open while working. If you need to start this chapter over, exit its session and remove `wad-manual`
-from HOST with `sbx rm wad-manual`, then run this command again. Removing a sandbox
-does not delete the mounted application.
+terminal open while working.
 
 **Sign in:** if Claude asks you to authenticate, choose your subscription account
 and follow the browser login. You can also type `/login` inside Claude. Existing
 SBX credentials may mean you are already authenticated. See
 [Claude authentication in SBX](https://docs.docker.com/ai/sandboxes/agents/claude-code/).
+
+Before continuing, send Claude a short message such as “Hello, what directory
+are we working in?” Wait for a response to confirm that your model access works.
+If it reports an authentication error, ask the instructor for help before starting
+the application exercise.
 
 The built-in Claude configuration starts with permission prompts bypassed (the
 “YOLO” mode for this exercise). SBX still enforces its own access boundaries.
@@ -90,12 +93,10 @@ On Windows, first run this in your **HOST Git Bash tab**, from the workshop root
 ./scripts/prepare-workspace.sh wad-manual
 ```
 
-Some Windows shared mounts lose npm's executable symlinks. This helper checks
-whether links work and, when needed, mounts sandbox-local storage at
-`sample-app/node_modules`. Existing host dependencies stay on disk but are hidden
-inside this sandbox; the application source stays shared. Dependencies are
-installed separately in each sandbox. Repeat the command if you recreate
-`wad-manual`; later chapter launchers do this automatically.
+This prepares storage for npm dependencies inside the sandbox when the Windows
+shared directory cannot support their executable links. Your application source
+and Git history stay shared with the host. The helper reports whether it needed
+to prepare that storage. Later chapter launchers include this step for you.
 
 Give Claude this prompt:
 

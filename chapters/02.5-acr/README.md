@@ -136,11 +136,14 @@ acr check --agent claude-code --agent codex
 
 `install` adds the pinned policy without replacing an existing dependency choice.
 `realize` writes the agent-facing guidance. Claude and Codex have generated formats;
-Pi can read the shared `AGENTS.md` and skill too. For a project without `agents.yaml`,
-the helper also selects Claude and Codex and sets `--freshness none`. Existing
-configuration is preserved. Both review skills must exist and `acr check` must
-pass before the helper succeeds. It also removes GitHub token placeholders for this
-public download; that compatibility detail stays in the helper.
+Pi can read the shared `AGENTS.md` and skill too. `check` confirms that generated
+instructions match the installed package. You should now have a review skill for
+both Claude and Codex.
+
+For a project without `agents.yaml`, the helper selects those two assistants and
+sets `--freshness none` to keep the exercise on its chosen policy revision. An
+existing project's package choices and configuration are kept. You can inspect
+`chapters/support/bin/install-guidance` on the host to see the complete helper.
 
 Open `sample-app/AGENTS.md` in your host editor. These are real files in the same
 mounted project. Ask Claude:

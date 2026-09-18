@@ -150,8 +150,17 @@ might keep working without noticing that file. The notification gives it a turn
 to read the message. We can then follow the handoff through the stored messages,
 even when an assistant's busy/idle status is unreliable.
 
-Open `~/work/factory/messages/` inside SBX to see the stored conversation. Agents
-use `crew send ROLE "message"` to save and deliver their replies together, just as
+To see how a conversation is stored, ask the coordinator through the SANDBOX shell:
+
+```bash
+crew ask "Show one message file from ~/work/factory/messages/ and explain its sender, recipient and body. Do not change any files."
+crew watch
+```
+
+Look for the same request and roles you just followed in the message view.
+Press Ctrl-C when you have read the answer.
+
+Agents use `crew send ROLE "message"` to save and deliver their replies together, just as
 you use `crew ask`. We'll keep using these helpers for the rest of the workshop.
 
 ## 5. Make startup repeatable

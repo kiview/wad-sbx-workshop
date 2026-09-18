@@ -55,10 +55,10 @@ SH
 for mode in default app-only; do
   fixture="$work/$mode"
   make_fixture "$fixture"
-  args=()
-  [ "$mode" != app-only ] || args+=(--app-only)
+  set --
+  [ "$mode" != app-only ] || set -- --app-only
   PATH="$work/bin:$PATH" MATERIALS_TEST_LOG="$fixture/calls" MATERIALS_TEST_DATA="$work/materials" \
-    bash "$fixture/scripts/get-materials.sh" "${args[@]}" > "$fixture/output" 2>&1
+    bash "$fixture/scripts/get-materials.sh" "$@" > "$fixture/output" 2>&1
   grep -qx 'download incident-triage-board.bundle' "$fixture/calls"
   grep -qx 'download SHA256SUMS' "$fixture/calls"
   grep -qx clone "$fixture/calls"

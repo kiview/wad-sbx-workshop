@@ -33,20 +33,22 @@ Claude's model-account login happens separately in chapter 1.
 
 ### Windows x64
 
-Install Git for Windows and jq. For this workshop, download and run
-`DockerSandboxes.msi` from the
-[v0.45.0-rc2 release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2).
-
-For stable SBX releases, you can also install through WinGet in PowerShell:
+Install [Git for Windows](https://gitforwindows.org/), which includes Git Bash.
+Install [jq](https://jqlang.org/download/#windows), the command-line JSON reader
+used by our host scripts. With WinGet, run this in **PowerShell**:
 
 ```powershell
-winget install -h Docker.sbx
+winget install jqlang.jq
 ```
 
-The workshop's RC requires the MSI above. Both installation methods configure
-PATH automatically. Open new **Git Bash** tabs after installation and use them
-for both workshop terminals. Git Bash supplies the shell and Unix utilities
-used by the host scripts; application code still runs inside the Linux sandbox.
+Download and run `DockerSandboxes.msi` from the
+[v0.45.0-rc2 release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2).
+Follow the Windows prerequisites in the SBX installation guide linked above.
+
+Open new **Git Bash** tabs after installation and use them for both workshop
+terminals from here onward. Git Bash supplies the shell and Unix utilities used
+by the host scripts. SBX runs on Windows; the agents and application code run
+inside its Linux sandbox.
 
 Check the version and sign in:
 
@@ -56,17 +58,16 @@ sbx login
 ```
 
 Use **Windows OpenSSH Client** for chapter 06. In Git Bash its executable is
-`/c/Windows/System32/OpenSSH/ssh.exe`; enable Windows OpenSSH Client if that file
-is missing. Git Bash's bundled `/usr/bin/ssh` does not resolve SBX's generated
-Windows Include path correctly. [Chapter 06](../06-human/README.md#2-reach-the-existing-team-through-ssh)
-shows the native-client command.
+`/c/Windows/System32/OpenSSH/ssh.exe`. If it is missing, follow Microsoft's
+[OpenSSH installation instructions](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)
+to add the **client**. [Chapter 06](../06-human/README.md#2-reach-the-existing-team-through-ssh)
+shows how to use it to join your running team.
 
 ### Check the version and tools
 
-This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
-may now deliver a later release; use the assets and installation guidance on the
-[pinned release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2)
-to install that version. Use `sbx version` again afterward; the version for this workshop is `v0.45.0-rc2`.
+Check that `sbx version` reports **v0.45.0-rc2**, the version used by these
+instructions. If Homebrew installed a different RC, use the installer for your
+platform from the [workshop release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2).
 
 You also need a browser, SSH, a Bash-compatible terminal, internet access and enough
 available memory for a 4-CPU/8-GB sandbox. Run one main chapter sandbox at a time
@@ -102,11 +103,8 @@ Never put actual keys or OAuth tokens in the workshop's files.
 
 ## 3. Clone the workshop and get its materials
 
-Clone the workshop repository. Material setup patches each fresh sample-app
-checkpoint so migration and seed commands work in paths containing spaces and
-browser checks fail when Chromium cannot start. The fixes are recorded as a local
-`Workshop setup` commit before you start the exercises; existing application work
-is preserved.
+Choose where you want to keep the workshop on your laptop. Open your terminal
+there, then clone the repository:
 
 ```bash
 # HOST
@@ -114,32 +112,35 @@ git clone https://github.com/shelajev/wad-sbx-workshop.git
 cd wad-sbx-workshop
 ```
 
-The repository keeps text files in LF format, and the material setup configures
-sample-app checkouts the same way. Linux shell scripts fail if Windows Git
-converts their line endings to CRLF. If an older checkout already has CRLF files,
-start with a fresh clone in a new directory and keep your existing work in the
-original directory.
-
 ### Download the application and the prebuilt tool
 
 The workshop's `get-materials.sh` script downloads the sample application and
 saved versions you can use to catch up later. It also downloads the Beans MCP
 server, which will let agents in the sandbox read tasks from your host backlog
-in chapter 05. The script gets both from our GitHub release and verifies their
-checksums. At this stage, it only prepares files; you'll start the app in chapter 01.
+in chapter 05. The script downloads these materials from the workshop's GitHub
+releases and verifies their checksums. You'll start the app in chapter 01.
 
 ```bash
 # HOST — from the workshop repository
 ./scripts/get-materials.sh
 ```
 
-The application checkpoints are stored in `.local/app`. The prebuilt task-access
-tool is downloaded to `dist/`; we will install it for the factory in chapter 05.
+When it finishes, open `sample-app/README.md` in your editor. This is the project
+your agents will work on. You should also find `host-only.txt` at the workshop
+root; we'll use it to explore which files a sandbox can see.
 
 ### Find your workshop files
 
-The download script also prepares `sample-app/`, your working copy for the coding
-exercises. It keeps an existing working copy if you run the download again.
+| Path | What you use it for |
+|---|---|
+| `sample-app/` | Your application source and its Git history, shared with each sandbox. |
+| `chapters/` | The instructions you are following. |
+| `.local/app/` | Saved application checkpoints for catching up if you need one. |
+| `dist/` | The downloaded MCP tool, ready to install in chapter 05. |
+
+In chapter 02, you'll create `factory/` for the sandbox settings and team
+configuration. Keep application changes in `sample-app/` and factory settings in
+`factory/`; the chapters will name each file as you need it.
 
 **Run host commands from the workshop repository root.** The sample application's
 code is in `sample-app/`. In each new host terminal, open the workshop repository.

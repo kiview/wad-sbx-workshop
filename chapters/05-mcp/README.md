@@ -20,16 +20,20 @@ reading a task and, when enabled, appending a note. It does not expose arbitrary
 shell commands or task deletion. We can make the integration useful without giving
 the agent our entire host filesystem or connecting a production issue tracker.
 
-Install the downloaded adapter in HOST:
+Chapter 00 downloaded the adapter for your computer. Install it into the
+workshop's tools directory from HOST:
 
 ```bash
 ./scripts/install-mcp.sh --from-local
 ```
 
-This installs the native Go executable downloaded during setup. The download
-selects the build for your operating system and CPU; you do not need Go installed. The gateway starts
-it as a host process and exchanges messages over stdin/stdout (**stdio**). No host
-Docker engine, public web service or separate OAuth login is needed.
+`--from-local` uses that earlier download. The installer checks its checksum,
+places the executable in `.local/chapters/bin/` and prints its version. It is
+prebuilt for your operating system, so you do not need to install Go or compile it.
+
+The gateway will start this program on your host and exchange MCP messages through
+its standard input and output (**stdio**). This gives the sandbox a connection to
+Beans without needing a public web service or another account login.
 
 Open `scripts/beans-mcp` in your editor. This short entry point selects the same
 workshop backlog as `scripts/beans`. By default it is read-only; `--allow-notes`
@@ -53,12 +57,14 @@ mcp:
       args: ["${{ env.fileDir }}/../scripts/beans-mcp", --allow-notes]
 ```
 
-`command` is the **host** Bash executable; the first argument is the workshop
-script relative to the environment file. Windows cannot launch a Bash script
-directly. The launcher supplies the absolute Git Bash executable as `host_shell`
-on Windows, so the daemon does not select WSL's `bash.exe`. `--allow-notes`
-permits notes on our practice backlog. The name combines the sandbox name with
-`-beans`, giving each environment its own registration.
+Read this as a host command: run Bash, give it `scripts/beans-mcp`, and enable
+notes with `--allow-notes`. `${{ env.fileDir }}` is the directory containing our
+environment file, so the script path leads from `factory/` back to `scripts/`.
+On Windows, the launcher supplies the path to Git Bash as `host_shell`.
+
+The server name combines the sandbox name with `-beans`. For this chapter, the
+registration will be called `wad-ch-05-beans`; you'll see that name when you
+inspect the connection and remove it at the end.
 
 These fields describe both registration and attachment. You can also register and
 load servers with `sbx mcp add` and `sbx mcp load`; recording them here makes the
@@ -81,9 +87,10 @@ USE_ACR=1
 SESSION=shell
 ```
 
-`MODE=mcp` starts the team and sends only a task ID, so the agent must fetch the
-current requirements. `SESSION=shell` gives us a place to explore the tools before
-submitting work.
+`TASK=wad-102` selects the next feature: assigning incidents and recording their
+resolution. `MODE=mcp` starts the team and supplies only that task ID, so the agent
+must fetch the current requirements through the gateway. `SESSION=shell` gives us
+a place to explore the tools before submitting work.
 
 Replace `factory/PROMPT.md` with:
 
@@ -100,8 +107,9 @@ check outcomes. Leave the task open. Send the human a summary and how to try it.
 
 With the server in the environment file, Claude can call its tools. The prompt
 gives the team a reason to use them: fetch this task, do the work and write back
-the result. Claude is the developer connected to the gateway, so Pi asks it for
-the requirements through the messages you tried in chapter 04.
+the result. Claude is the developer connected to the gateway, so the coordinator
+asks it for the requirements through the messages you tried in chapter 04. This
+works with either coordinator configuration from that chapter.
 
 In HOST, preview the connection:
 
@@ -132,7 +140,14 @@ to inspect the gateway connection, then ask:
 
 Watch the tool calls. You should see the assignment-and-resolution requirements
 stored in the host backlog. Ask what information is required to resolve an incident.
-You should be able to match Claude's answer to the task in your host backlog.
+Compare Claude's answer with the original task in HOST:
+
+```bash
+./scripts/beans show wad-102
+```
+
+The requirements should match. You have read a host task from inside SBX without
+mounting the backlog directory.
 
 Type `/exit` to return to the SANDBOX shell. Now give the job to the team:
 
@@ -174,9 +189,10 @@ crew watch
 ```
 
 `--with-deps` installs both Chromium and its Linux system libraries inside SBX.
-Downloading the browser alone can leave libraries such as `libglib-2.0.so.0`
-missing. Browser checks must execute and pass with zero skipped tests before
-continuing; a successful download is only the installation step.
+Downloading the browser alone can leave required libraries missing. Ask the
+developer to explain the check results: did Chromium start, and which tests
+actually ran? A skipped test has not exercised the browser. If startup fails,
+use its error message to identify what the sandbox still needs.
 
 Redirects and system package repositories may introduce another destination;
 inspect the actual request before allowing it. If installation and browser checks
@@ -226,7 +242,8 @@ The task should contain the team's result note. The commit and changed code are
 already in `sample-app/`. Compare the actual app behavior with the requirements;
 a note saying “done” is not a substitute for trying the result.
 
-When the team is finished, exit the SANDBOX shell. In HOST:
+When the team is finished, press Ctrl-C to leave `crew watch`, then type `exit`
+to leave the SANDBOX shell. In HOST:
 
 ```bash
 sbx env rm factory/sbxenv.yaml --env-arg name=wad-ch-05
@@ -234,7 +251,8 @@ sbx mcp rm wad-ch-05-beans
 ```
 
 The first command removes the sandbox. The second removes its named host MCP
-registration; this SBX release keeps registrations after sandbox removal. Keep the application as it
-is; the next task builds on your assignment-and-resolution feature.
+registration. They are separate resources, so we remove both before creating the
+next environment. Keep the application as it is; the next task builds on your
+assignment-and-resolution feature.
 
 Next: [answer a human question through SSH](../06-human/README.md).
