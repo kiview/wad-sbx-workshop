@@ -7,6 +7,8 @@ args:
     default: ../../sample-app
   name:
     required: true
+  host_shell:
+    default: bash
 sandboxOptions:
   skills: off
   cpus: 4
@@ -23,5 +25,5 @@ kits:
 mcp:
   servers:
     - name: "${{ env.args.name }}-beans"
-      command: "${{ env.fileDir }}/../../scripts/beans-mcp"
-      args: [--allow-notes]
+      command: "${{ env.args.host_shell }}"
+      args: ["${{ env.fileDir }}/../../scripts/beans-mcp", --allow-notes]

@@ -26,6 +26,11 @@ Install the downloaded adapter in HOST:
 ./scripts/install-mcp.sh --from-local
 ```
 
+**Windows release limitation:** the published `beans-mcp` 0.1.0 Windows binary
+rejects Beans with `beans executable is not executable`. The host scripts can
+download and launch it, but chapters 05–07 need a corrected adapter release before
+their MCP exercises can run on Windows.
+
 This installs the native executable downloaded during setup. The gateway starts
 it as a host process and exchanges messages over stdin/stdout (**stdio**). No host
 Docker engine, public web service or separate OAuth login is needed.
@@ -37,20 +42,27 @@ backlog marker created in chapter 02.
 
 ## 2. Declare the connection alongside the sandbox
 
-Add this section to `factory/sbxenv.yaml`:
+Add `host_shell` to the existing `args` mapping in `factory/sbxenv.yaml`, then add
+the `mcp` section:
 
 ```yaml
+args:
+  # Keep the existing app and name arguments.
+  host_shell:
+    default: bash
 mcp:
   servers:
     - name: "${{ env.args.name }}-beans"
-      command: "${{ env.fileDir }}/../scripts/beans-mcp"
-      args: [--allow-notes]
+      command: "${{ env.args.host_shell }}"
+      args: ["${{ env.fileDir }}/../scripts/beans-mcp", --allow-notes]
 ```
 
-`command` is the **host** program the gateway will start. `${{ env.fileDir }}` is
-where this environment file lives, so the path points to the workshop script.
-`args` permits notes on our practice backlog. The name combines the sandbox name
-with `-beans`, giving each environment its own registration.
+`command` is the **host** Bash executable; the first argument is the workshop
+script relative to the environment file. Windows cannot launch a Bash script
+directly. The launcher supplies the absolute Git Bash executable as `host_shell`
+on Windows, so the daemon does not select WSL's `bash.exe`. `--allow-notes`
+permits notes on our practice backlog. The name combines the sandbox name with
+`-beans`, giving each environment its own registration.
 
 These fields describe both registration and attachment. You can also register and
 load servers with `sbx mcp add` and `sbx mcp load`; recording them here makes the

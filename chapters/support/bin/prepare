@@ -10,6 +10,7 @@ for tool in "$HOME/work/bin/"*; do ln -sf "$tool" "$HOME/.local/bin/$(basename "
 export PATH="$HOME/work/bin:$PATH"
 app="$(cat app-path)"
 [ -d "$app" ] || { echo "Missing mounted project: $app"; exit 1; }
+prepare-node-modules "$app"
 ln -sfn "$app" "$HOME/work/app"
 trust-workspace "$HOME/work" "$app"
 cd "$app"

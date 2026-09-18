@@ -47,14 +47,29 @@ chapter 05, it is also installed in this newly created environment.
 
 ## 2. Reach the existing team through SSH
 
-Leave the SANDBOX session open. In HOST:
+Leave the SANDBOX session open. In HOST, configure SSH:
 
 ```bash
 sbx setup ssh
+```
+
+On macOS or Linux, connect with:
+
+```bash
 ssh wad-ch-06.sbx
 ```
 
-`setup ssh` configures the host's SSH integration. The second command opens an
+On Windows, use the native Windows OpenSSH client from Git Bash:
+
+```bash
+/c/Windows/System32/OpenSSH/ssh.exe wad-ch-06.sbx
+```
+
+Git Bash's bundled `ssh` treats SBX's generated `Include "C:/..."` path as relative
+and misses the proxy configuration. Use the native client even if `command -v ssh`
+finds `/usr/bin/ssh`.
+
+`setup ssh` configures the host's SSH integration. The connection command opens an
 interactive shell in the running sandbox, alongside the existing agent sessions.
 You do not need to find an IP address or install an SSH server in the app.
 See [SBX integrations](https://docs.docker.com/ai/sandboxes/integrations/).
