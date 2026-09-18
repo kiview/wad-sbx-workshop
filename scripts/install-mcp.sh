@@ -7,6 +7,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 [ $# -eq 0 ] || { [ $# -eq 1 ] && [ "$1" = --from-local ]; } || die 'Usage: scripts/install-mcp.sh [--from-local]'
 asset="$(beans_mcp_asset)"
 source_dir="$ROOT/dist/beans-mcp/$BEANS_MCP_VERSION"
+if [ "${1:-}" != --from-local ]; then
+  "$ROOT/scripts/download-mcp.sh"
+fi
 [ -f "$source_dir/$asset" ] && [ -f "$source_dir/SHA256SUMS" ] || die 'Run scripts/get-materials.sh first.'
 expected="$(awk -v n="$asset" '$2 == n {print $1}' "$source_dir/SHA256SUMS")"
 actual="$(sha256_file "$source_dir/$asset")"
@@ -15,6 +18,3 @@ mkdir -p "$BIN_DIR"
 target="$BIN_DIR/beans-mcp$(executable_suffix)"
 install -m 0755 "$source_dir/$asset" "$target"
 "$target" --version
-if [ "$(host_os)" = Windows ] && [ "$BEANS_MCP_VERSION" = 0.1.0 ]; then
-  warn 'The published 0.1.0 Windows adapter rejects Beans executable permissions; chapter 05 requires a corrected adapter release.'
-fi

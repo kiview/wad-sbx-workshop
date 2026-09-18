@@ -26,12 +26,8 @@ Install the downloaded adapter in HOST:
 ./scripts/install-mcp.sh --from-local
 ```
 
-**Windows release limitation:** the published `beans-mcp` 0.1.0 Windows binary
-rejects Beans with `beans executable is not executable`. The host scripts can
-download and launch it, but chapters 05–07 need a corrected adapter release before
-their MCP exercises can run on Windows.
-
-This installs the native executable downloaded during setup. The gateway starts
+This installs the native Go executable downloaded during setup. The download
+selects the build for your operating system and CPU; you do not need Go installed. The gateway starts
 it as a host process and exchanges messages over stdin/stdout (**stdio**). No host
 Docker engine, public web service or separate OAuth login is needed.
 

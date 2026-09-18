@@ -1,0 +1,94 @@
+name: Beans MCP
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['beans-mcp-v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Native (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: mcp/beans/go.mod
+          cache-dependency-path: mcp/beans/go.sum
+      - name: Install real Beans and build the native adapter
+        run: |
+          ./scripts/install-beans.sh
+          ./scripts/build-mcp.sh
+          ./scripts/backlog-init.sh --disposable
+          bash scripts/tests/platform.sh
+      - name: Check Go formatting and vet
+        working-directory: mcp/beans
+        run: |
+          test -z "$(gofmt -l .)"
+          go vet ./...
+      - name: Run native protocol suite
+        env:
+          WORKSHOP_REQUIRE_PROTOCOL_TESTS: '1'
+        run: |
+          ROOT="$PWD"
+          . scripts/common.sh
+          native_path() { if [ "$(host_os)" = Windows ]; then cygpath -am "$1"; else printf '%s' "$1"; fi; }
+          export WORKSHOP_TEST_BEANS_BIN="$(native_path "$(beans_bin)")"
+          export WORKSHOP_TEST_ADAPTER_BIN="$(native_path "$BIN_DIR/beans-mcp$(executable_suffix)")"
+          export WORKSHOP_TEST_WRAPPER="$(native_path "$ROOT/scripts/beans-mcp")"
+          cd mcp/beans
+          go test -count=1 -v ./...
+  build:
+    name: Release binaries
+    needs: native
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: mcp/beans/go.mod
+          cache-dependency-path: mcp/beans/go.sum
+      - run: ./scripts/build-mcp.sh --release
+      - name: Verify checksums
+        run: |
+          . scripts/versions.env
+          cd "dist/beans-mcp/$BEANS_MCP_VERSION"
+          sha256sum -c SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beans-mcp-release
+          path: dist/beans-mcp/*/
+          if-no-files-found: error
+  publish:
+    if: startsWith(github.ref, 'refs/tags/beans-mcp-v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: beans-mcp-release
+          path: release
+      - name: Publish tested adapter binaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          . scripts/versions.env
+          test "$GITHUB_REF_NAME" = "beans-mcp-v$BEANS_MCP_VERSION"
+          cd release
+          sha256sum -c SHA256SUMS
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Beans MCP $BEANS_MCP_VERSION" \
+            --notes "Native Go adapter for the workshop's host Beans backlog. Protocol reads, note writes, isolation and the Bash entrypoint are tested with the real Beans CLI on Windows x64, macOS ARM64/x64 and Linux ARM64/x64. Includes SHA-256 checksums and build provenance. This validates the adapter; full Windows SBX chapters still need a host rehearsal." \
+            beans-mcp_* SHA256SUMS release-manifest.json LICENSE THIRD-PARTY-NOTICES.md
