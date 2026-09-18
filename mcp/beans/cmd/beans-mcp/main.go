@@ -78,7 +78,9 @@ func main() {
 	}
 
 	if opts.check {
-		emitCheck(true, opts, client, nil)
+		if !emitCheck(true, opts, client, nil) {
+			os.Exit(1)
+		}
 		return
 	}
 
@@ -196,7 +198,7 @@ type checkReport struct {
 	Remedy      string   `json:"remedy,omitempty"`
 }
 
-func emitCheck(ok bool, opts options, client *backlog.Client, err error) {
+func emitCheck(ok bool, opts options, client *backlog.Client, err error) bool {
 	report := checkReport{
 		OK: ok, Version: version,
 		BeansBin: opts.beansBin, BeansConfig: opts.beansConfig,
@@ -238,7 +240,10 @@ func emitCheck(ok bool, opts options, client *backlog.Client, err error) {
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-	_ = enc.Encode(report)
+	if err := enc.Encode(report); err != nil {
+		return false
+	}
+	return report.OK
 }
 
 func remedyFor(code backlog.Code) string {

@@ -831,3 +831,26 @@ func TestConcurrentNotesArePreserved(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckFailsWhenBacklogReadFails(t *testing.T) {
+	cfg, data := backlog(t, sampleTasks())
+	broken := filepath.Join(filepath.Dir(cfg), "broken-config.yml")
+	if err := os.WriteFile(broken, []byte("beans: [unclosed\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	output, err := exec.Command(binaryPath, "--check", "--beans-bin="+beansPath, "--beans-config="+broken, "--beans-data="+data).Output()
+	if err == nil {
+		t.Fatalf("check exited successfully: %s", output)
+	}
+	var report struct {
+		OK           bool   `json:"ok"`
+		BeansVersion string `json:"beans_version"`
+		Error        string `json:"error"`
+	}
+	if err := json.Unmarshal(output, &report); err != nil {
+		t.Fatal(err)
+	}
+	if report.OK || report.BeansVersion == "" || report.Error == "" {
+		t.Fatalf("expected successful version probe and failed list: %s", output)
+	}
+}
