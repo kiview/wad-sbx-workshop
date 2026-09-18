@@ -125,18 +125,21 @@ Ask Claude:
 > agents.yaml, AGENTS.md and the installed review-change skill. Explain which file
 > declares the package and which files tell an assistant how to work.
 
-The helper performs these ACR operations, shown here for explanation:
+The helper installs a missing dependency, generates guidance, and checks that it
+is current. Its main operations are:
 
 ```text
-acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --agent claude-code --agent codex --freshness none --non-interactive
-acr realize
+acr install github:shelajev/coding-policy@b85031eb0c8963b28b63eaa12efcbd34c850d32d --if-missing --non-interactive
+acr realize --agent claude-code --agent codex
+acr check --agent claude-code --agent codex
 ```
 
-`install` selects the pinned policy and the assistant formats to generate.
+`install` adds the pinned policy without replacing an existing dependency choice.
 `realize` writes the agent-facing guidance. Claude and Codex have generated formats;
-Pi can read the shared `AGENTS.md` and skill too. The fixed revision and
-`--freshness none` keep everyone on the same exercise; `--non-interactive` uses
-these supplied choices. The helper also removes GitHub token placeholders for this
+Pi can read the shared `AGENTS.md` and skill too. For a project without `agents.yaml`,
+the helper also selects Claude and Codex and sets `--freshness none`. Existing
+configuration is preserved. Both review skills must exist and `acr check` must
+pass before the helper succeeds. It also removes GitHub token placeholders for this
 public download; that compatibility detail stays in the helper.
 
 Open `sample-app/AGENTS.md` in your host editor. These are real files in the same

@@ -29,7 +29,10 @@ jobs:
           cache-dependency-path: mcp/beans/go.sum
       - name: Check sample-app preparation
         run: |
-          ./scripts/get-materials.sh
+          bash scripts/tests/app-materials-mode.sh
+          bash scripts/tests/prepare-node-modules.sh
+          bash scripts/tests/install-guidance.sh
+          ./scripts/get-materials.sh --app-only
           bash scripts/tests/app-cli-paths.sh
       - name: Install real Beans and build the native adapter
         run: |

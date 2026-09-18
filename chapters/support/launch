@@ -25,6 +25,7 @@ tr -d '\r' < "$chapter/chapter.env" > "$payload/chapter.env"
 cp "$chapter/PROMPT.md" "$payload/"
 [ ! -f "$chapter/team.tsv" ] || tr -d '\r' < "$chapter/team.tsv" > "$payload/team.tsv"
 printf '%s\n' "$app" > "$payload/app-path"
+printf '%s\n' "$(host_os)" > "$payload/host-platform"
 if [ "$MODE" = mcp ]; then
   printf '%s\n' "$TASK" > "$payload/task-id"
 else
