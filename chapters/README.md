@@ -116,7 +116,7 @@ sbx mcp rm wad-ch-05-beans
 ```
 
 The first command removes the sandbox; the second removes its host tool
-registration. This SBX release keeps that registration after sandbox removal.
+registration. The sandbox and host connection are separate resources.
 Chapters 06 and 07 show the corresponding names for their environments. Earlier
 chapters have no MCP registration to remove.
 

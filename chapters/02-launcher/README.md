@@ -134,8 +134,15 @@ USE_ACR=0
 SESSION=claude
 ```
 
-These settings configure the host launcher. They select the task, leave team
-startup manual, leave guidance installation off, and open Claude for us.
+`sbxenv.yaml` configures SBX. This smaller file configures the workshop's host
+launcher, which connects a task to that environment:
+
+| Setting | What it tells the launcher |
+|---|---|
+| `TASK=wad-101` | Read the filter-count task from our host backlog. |
+| `MODE=manual` | Let us work with the assistant ourselves. |
+| `USE_ACR=0` | Leave coding-policy installation for the next chapter. |
+| `SESSION=claude` | Open Claude after preparing the sandbox. |
 
 Create `factory/PROMPT.md`:
 
@@ -175,7 +182,10 @@ Then in the SANDBOX tab, at the workshop root:
 ./scripts/launch-factory.sh wad-ch-02
 ```
 
-The name selects this sandbox. The launcher opens Claude in the mounted project.
+The launcher creates `wad-ch-02`, places the selected task at `~/work/task.json`
+and your prompt at `~/work/PROMPT.md` inside it, then opens Claude in the mounted
+project. These two files give the assistant its assignment; the application
+itself is still shared directly from `sample-app/`.
 Tell it:
 
 > Read ~/work/PROMPT.md and follow those instructions. Explain what you found.

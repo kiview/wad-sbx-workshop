@@ -108,6 +108,9 @@ Our kit's Pi wrapper supplies a placeholder API value when this route needs one;
 the SBX proxy supplies the real credential. Open the kit's wrapper section if you
 want to see that mechanism. No real key is written into the project.
 
+Pi knows how to make a model request, while SBX controls where it can connect and
+supplies the credential for that request.
+
 Accept the workspace trust prompt if shown. In Pi, type `/model` to see available
 models and choose one your account can use. Keep that model ID for the next chapter.
 

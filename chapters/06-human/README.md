@@ -15,7 +15,15 @@ Keep using `sample-app/`, including your completed chapter-05 feature. If you sk
 that feature, the [catch-up instructions](../README.md#catch-up) can install a completed
 checkpoint before you continue.
 
-In HOST, change only `TASK=wad-103` in `factory/chapter.env`. Keep `MODE=mcp`,
+Read the next task in HOST:
+
+```bash
+./scripts/beans show wad-103
+```
+
+Find the requirement about reopening an incident. The team needs your answer
+about the current resolution note before it can decide what behavior to implement.
+Change the `TASK` line to `TASK=wad-103` in `factory/chapter.env`. Keep `MODE=mcp`,
 `USE_ACR=1` and `SESSION=shell`. Keep the existing prompt and append this paragraph
 to `factory/PROMPT.md`:
 
@@ -42,7 +50,9 @@ crew submit
 crew watch
 ```
 
-Expect a question describing both options. If you added the browser-access kit in
+`crew submit` sends the reopening task to the coordinator; `crew watch` follows
+the discussion. Wait for a message asking whether to clear or retain the note
+before connecting through SSH to answer it. If you added the browser-access kit in
 chapter 05, it is also installed in this newly created environment.
 
 ## 2. Reach the existing team through SSH
@@ -65,9 +75,8 @@ On Windows, use the native Windows OpenSSH client from Git Bash:
 /c/Windows/System32/OpenSSH/ssh.exe wad-ch-06.sbx
 ```
 
-Git Bash's bundled `ssh` treats SBX's generated `Include "C:/..."` path as relative
-and misses the proxy configuration. Use the native client even if `command -v ssh`
-finds `/usr/bin/ssh`.
+Use this full path so you get the Windows client configured in chapter 00.
+It can read the Windows paths that SBX puts in the SSH configuration.
 
 `setup ssh` configures the host's SSH integration. The connection command opens an
 interactive shell in the running sandbox, alongside the existing agent sessions.

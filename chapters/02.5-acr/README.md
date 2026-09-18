@@ -119,8 +119,8 @@ acr realize
 `realize` writes the agent-facing guidance. Claude and Codex have generated formats;
 Pi can read the shared `AGENTS.md` and skill too. The fixed revision and
 `--freshness none` keep everyone on the same exercise; `--non-interactive` uses
-these supplied choices. The helper also removes GitHub token placeholders for this
-public download; that compatibility detail stays in the helper.
+these supplied choices. You can inspect `chapters/support/bin/install-guidance`
+on the host to see the complete helper.
 
 Open `sample-app/AGENTS.md` in your host editor. These are real files in the same
 mounted project. Ask Claude:

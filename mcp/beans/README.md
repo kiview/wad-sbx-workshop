@@ -13,9 +13,14 @@ The adapter provides `get_task` and `list_tasks`. The workshop also enables
 `add_task_note`, which requires a backlog marked with `.workshop-disposable`.
 It does not provide arbitrary commands, paths, task deletion or task completion.
 
-## Install or upgrade
+## Use it in the workshop
 
-From the workshop repository, run:
+Follow [chapter 00](../../chapters/00-setup/README.md) to download the application
+and tools, then [chapter 05](../../chapters/05-mcp/README.md) to connect the adapter
+to your sandbox. The workshop downloads a prebuilt executable for you.
+
+To install just the adapter and Beans, run these commands from the workshop
+repository root:
 
 ```bash
 ./scripts/install-beans.sh
@@ -24,20 +29,12 @@ From the workshop repository, run:
 
 The installer downloads the pinned adapter release and verifies its SHA-256
 checksum. Chapter 00 also downloads it through `get-materials.sh`; chapter 05
-uses `install-mcp.sh --from-local` to install that verified download. Restart any
-sandbox already using the adapter after an upgrade so its gateway starts the new
-executable.
+uses `install-mcp.sh --from-local` to install that verified download.
 
 Release binaries cover Windows x64, macOS ARM64/x64 and Linux ARM64/x64. Windows
 uses `beans.exe` and `beans-mcp.exe`; the workshop wrapper runs through Git Bash.
 Adapter support is separate from SBX host support: an Intel macOS adapter build
 does not make Intel Macs supported SBX hosts.
-
-Version 0.1.1 fixes the Unix execute-bit check that rejected Windows executables.
-The adapter still checks Unix permissions on macOS/Linux, and actually invokes
-`beans version` on every platform before starting the MCP server. Windows child
-processes receive Windows home/temp variables without inheriting model credentials
-or `BEANS_PATH` from the host.
 
 ## Run directly
 
@@ -52,7 +49,8 @@ beans-mcp --beans-bin /absolute/path/to/beans \
 
 Use Windows paths and `.exe` names when invoking the binary from PowerShell.
 Each path is a separate argument, so paths containing spaces are supported by
-this adapter. The sample application's separate path limitation is unchanged.
+this adapter. For the workshop itself, use a path without spaces as described in
+chapter 00 so the sample application's setup commands work correctly.
 
 `--enable-presenter-note-tool` enables result notes on a disposable backlog.
 `--check` reports configuration and a backlog read as JSON; `--version` reports

@@ -104,8 +104,7 @@ access-control concepts apply whichever team framework you choose.
 
 Bring a **Mac with Apple silicon** or a **Windows x64 machine with Git Bash**,
 a browser and model access. [Chapter 00](chapters/00-setup/README.md#1-install-the-host-prerequisites)
-covers the host tools, including native Windows SBX and OpenSSH. The setup downloads the native Beans MCP adapter for your platform;
-Windows host scripts run through Git Bash.
+walks you through installation, accounts and downloading the sample application.
 The first exercise uses Claude Code with your Claude account. Later, Anthropic API
 access lets you try Pi yourself; with subscription access alone, follow that model
 conversation with a partner or presenter and run your own team using Claude Code
@@ -128,8 +127,9 @@ Use two terminal tabs, both initially opened at this repository root:
 - **HOST** stays on your laptop for sandbox creation, network policy and task tracking.
 - **SANDBOX** is where you open the assistant or shell inside SBX. Keep that session open while the agents work.
 
-We run one workshop sandbox at a time. Every chapter mounts the same `sample-app/`
-working copy, including its Git history. Edits appear on your host immediately.
+We run one workshop sandbox at a time. Chapters 01–06 mount the same `sample-app/`
+working copy, including its Git history. Chapter 07 applies the factory to another
+project you choose. Edits appear on your host immediately.
 Containers and application processes run inside SBX. A chapter ends by removing
 its sandbox; the mounted source remains for the next chapter.
 
@@ -149,5 +149,5 @@ edit, what to run and what to look for afterward.
 
 ## License
 
-Workshop source is licensed under [Apache 2.0](LICENSE). Downloaded third-party
-components retain their own licenses and notices.
+Workshop source is licensed under [Apache 2.0](LICENSE). The [Beans MCP adapter](mcp/beans/LICENSE)
+and third-party components retain their own licenses and notices.
