@@ -12,7 +12,7 @@ fi
 git -C "$root/.local/app" rev-parse --verify "$ref^{commit}" >/dev/null
 stage="$(mktemp -d "$root/.local/app-prepare.XXXXXX")"
 trap 'rm -rf "$stage"' EXIT
-git clone --quiet --no-hardlinks "$root/.local/app" "$stage/app"
+git clone --quiet --no-hardlinks --config core.autocrlf=false --config core.eol=lf "$root/.local/app" "$stage/app"
 git -C "$stage/app" switch --quiet -c workshop "$ref"
 git -C "$stage/app" remote remove origin
 cat "$root/backlog/seed/wad-101--warm-up-active-filter-count.md" > "$stage/app/WORKSHOP-TASK.md"

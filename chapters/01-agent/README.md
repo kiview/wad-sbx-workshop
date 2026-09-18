@@ -84,6 +84,19 @@ inside the mounted directory. Remove the demonstration file from Claude:
 
 ## 3. Ask the agent to run the app
 
+On Windows, first run this in your **HOST Git Bash tab**, from the workshop root:
+
+```bash
+./scripts/prepare-workspace.sh wad-manual
+```
+
+Some Windows shared mounts lose npm's executable symlinks. This helper checks
+whether links work and, when needed, mounts sandbox-local storage at
+`sample-app/node_modules`. Existing host dependencies stay on disk but are hidden
+inside this sandbox; the application source stays shared. Dependencies are
+installed separately in each sandbox. Repeat the command if you recreate
+`wad-manual`; later chapter launchers do this automatically.
+
 Give Claude this prompt:
 
 > Read README.md and get this application running inside the sandbox. Work out its

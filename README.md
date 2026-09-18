@@ -102,8 +102,12 @@ access-control concepts apply whichever team framework you choose.
 
 ## Get started
 
-Bring a **Mac with Apple silicon**, a terminal, a browser and model access. The
-first exercise uses Claude Code with your Claude account. Later, Anthropic API
+Bring a **Mac with Apple silicon** or a **Windows x64 machine with Git Bash**,
+a browser and model access. [Chapter 00](chapters/00-setup/README.md#1-install-the-host-prerequisites)
+covers the host tools, including native Windows SBX and OpenSSH. Windows setup
+and launchers are supported, but the published Beans MCP adapter
+still blocks the [MCP exercises in chapters 05–07](chapters/05-mcp/README.md#1-understand-the-tool-boundary).
+The first exercise uses Claude Code with your Claude account. Later, Anthropic API
 access lets you try Pi yourself; with subscription access alone, follow that model
 conversation with a partner or presenter and run your own team using Claude Code
 for all three roles. Everyone configures the roles and their models.

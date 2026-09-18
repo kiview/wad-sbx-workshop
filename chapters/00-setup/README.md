@@ -10,10 +10,11 @@ will run inside a sandbox, so you won't need Docker Desktop.
 
 ## 1. Install the host prerequisites
 
-These instructions use macOS on Apple silicon.
 Use the [standalone SBX installation instructions](https://docs.docker.com/ai/sandboxes/install/).
 No host Docker engine or Docker Desktop is required. Docker containers will run
 **inside** the sandbox.
+
+### macOS on Apple silicon
 
 These commands assume [Homebrew](https://brew.sh) is installed. Install the
 release-candidate channel and host utilities:
@@ -30,22 +31,53 @@ jq for reading JSON, and coreutils for checksums. Downloads use `curl`.
 `sbx version` tells you which CLI you are running. `sbx login` signs in to Docker;
 Claude's model-account login happens separately in chapter 1.
 
-If SBX is already installed, check which executable `command -v sbx` selects before
-changing it. This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
+### Windows x64
+
+Install Git for Windows and jq. For this workshop, download and run
+`DockerSandboxes.msi` from the
+[v0.45.0-rc2 release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2).
+
+For stable SBX releases, you can also install through WinGet in PowerShell:
+
+```powershell
+winget install -h Docker.sbx
+```
+
+The workshop's RC requires the MSI above. Both installation methods configure
+PATH automatically. Open new **Git Bash** tabs after installation and use them
+for both workshop terminals. Git Bash supplies the shell and Unix utilities
+used by the host scripts; application code still runs inside the Linux sandbox.
+
+Check the version and sign in:
+
+```bash
+sbx version
+sbx login
+```
+
+Use **Windows OpenSSH Client** for chapter 06. In Git Bash its executable is
+`/c/Windows/System32/OpenSSH/ssh.exe`; enable Windows OpenSSH Client if that file
+is missing. Git Bash's bundled `/usr/bin/ssh` does not resolve SBX's generated
+Windows Include path correctly. [Chapter 06](../06-human/README.md#2-reach-the-existing-team-through-ssh)
+shows the native-client command.
+
+### Check the version and tools
+
+This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
 may now deliver a later release; use the assets and installation guidance on the
 [pinned release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2)
 to install that version. Use `sbx version` again afterward; the version for this workshop is `v0.45.0-rc2`.
 
 You also need a browser, SSH, a Bash-compatible terminal, internet access and enough
 available memory for a 4-CPU/8-GB sandbox. Run one main chapter sandbox at a time
-when resources are limited. Git, jq and sha256sum must be on the host PATH:
+when resources are limited. Check the host utilities in each workshop terminal:
 
 ```bash
 # HOST
-command -v sbx git jq sha256sum ssh
+command -v sbx git jq curl tar unzip sha256sum
 ```
 
-You should see a path for each of the five tools above. A missing path means that
+You should see a path for each tool above. A missing path means that
 tool is not available in this terminal; fix its installation before continuing.
 
 ## 2. Have an agent account ready
@@ -70,13 +102,22 @@ Never put actual keys or OAuth tokens in the workshop's files.
 
 ## 3. Clone the workshop and get its materials
 
-Download the workshop repository, then enter its directory:
+Choose a directory whose full path contains no spaces, then download the workshop
+repository. The bundled application's migration and seed entry points currently
+skip execution when their path contains spaces, leaving the database empty.
+This fixture limitation applies on every host platform.
 
 ```bash
 # HOST
 git clone https://github.com/shelajev/wad-sbx-workshop.git
 cd wad-sbx-workshop
 ```
+
+The repository keeps text files in LF format, and the material setup configures
+sample-app checkouts the same way. Linux shell scripts fail if Windows Git
+converts their line endings to CRLF. If an older checkout already has CRLF files,
+start with a fresh clone in a new directory and keep your existing work in the
+original directory.
 
 ### Download the application and the prebuilt tool
 

@@ -12,7 +12,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 . "$ROOT/scripts/versions.env"
 
 mkdir -p "$BIN_DIR"
-TARGET="$BIN_DIR/beans"
+TARGET="$(beans_bin)"
 
 if [ -x "$TARGET" ] && [ "${1:-}" != "--force" ]; then
   if installed_version="$("$TARGET" version 2>/dev/null)" && \
@@ -23,17 +23,9 @@ if [ -x "$TARGET" ] && [ "${1:-}" != "--force" ]; then
   warn "installed Beans is not runnable or is not the pinned version; replacing it"
 fi
 
-case "$(uname -s)" in
-  Darwin) os=Darwin ;;
-  Linux)  os=Linux ;;
-  MINGW*|MSYS*|CYGWIN*) os=Windows ;;
-  *) die "unsupported operating system: $(uname -s)" ;;
-esac
-case "$(uname -m)" in
-  arm64|aarch64) arch=arm64 ;;
-  x86_64|amd64)  arch=x86_64 ;;
-  *) die "unsupported CPU architecture: $(uname -m)" ;;
-esac
+os="$(host_os)"
+arch="$(host_arch)"
+[ "$arch" != amd64 ] || arch=x86_64
 
 ext=tar.gz
 [ "$os" = "Windows" ] && ext=zip
@@ -48,8 +40,10 @@ curl -fsSL --retry 3 -o "$work/$asset" "$base/$asset" \
 curl -fsSL --retry 3 -o "$work/checksums.txt" "$base/beans_${BEANS_VERSION}_checksums.txt" \
   || die "checksum download failed"
 
-( cd "$work" && grep " $asset\$" checksums.txt | sha256sum -c - ) \
-  || die "checksum mismatch for $asset — refusing to install"
+expected="$(awk -v n="$asset" '$2 == n {print $1}' "$work/checksums.txt")"
+actual="$(sha256_file "$work/$asset")"
+[ -n "$expected" ] && [ "$actual" = "$expected" ] \
+  || die "checksum mismatch for $asset - refusing to install"
 ok "checksum verified"
 
 if [ "$ext" = "zip" ]; then unzip -qo "$work/$asset" -d "$work"; else tar xzf "$work/$asset" -C "$work"; fi

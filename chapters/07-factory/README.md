@@ -11,7 +11,7 @@ In HOST, clone your chosen repository. Replace the URL with its actual clone URL
 
 ```bash
 mkdir -p projects
-git clone https://github.com/OWNER/REPOSITORY.git projects/my-project
+git clone --config core.autocrlf=false --config core.eol=lf https://github.com/OWNER/REPOSITORY.git projects/my-project
 ```
 
 This working copy will be mounted directly, including its Git history. The

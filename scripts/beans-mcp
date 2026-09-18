@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 # Host MCP entry point: expose only this workshop's backlog.
 set -euo pipefail
-root="$(cd "$(dirname "$0")/.." && pwd)"
-args=(--beans-bin "$root/.local/chapters/bin/beans"
-      --beans-config "$root/.local/chapters/beans/.beans.yml"
-      --beans-data "$root/.local/chapters/beans/.beans")
+case "$OSTYPE" in
+  msys*|cygwin*) export PATH="/usr/bin:$PATH" ;;
+esac
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+. "$ROOT/scripts/common.sh"
+args=(--beans-bin "$(beans_bin)"
+  --beans-config "$CONTROL_DIR/beans/.beans.yml"
+  --beans-data "$CONTROL_DIR/beans/.beans")
 case "${1:-}" in
   '') ;;
   --allow-notes) args+=(--enable-presenter-note-tool); shift ;;
   *) echo 'Usage: scripts/beans-mcp [--allow-notes]' >&2; exit 2 ;;
 esac
 [ $# -eq 0 ] || { echo 'Unexpected arguments' >&2; exit 2; }
-exec "$root/.local/chapters/bin/beans-mcp" "${args[@]}"
+exec "$BIN_DIR/beans-mcp$(executable_suffix)" "${args[@]}"

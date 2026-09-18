@@ -4,14 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 . "$ROOT/scripts/common.sh"
 . "$ROOT/scripts/versions.env"
-case "$(uname -s)/$(uname -m)" in
-  Darwin/arm64) platform=darwin_arm64 ;;
-  Darwin/x86_64) platform=darwin_amd64 ;;
-  Linux/aarch64|Linux/arm64) platform=linux_arm64 ;;
-  Linux/x86_64) platform=linux_amd64 ;;
-  *) die 'This workshop downloader supports macOS and Linux; this host is not covered.' ;;
-esac
-asset="beans-mcp_${BEANS_MCP_VERSION}_${platform}"
+asset="$(beans_mcp_asset)"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 release_url="https://github.com/shelajev/wad-sbx-workshop/releases/download/materials-v0.1.0"
@@ -21,7 +14,7 @@ done
 for name in incident-triage-board.bundle "$asset" LICENSE THIRD-PARTY-NOTICES.md release-manifest.json; do
   expected="$(awk -v n="$name" '$2 == n {print $1}' "$work/SHA256SUMS")"
   [ -n "$expected" ] || die "No published checksum for $name"
-  actual="$(shasum -a 256 "$work/$name" | awk '{print $1}')"
+  actual="$(sha256_file "$work/$name")"
   [ "$actual" = "$expected" ] || die "Checksum mismatch: $name"
 done
 mkdir -p "$ROOT/.local" "$ROOT/dist/beans-mcp/$BEANS_MCP_VERSION"
@@ -31,7 +24,7 @@ done
 if [ -e "$ROOT/.local/app" ]; then
   info 'Keeping your existing .local/app; no application files changed.'
 else
-  git clone "$work/incident-triage-board.bundle" "$ROOT/.local/app"
+  git clone --config core.autocrlf=false --config core.eol=lf "$work/incident-triage-board.bundle" "$ROOT/.local/app"
   git -C "$ROOT/.local/app" remote remove origin
 fi
 for ref in app-00-starter app-01-warmup-solution app-02-feature-solution; do
