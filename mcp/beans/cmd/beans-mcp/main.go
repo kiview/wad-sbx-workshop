@@ -22,7 +22,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"runtime"
 	"syscall"
 	"time"
@@ -125,22 +124,7 @@ func parseFlags() options {
 	}
 	_ = fs.Parse(os.Args[1:])
 
-	// Absolute paths are required, but expanding a relative one here gives a clearer
-	// error than letting the CLI resolve it against an unknown working directory.
-	opts.beansBin = absOrRaw(opts.beansBin)
-	opts.beansConfig = absOrRaw(opts.beansConfig)
-	opts.beansData = absOrRaw(opts.beansData)
 	return opts
-}
-
-func absOrRaw(p string) string {
-	if p == "" || filepath.IsAbs(p) {
-		return p
-	}
-	if abs, err := filepath.Abs(p); err == nil {
-		return abs
-	}
-	return p
 }
 
 func envOr(key, fallback string) string {

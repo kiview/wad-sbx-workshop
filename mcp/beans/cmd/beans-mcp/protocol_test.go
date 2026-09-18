@@ -549,10 +549,10 @@ func TestStartupFailsLoudlyOnMisconfiguration(t *testing.T) {
 		args []string
 		want string
 	}{
-		{"missing beans binary", []string{"--beans-bin=/nonexistent/beans", "--beans-config=" + cfg, "--beans-data=" + data}, "beans executable was not found"},
-		{"missing config", []string{"--beans-bin=" + beansPath, "--beans-config=/nonexistent/.beans.yml", "--beans-data=" + data}, "beans config file was not found"},
-		{"missing data dir", []string{"--beans-bin=" + beansPath, "--beans-config=" + cfg, "--beans-data=/nonexistent/.beans"}, "beans data directory was not found"},
-		{"relative path", []string{"--beans-bin=beans", "--beans-config=" + cfg, "--beans-data=" + data}, "beans executable was not found"},
+		{"missing beans binary", []string{"--beans-bin=" + filepath.Join(t.TempDir(), "missing-beans"), "--beans-config=" + cfg, "--beans-data=" + data}, "beans executable was not found"},
+		{"missing config", []string{"--beans-bin=" + beansPath, "--beans-config=" + filepath.Join(t.TempDir(), "missing-config"), "--beans-data=" + data}, "beans config file was not found"},
+		{"missing data dir", []string{"--beans-bin=" + beansPath, "--beans-config=" + cfg, "--beans-data=" + filepath.Join(t.TempDir(), "missing-data")}, "beans data directory was not found"},
+		{"relative path", []string{"--beans-bin=beans", "--beans-config=" + cfg, "--beans-data=" + data}, "path must be absolute"},
 		{"no paths at all", nil, "path is not configured"},
 	}
 	for _, tc := range cases {
@@ -737,5 +737,97 @@ func TestBacklogIsolationFromUpwardDiscovery(t *testing.T) {
 	}
 	if strings.Contains(textOf(result), "other-777") {
 		t.Errorf("list_tasks leaked the unrelated backlog: %s", textOf(result))
+	}
+}
+
+func TestRemovingDisposableMarkerRevokesWrites(t *testing.T) {
+	cfg, data := backlog(t, sampleTasks())
+	marker := filepath.Join(data, ".workshop-disposable")
+	if err := os.WriteFile(marker, []byte("disposable\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	session, _ := connect(t, cfg, data, "--enable-presenter-note-tool")
+	if !strings.Contains(session.InitializeResult().Instructions, "add_task_note") {
+		t.Fatal("write-enabled instructions must explain notes")
+	}
+	if err := os.Remove(marker); err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.CallTool(ctx(t), &mcp.CallToolParams{Name: "add_task_note", Arguments: map[string]any{"id": "wad-101", "note": "must not be written"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.IsError || errorCode(t, result) != "write_disabled" {
+		t.Fatalf("revoked write accepted: %s", textOf(result))
+	}
+	result, err = session.CallTool(ctx(t), &mcp.CallToolParams{Name: "get_task", Arguments: map[string]any{"id": "wad-101"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got struct {
+		Body string `json:"body"`
+	}
+	decodeStructured(t, result, &got)
+	if strings.Contains(got.Body, "must not be written") {
+		t.Fatal("revoked note reached disk")
+	}
+}
+
+func TestNoteLimitCountsCharacters(t *testing.T) {
+	cfg, data := backlog(t, sampleTasks())
+	if err := os.WriteFile(filepath.Join(data, ".workshop-disposable"), []byte("disposable\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	session, _ := connect(t, cfg, data, "--enable-presenter-note-tool")
+	for _, n := range []int{2000, 2001} {
+		result, err := session.CallTool(ctx(t), &mcp.CallToolParams{Name: "add_task_note", Arguments: map[string]any{"id": "wad-101", "note": strings.Repeat("語", n)}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.IsError != (n > 2000) {
+			t.Fatalf("%d characters: %s", n, textOf(result))
+		}
+	}
+}
+
+func TestConcurrentNotesArePreserved(t *testing.T) {
+	cfg, data := backlog(t, sampleTasks())
+	if err := os.WriteFile(filepath.Join(data, ".workshop-disposable"), []byte("disposable\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	session, _ := connect(t, cfg, data, "--enable-presenter-note-tool")
+	c := ctx(t)
+	replies := make(chan string, 2)
+	for _, note := range []string{"developer result", "QA result"} {
+		go func(note string) {
+			result, err := session.CallTool(c, &mcp.CallToolParams{Name: "add_task_note", Arguments: map[string]any{"id": "wad-101", "note": note}})
+			if err != nil {
+				replies <- err.Error()
+				return
+			}
+			if result.IsError {
+				replies <- textOf(result)
+				return
+			}
+			replies <- ""
+		}(note)
+	}
+	for range 2 {
+		if failure := <-replies; failure != "" {
+			t.Fatal(failure)
+		}
+	}
+	result, err := session.CallTool(c, &mcp.CallToolParams{Name: "get_task", Arguments: map[string]any{"id": "wad-101"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got struct {
+		Body string `json:"body"`
+	}
+	decodeStructured(t, result, &got)
+	for _, note := range []string{"developer result", "QA result"} {
+		if !strings.Contains(got.Body, note) {
+			t.Fatalf("lost %q: %s", note, got.Body)
+		}
 	}
 }

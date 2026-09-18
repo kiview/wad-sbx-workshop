@@ -58,15 +58,16 @@ func New(opts Options) *mcp.Server {
 		logger = slog.Default()
 	}
 
+	instructions := "Read the assigned workshop task with get_task(id). " +
+		"Record the returned version value in your report so a later read can detect that the task changed. "
+	if opts.ExposeNoteTool && opts.Client.WriteArmed() {
+		instructions += "Use add_task_note to append a result note to this disposable workshop backlog."
+	} else {
+		instructions += "This backlog is read-only."
+	}
 	srv := mcp.NewServer(&mcp.Implementation{
-		Name:    ServerName,
-		Title:   "Workshop Beans backlog (read-only)",
-		Version: Version,
-	}, &mcp.ServerOptions{
-		Instructions: "Read the assigned workshop task with get_task(id). " +
-			"Record the returned version value in your report so a later read can " +
-			"detect that the task changed. This backlog is read-only.",
-	})
+		Name: ServerName, Title: "Workshop Beans backlog", Version: Version,
+	}, &mcp.ServerOptions{Instructions: instructions})
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "get_task",

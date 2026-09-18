@@ -14,7 +14,9 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 // Config pins every path the adapter uses. Nothing is discovered: the adapter never
@@ -51,6 +53,7 @@ const (
 
 // Client runs the pinned Beans CLI against the configured workshop backlog.
 type Client struct {
+	noteMu      sync.Mutex
 	cfg         Config
 	beansVer    string
 	writeArmed  bool
@@ -322,6 +325,8 @@ func (c *Client) List(ctx context.Context, filter ListFilter) (*ListResult, erro
 // AddNote appends a note to a task. Presenter demonstration only: it refuses unless
 // writes were enabled AND the data directory carries the disposable marker.
 func (c *Client) AddNote(ctx context.Context, id, note string) (*Task, error) {
+	c.noteMu.Lock()
+	defer c.noteMu.Unlock()
 	if !c.writeArmed {
 		reason := c.writeReason
 		if reason == "" {
@@ -336,15 +341,18 @@ func (c *Client) AddNote(ctx context.Context, id, note string) (*Task, error) {
 	if note == "" {
 		return nil, newError(CodeInvalidFilter, "note must not be empty", "")
 	}
-	if len(note) > 2000 {
+	if utf8.RuneCountInString(note) > 2000 {
 		return nil, newError(CodeInvalidFilter, "note must be 2000 characters or fewer", "")
 	}
 	current, err := c.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	body := current.Body + "\n\n## Note (presenter demonstration)\n" + note + "\n"
-	args := append(c.globalArgs(), "update", "--json", "--body", body, "--", id)
+	if info, err := os.Stat(filepath.Join(c.cfg.DataDir, DisposableMarker)); err != nil || !info.Mode().IsRegular() {
+		return nil, newError(CodeWriteDisabled, "this backlog is read-only: the disposable marker is missing", "")
+	}
+	body := "\n\n## Note (presenter demonstration)\n" + note + "\n"
+	args := append(c.globalArgs(), "update", "--json", "--body-append", body, "--if-match", current.Version, "--", id)
 	if _, err := c.run(ctx, args); err != nil {
 		return nil, err
 	}
@@ -361,7 +369,7 @@ func ExtractAcceptanceCriteria(body string) []string {
 		trimmed := strings.TrimSpace(line)
 		lower := strings.ToLower(trimmed)
 		if strings.HasPrefix(trimmed, "#") {
-			if strings.Contains(lower, "acceptance criteria") {
+			if strings.TrimSpace(strings.TrimLeft(lower, "#")) == "acceptance criteria" {
 				inSection = true
 				continue
 			}
