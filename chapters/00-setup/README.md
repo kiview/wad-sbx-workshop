@@ -33,21 +33,24 @@ Claude's model-account login happens separately in chapter 1.
 
 ### Windows x64
 
-Install the native Windows SBX executable, Git for Windows and jq. Use **Git Bash**
-for both workshop terminal tabs. Git Bash supplies the shell and Unix utilities
-used by the host scripts; application code still runs inside the Linux sandbox.
+Install Git for Windows and jq. For this workshop, download and run
+`DockerSandboxes.msi` from the
+[v0.45.0-rc2 release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2).
 
-Put the directory containing your intended `sbx.exe` first on PATH. For a local
-build installed under `~/.docker/sbx/bin`, run this in each Git Bash tab:
+For stable SBX releases, you can also install through WinGet in PowerShell:
 
-```bash
-export PATH="$HOME/.docker/sbx/bin:$PATH"
+```powershell
+winget install -h Docker.sbx
 ```
 
-Check the selected executable and sign in:
+The workshop's RC requires the MSI above. Both installation methods configure
+PATH automatically. Open new **Git Bash** tabs after installation and use them
+for both workshop terminals. Git Bash supplies the shell and Unix utilities
+used by the host scripts; application code still runs inside the Linux sandbox.
+
+Check the version and sign in:
 
 ```bash
-type -a sbx
 sbx version
 sbx login
 ```
@@ -60,8 +63,7 @@ shows the native-client command.
 
 ### Check the version and tools
 
-If SBX is already installed, check which executable `command -v sbx` selects before
-changing it. This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
+This material targets **v0.45.0-rc2**. A floating Homebrew RC channel
 may now deliver a later release; use the assets and installation guidance on the
 [pinned release](https://github.com/docker/sbx-releases/releases/tag/v0.45.0-rc2)
 to install that version. Use `sbx version` again afterward; the version for this workshop is `v0.45.0-rc2`.
