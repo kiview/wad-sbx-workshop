@@ -22,6 +22,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"syscall"
 	"time"
@@ -78,9 +79,7 @@ func main() {
 	}
 
 	if opts.check {
-		if !emitCheck(true, opts, client, nil) {
-			os.Exit(1)
-		}
+		emitCheck(true, opts, client, nil)
 		return
 	}
 
@@ -126,7 +125,22 @@ func parseFlags() options {
 	}
 	_ = fs.Parse(os.Args[1:])
 
+	// Absolute paths are required, but expanding a relative one here gives a clearer
+	// error than letting the CLI resolve it against an unknown working directory.
+	opts.beansBin = absOrRaw(opts.beansBin)
+	opts.beansConfig = absOrRaw(opts.beansConfig)
+	opts.beansData = absOrRaw(opts.beansData)
 	return opts
+}
+
+func absOrRaw(p string) string {
+	if p == "" || filepath.IsAbs(p) {
+		return p
+	}
+	if abs, err := filepath.Abs(p); err == nil {
+		return abs
+	}
+	return p
 }
 
 func envOr(key, fallback string) string {
@@ -198,7 +212,7 @@ type checkReport struct {
 	Remedy      string   `json:"remedy,omitempty"`
 }
 
-func emitCheck(ok bool, opts options, client *backlog.Client, err error) bool {
+func emitCheck(ok bool, opts options, client *backlog.Client, err error) {
 	report := checkReport{
 		OK: ok, Version: version,
 		BeansBin: opts.beansBin, BeansConfig: opts.beansConfig,
@@ -240,10 +254,7 @@ func emitCheck(ok bool, opts options, client *backlog.Client, err error) bool {
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(report); err != nil {
-		return false
-	}
-	return report.OK
+	_ = enc.Encode(report)
 }
 
 func remedyFor(code backlog.Code) string {

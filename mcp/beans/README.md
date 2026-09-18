@@ -77,19 +77,13 @@ go vet ./...
 
 Tests use a real Beans executable and MCP client/server processes. They cover
 reads, filtering, notes, invalid IDs, isolation from an unrelated backlog,
-startup failures, paths containing spaces, Unicode note limits, revoking note
-access, simultaneous notes, and shutdown. CI requires Beans so
+startup failures, paths containing spaces, and shutdown. CI requires Beans so
 missing dependencies cannot silently skip protocol coverage. CI also exercises
 the installed `scripts/beans-mcp` entrypoint, including Git Bash on Windows.
 
 The `Beans MCP` workflow runs natively on all five release OS/architecture pairs,
 then cross-compiles static binaries and packages checksums and provenance. These
 checks validate the adapter and host wrapper, not SBX virtualization or agent login.
-
-This adapter targets small workshop backlogs. Each Beans call has a 10-second
-timeout and a 1 MiB output cap. A larger result produces `backlog_output_too_large`,
-even if the caller requests a short list; `list_tasks` limits the returned task
-count after reading the CLI response.
 
 For a release, update `BEANS_MCP_VERSION` in `scripts/versions.env`, run the checks,
 and push a matching `beans-mcp-vVERSION` tag at the tested source commit. The tag

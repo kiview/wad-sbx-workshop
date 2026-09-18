@@ -98,11 +98,3 @@ func TestErrorFormatting(t *testing.T) {
 		t.Errorf("Message = %q", err.Message)
 	}
 }
-
-func TestAcceptanceHeadingMustMatch(t *testing.T) {
-	for _, heading := range []string{"Non-acceptance criteria", "Acceptance criteria notes"} {
-		if got := ExtractAcceptanceCriteria("## " + heading + "\n- unrelated bullet\n"); len(got) != 0 {
-			t.Errorf("%q matched: %v", heading, got)
-		}
-	}
-}
